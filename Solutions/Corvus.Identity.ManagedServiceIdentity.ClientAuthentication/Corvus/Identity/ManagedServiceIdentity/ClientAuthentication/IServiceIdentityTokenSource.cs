@@ -50,5 +50,27 @@ namespace Corvus.Identity.ManagedServiceIdentity.ClientAuthentication
         /// </param>
         /// <returns>A task that produces an access token.</returns>
         Task<string> GetAccessToken(string resource);
+
+        /// <summary>
+        /// Obtains an access token suitable for use as a Bearer token in an HTTP Authorization
+        /// header, specifying the authority from which to obtain the token.
+        /// </summary>
+        /// <param name="authority">
+        /// The authority that should issue the token.
+        /// </param>
+        /// <param name="resource">
+        /// An identifier for the resource to be accessed. For Microsoft services (e.g., ARM) this
+        /// will typically be a well-known URL. For service-to-service authentication where each
+        /// service has its own MSI, this will typically be the GUID identifying the target
+        /// service's MSI.
+        /// </param>
+        /// <param name="scope">
+        /// The type of access required for this particular token.
+        /// </param>
+        /// <returns>A task that produces an access token.</returns>
+        /// <remarks>
+        /// This is the callback form required by <c>Microsoft.Azure.KeyVault.KeyVaultClient</c>.
+        /// </remarks>
+        Task<string> GetAccessTokenSpecifyingAuthority(string authority, string resource, string scope);
     }
 }
