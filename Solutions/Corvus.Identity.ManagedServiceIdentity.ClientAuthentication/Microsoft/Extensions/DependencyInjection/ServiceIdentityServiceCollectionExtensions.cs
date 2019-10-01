@@ -8,24 +8,28 @@ namespace Microsoft.Extensions.DependencyInjection
     using Corvus.Identity.ManagedServiceIdentity.ClientAuthentication;
 
     /// <summary>
-    /// DI initialization for services using a Managed Service Identity (MSI).
+    /// DI initialization for services using a Managed Identity.
     /// </summary>
     public static class ServiceIdentityServiceCollectionExtensions
     {
         /// <summary>
-        /// Adds the Workflow Engine client to a service collection.
+        /// Adds an <c>AzureServiceTokenProvider</c>-based <see cref="IServiceIdentityTokenSource"/>
+        /// to a service collection.
         /// </summary>
         /// <param name="services">The service collection.</param>
+        /// <param name="options">Configuration for the token source.</param>
         /// <returns>The modified service collection.</returns>
-        public static IServiceCollection AddAzureMsiBasedTokenSource(
-            this IServiceCollection services)
+        public static IServiceCollection AddAzureManagedIdentityBasedTokenSource(
+            this IServiceCollection services,
+            AzureManagedIdentityTokenSourceOptions options = null)
         {
-            if (services.Any(s => s.ImplementationType == typeof(AzureMsiTokenSource)))
+            if (services.Any(s => s.ImplementationType == typeof(AzureManagedIdentityTokenSource)))
             {
                 return services;
             }
 
-            return services.AddSingleton<IServiceIdentityTokenSource, AzureMsiTokenSource>();
+            return services.AddSingleton<IServiceIdentityTokenSource>(
+                _ => new AzureManagedIdentityTokenSource(options?.AzureServicesAuthConnectionString));
         }
     }
 }
