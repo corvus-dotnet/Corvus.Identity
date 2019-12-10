@@ -1,4 +1,4 @@
-﻿// <copyright file="AzureMsiTokenSource.cs" company="Endjin Limited">
+﻿// <copyright file="AzureManagedIdentityTokenSource.cs" company="Endjin Limited">
 // Copyright (c) Endjin Limited. All rights reserved.
 // </copyright>
 
@@ -6,24 +6,27 @@ namespace Corvus.Identity.ManagedServiceIdentity.ClientAuthentication
 {
     using System.Threading.Tasks;
     using Microsoft.Azure.Services.AppAuthentication;
-    using Microsoft.Extensions.Configuration;
 
     /// <summary>
-    /// Enables applications running in an Azure service with an associated Managed Service
-    /// Identity (MSI) to authenticate using that identity.
+    /// Enables applications running in an Azure service with an associated Managed Identity to
+    /// authenticate using that identity.
     /// </summary>
-    public class AzureMsiTokenSource : IServiceIdentityTokenSource
+    /// <remarks>
+    /// To use this, call the <see cref="Microsoft.Extensions.DependencyInjection.ServiceIdentityServiceCollectionExtensions.AddAzureManagedIdentityBasedTokenSource(Microsoft.Extensions.DependencyInjection.IServiceCollection, AzureManagedIdentityTokenSourceOptions)"/>
+    /// method during dependency injection initialization.
+    /// </remarks>
+    internal class AzureManagedIdentityTokenSource : IServiceIdentityTokenSource
     {
         private readonly AzureServiceTokenProvider azureServiceTokenProvider;
         private AzureServiceTokenProvider.TokenCallback keyVaultTokenCallback;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AzureMsiTokenSource"/> class.
+        /// Initializes a new instance of the <see cref="AzureManagedIdentityTokenSource"/> class.
         /// </summary>
-        /// <param name="configuration">The configuration root.</param>
-        public AzureMsiTokenSource(IConfigurationRoot configuration)
+        /// <param name="connectionString">The connection string, or null.</param>
+        internal AzureManagedIdentityTokenSource(string connectionString)
         {
-            this.azureServiceTokenProvider = new AzureServiceTokenProvider(configuration["AzureServicesAuthConnectionString"]);
+            this.azureServiceTokenProvider = new AzureServiceTokenProvider(connectionString);
         }
 
         /// <inheritdoc />
