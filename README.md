@@ -3,11 +3,14 @@
 [![GitHub license](https://img.shields.io/badge/License-Apache%202-blue.svg)](https://raw.githubusercontent.com/corvus-dotnet/Corvus.Identity/master/LICENSE)
 [![IMM](https://endimmfuncdev.azurewebsites.net/api/imm/github/corvus-dotnet/Corvus.Identity/total?cache=false)](https://endimmfuncdev.azurewebsites.net/api/imm/github/corvus-dotnet/Corvus.Identity/total?cache=false)
 
-This provides a library of identity-related components.
+This project is for components that bridge between different mechanisms for asserting user or service identities.
 
 It is built for netstandard2.0.
 
 ## Features
+
+A bridge between the `Microsoft.Rest.ITokenSource` required by the majority of ca 2018 Azure Client SDK libraries,
+and the `AzureServiceTokenProvider` type provided by the `Microsoft.Azure.Services.AppAuthentication` library.
 
 
 ## Licenses
