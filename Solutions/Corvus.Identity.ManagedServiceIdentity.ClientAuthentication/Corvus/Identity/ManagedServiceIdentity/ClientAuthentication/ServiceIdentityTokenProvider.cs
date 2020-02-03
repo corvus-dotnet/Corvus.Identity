@@ -40,7 +40,9 @@ namespace Corvus.Identity.ManagedServiceIdentity.ClientAuthentication
         public async Task<AuthenticationHeaderValue> GetAuthenticationHeaderAsync(CancellationToken cancellationToken)
         {
             string token = await this.serviceIdentityTokenSource.GetAccessToken(this.resource).ConfigureAwait(false);
-            return new AuthenticationHeaderValue("Bearer", token);
+            return token != null
+                ? new AuthenticationHeaderValue("Bearer", token)
+                : null;
         }
     }
 }
