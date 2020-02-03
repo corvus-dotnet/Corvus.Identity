@@ -10,7 +10,18 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DevOps", "DevOps", "{D29CAB
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Corvus.Identity.ManagedServiceIdentity.ClientAuthentication", "Corvus.Identity.ManagedServiceIdentity.ClientAuthentication\Corvus.Identity.ManagedServiceIdentity.ClientAuthentication.csproj", "{A83D2A90-3FCE-45FE-892F-E778E8A018FF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Corvus.Identity.ManagedServiceIdentity.ClientAuthentication.Specs", "Corvus.Identity.ManagedServiceIdentity.ClientAuthentication.Specs\Corvus.Identity.ManagedServiceIdentity.ClientAuthentication.Specs.csproj", "{24D0BC07-9757-4111-A60B-5D9E2326E3A4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Corvus.Identity.ManagedServiceIdentity.ClientAuthentication.Specs", "Corvus.Identity.ManagedServiceIdentity.ClientAuthentication.Specs\Corvus.Identity.ManagedServiceIdentity.ClientAuthentication.Specs.csproj", "{24D0BC07-9757-4111-A60B-5D9E2326E3A4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{69057702-EBA8-4396-BB8F-8042AE76500A}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		Common.GitHub.proj = Common.GitHub.proj
+		Common.NetStandard_2_0.proj = Common.NetStandard_2_0.proj
+		Common.NuGet.proj = Common.NuGet.proj
+		Directory.build.props = Directory.build.props
+		Directory.build.targets = Directory.build.targets
+		StyleCop.ruleset = StyleCop.ruleset
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
