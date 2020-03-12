@@ -4,8 +4,6 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <LangVersion>latest</LangVersion>
     <IsPackable>false</IsPackable>
-    <RootNamespace></RootNamespace>
-    <Copyright>Copyright (c) Endjin Limited 2020. All rights reserved.</Copyright>
     <!-- Disabling SA1204 because it prioritizes static/non-static over public/non-public, which doesn't fit very well
          with bindings in SpecFlow.
          Disabling SA1600, SA1602 (all public types and members to be documented) because test projects need to make lots of types

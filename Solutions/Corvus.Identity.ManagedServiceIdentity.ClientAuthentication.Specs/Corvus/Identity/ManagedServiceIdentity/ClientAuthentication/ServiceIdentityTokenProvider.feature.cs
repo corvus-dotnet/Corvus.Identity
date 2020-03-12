@@ -10,7 +10,7 @@
 // ------------------------------------------------------------------------------
 #region Designer generated code
 #pragma warning disable
-namespace Corvus.Identity.ManagedServiceIdentity.ClientAuthentication
+namespace Corvus.Identity.ManagedServiceIdentity.ClientAuthentication.Specs.Corvus.Identity.ManagedServiceIdentity.ClientAuthentication
 {
     using TechTalk.SpecFlow;
     using System;

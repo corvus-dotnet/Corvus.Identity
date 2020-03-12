@@ -2,8 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <RootNamespace></RootNamespace>
-    <Copyright>Copyright (c) Endjin Limited 2020. All rights reserved.</Copyright>
+    <RootNamespace />
   </PropertyGroup>
 
   <PropertyGroup>
