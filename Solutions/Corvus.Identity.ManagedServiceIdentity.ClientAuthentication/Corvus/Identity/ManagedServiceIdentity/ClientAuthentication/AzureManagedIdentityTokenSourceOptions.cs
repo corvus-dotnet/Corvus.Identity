@@ -44,6 +44,6 @@ namespace Corvus.Identity.ManagedServiceIdentity.ClientAuthentication
         /// <c>AzureServicesAuthConnectionString</c>.
         /// </p>
         /// </remarks>
-        public string AzureServicesAuthConnectionString { get; set; }
+        public string? AzureServicesAuthConnectionString { get; set; }
     }
 }

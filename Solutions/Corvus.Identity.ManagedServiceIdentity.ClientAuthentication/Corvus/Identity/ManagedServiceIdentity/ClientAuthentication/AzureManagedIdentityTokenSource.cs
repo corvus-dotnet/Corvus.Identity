@@ -18,13 +18,13 @@ namespace Corvus.Identity.ManagedServiceIdentity.ClientAuthentication
     internal class AzureManagedIdentityTokenSource : IServiceIdentityTokenSource
     {
         private readonly AzureServiceTokenProvider azureServiceTokenProvider;
-        private AzureServiceTokenProvider.TokenCallback keyVaultTokenCallback;
+        private AzureServiceTokenProvider.TokenCallback? keyVaultTokenCallback;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AzureManagedIdentityTokenSource"/> class.
         /// </summary>
         /// <param name="connectionString">The connection string, or null.</param>
-        internal AzureManagedIdentityTokenSource(string connectionString)
+        internal AzureManagedIdentityTokenSource(string? connectionString)
         {
             this.azureServiceTokenProvider = new AzureServiceTokenProvider(connectionString);
         }
