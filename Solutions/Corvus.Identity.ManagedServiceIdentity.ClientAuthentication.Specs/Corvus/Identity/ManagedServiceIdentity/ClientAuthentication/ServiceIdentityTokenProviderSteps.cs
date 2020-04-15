@@ -4,6 +4,7 @@
 
 namespace Corvus.Identity.ManagedServiceIdentity.ClientAuthentication
 {
+    using System;
     using System.Net.Http.Headers;
     using System.Threading;
     using System.Threading.Tasks;
@@ -17,9 +18,9 @@ namespace Corvus.Identity.ManagedServiceIdentity.ClientAuthentication
     public class ServiceIdentityTokenProviderSteps
     {
         private readonly Mock<IServiceIdentityTokenSource> underlyingTokenSource = new Mock<IServiceIdentityTokenSource>();
-        private readonly TaskCompletionSource<string> underlyingGetAccessTokenResultSource = new TaskCompletionSource<string>();
-        private ITokenProvider provider;
-        private Task<AuthenticationHeaderValue> result;
+        private readonly TaskCompletionSource<string?> underlyingGetAccessTokenResultSource = new TaskCompletionSource<string?>();
+        private ITokenProvider? provider;
+        private Task<AuthenticationHeaderValue>? result;
 
         public ServiceIdentityTokenProviderSteps()
         {
@@ -38,6 +39,11 @@ namespace Corvus.Identity.ManagedServiceIdentity.ClientAuthentication
         [When(@"I invoke ITokenProvider\.GetAuthenticationHeaderAsync")]
         public void GivenIHaveInvokedITokenProvider_GetAuthenticationHeader()
         {
+            if (this.provider == null)
+            {
+                throw new Exception("No provider has been set up.");
+            }
+
             this.result = this.provider.GetAuthenticationHeaderAsync(CancellationToken.None);
         }
 

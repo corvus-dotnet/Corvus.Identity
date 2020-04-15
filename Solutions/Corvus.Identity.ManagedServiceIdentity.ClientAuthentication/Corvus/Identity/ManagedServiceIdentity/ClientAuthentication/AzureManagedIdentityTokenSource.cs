@@ -30,7 +30,7 @@ namespace Corvus.Identity.ManagedServiceIdentity.ClientAuthentication
         }
 
         /// <inheritdoc />
-        public Task<string> GetAccessToken(string resource) => this.azureServiceTokenProvider.GetAccessTokenAsync(resource);
+        public Task<string?> GetAccessToken(string resource) => this.azureServiceTokenProvider.GetAccessTokenAsync(resource);
 
         /// <inheritdoc />
         public Task<string> GetAccessTokenSpecifyingAuthority(string authority, string resource, string scope)
