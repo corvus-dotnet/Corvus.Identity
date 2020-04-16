@@ -21,7 +21,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns>The modified service collection.</returns>
         public static IServiceCollection AddAzureManagedIdentityBasedTokenSource(
             this IServiceCollection services,
-            AzureManagedIdentityTokenSourceOptions options = null)
+            AzureManagedIdentityTokenSourceOptions? options = null)
         {
             if (services.Any(s => s.ImplementationType == typeof(AzureManagedIdentityTokenSource)))
             {

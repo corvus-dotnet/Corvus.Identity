@@ -49,7 +49,7 @@ namespace Corvus.Identity.ManagedServiceIdentity.ClientAuthentication
         /// service's MSI.
         /// </param>
         /// <returns>A task that produces an access token.</returns>
-        Task<string> GetAccessToken(string resource);
+        Task<string?> GetAccessToken(string resource);
 
         /// <summary>
         /// Obtains an access token suitable for use as a Bearer token in an HTTP Authorization
