@@ -4,6 +4,7 @@
 
 namespace Microsoft.Extensions.DependencyInjection
 {
+    using System;
     using System.Linq;
     using Corvus.Identity.ManagedServiceIdentity.ClientAuthentication;
 
@@ -21,7 +22,21 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns>The modified service collection.</returns>
         public static IServiceCollection AddAzureManagedIdentityBasedTokenSource(
             this IServiceCollection services,
-            AzureManagedIdentityTokenSourceOptions? options = null)
+            AzureManagedIdentityTokenSourceOptions? options)
+        {
+            return services.AddAzureManagedIdentityBasedTokenSource(_ => options);
+        }
+
+        /// <summary>
+        /// Adds an <c>AzureServiceTokenProvider</c>-based <see cref="IServiceIdentityTokenSource"/>
+        /// to a service collection.
+        /// </summary>
+        /// <param name="services">The service collection.</param>
+        /// <param name="getOptions">A callback method that will retrieve an <see cref="AzureManagedIdentityTokenSourceOptions" />.</param>
+        /// <returns>The modified service collection.</returns>
+        public static IServiceCollection AddAzureManagedIdentityBasedTokenSource(
+            this IServiceCollection services,
+            Func<IServiceProvider, AzureManagedIdentityTokenSourceOptions?> getOptions)
         {
             if (services.Any(s => s.ImplementationType == typeof(AzureManagedIdentityTokenSource)))
             {
@@ -29,7 +44,7 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             return services.AddSingleton<IServiceIdentityTokenSource>(
-                _ => new AzureManagedIdentityTokenSource(options?.AzureServicesAuthConnectionString));
+                sp => new AzureManagedIdentityTokenSource(getOptions(sp)?.AzureServicesAuthConnectionString));
         }
     }
 }
