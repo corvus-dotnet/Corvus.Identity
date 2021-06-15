@@ -1,6 +1,6 @@
 # Corvus.Identity
-[![Build Status](https://dev.azure.com/endjin-labs/Corvus.Identity/_apis/build/status/corvus-dotnet.Corvus.Identity?branchName=master)](https://dev.azure.com/endjin-labs/Corvus.Identity/_build/latest?definitionId=4&branchName=master)
-[![GitHub license](https://img.shields.io/badge/License-Apache%202-blue.svg)](https://raw.githubusercontent.com/corvus-dotnet/Corvus.Identity/master/LICENSE)
+[![Build Status](https://dev.azure.com/endjin-labs/Corvus.Identity/_apis/build/status/corvus-dotnet.Corvus.Identity?branchName=main)](https://dev.azure.com/endjin-labs/Corvus.Identity/_build/latest?definitionId=4&branchName=main)
+[![GitHub license](https://img.shields.io/badge/License-Apache%202-blue.svg)](https://raw.githubusercontent.com/corvus-dotnet/Corvus.Identity/main/LICENSE)
 [![IMM](https://endimmfuncdev.azurewebsites.net/api/imm/github/corvus-dotnet/Corvus.Identity/total?cache=false)](https://endimmfuncdev.azurewebsites.net/api/imm/github/corvus-dotnet/Corvus.Identity/total?cache=false)
 
 This project is for components that bridge between different mechanisms for asserting user or service identities.
@@ -15,7 +15,7 @@ and the `AzureServiceTokenProvider` type provided by the `Microsoft.Azure.Servic
 
 ## Licenses
 
-[![GitHub license](https://img.shields.io/badge/License-Apache%202-blue.svg)](https://raw.githubusercontent.com/corvus-dotnet/Corvus.Identity/master/LICENSE)
+[![GitHub license](https://img.shields.io/badge/License-Apache%202-blue.svg)](https://raw.githubusercontent.com/corvus-dotnet/Corvus.Identity/main/LICENSE)
 
 Corvus.Identity is available under the Apache 2.0 open source license.
 
