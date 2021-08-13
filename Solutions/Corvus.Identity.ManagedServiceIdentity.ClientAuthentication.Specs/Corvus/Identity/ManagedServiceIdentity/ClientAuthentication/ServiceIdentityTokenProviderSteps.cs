@@ -8,10 +8,15 @@ namespace Corvus.Identity.ManagedServiceIdentity.ClientAuthentication
     using System.Net.Http.Headers;
     using System.Threading;
     using System.Threading.Tasks;
+
     using Idg.AsyncTest.TaskExtensions;
+
     using Microsoft.Rest;
+
     using Moq;
+
     using NUnit.Framework;
+
     using TechTalk.SpecFlow;
 
     [Binding]

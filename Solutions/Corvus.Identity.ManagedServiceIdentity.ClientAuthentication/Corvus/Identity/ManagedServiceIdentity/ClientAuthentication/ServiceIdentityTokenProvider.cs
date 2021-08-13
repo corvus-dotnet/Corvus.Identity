@@ -7,6 +7,7 @@ namespace Corvus.Identity.ManagedServiceIdentity.ClientAuthentication
     using System.Net.Http.Headers;
     using System.Threading;
     using System.Threading.Tasks;
+
     using Microsoft.Rest;
 
     /// <summary>

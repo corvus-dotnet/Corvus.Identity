@@ -5,6 +5,7 @@
 namespace Corvus.Identity.ManagedServiceIdentity.ClientAuthentication
 {
     using System.Threading.Tasks;
+
     using Microsoft.Azure.Services.AppAuthentication;
 
     /// <summary>

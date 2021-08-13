@@ -14,6 +14,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Corvus.Identity.ManagedServ
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Corvus.Identity.ManagedServiceIdentity.ClientAuthentication.Specs", "Corvus.Identity.ManagedServiceIdentity.ClientAuthentication.Specs\Corvus.Identity.ManagedServiceIdentity.ClientAuthentication.Specs.csproj", "{24D0BC07-9757-4111-A60B-5D9E2326E3A4}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Corvus.Identity.Azure", "Corvus.Identity.Azure\Corvus.Identity.Azure.csproj", "{831D509C-4971-453D-86B8-ADC4AB7CD592}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Corvus.Identity.Abstractions", "Corvus.Identity.Abstractions\Corvus.Identity.Abstractions.csproj", "{3DCE2F70-5F7C-42A2-9690-9D05C8314EAA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,6 +32,14 @@ Global
 		{24D0BC07-9757-4111-A60B-5D9E2326E3A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{24D0BC07-9757-4111-A60B-5D9E2326E3A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{24D0BC07-9757-4111-A60B-5D9E2326E3A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{831D509C-4971-453D-86B8-ADC4AB7CD592}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{831D509C-4971-453D-86B8-ADC4AB7CD592}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{831D509C-4971-453D-86B8-ADC4AB7CD592}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{831D509C-4971-453D-86B8-ADC4AB7CD592}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DCE2F70-5F7C-42A2-9690-9D05C8314EAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DCE2F70-5F7C-42A2-9690-9D05C8314EAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DCE2F70-5F7C-42A2-9690-9D05C8314EAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DCE2F70-5F7C-42A2-9690-9D05C8314EAA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

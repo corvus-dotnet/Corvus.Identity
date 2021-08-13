@@ -6,6 +6,7 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     using System;
     using System.Linq;
+
     using Corvus.Identity.ManagedServiceIdentity.ClientAuthentication;
 
     /// <summary>
