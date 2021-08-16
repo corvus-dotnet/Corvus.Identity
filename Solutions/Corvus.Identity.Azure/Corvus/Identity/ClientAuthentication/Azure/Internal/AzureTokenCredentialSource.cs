@@ -14,7 +14,7 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
     /// </summary>
     internal class AzureTokenCredentialSource : IServiceIdentityAzureTokenCredentialSource
     {
-        private TokenCredential tokenCredential;
+        private readonly TokenCredential tokenCredential;
 
         /// <summary>
         /// Creates a <see cref="AzureTokenCredentialSource"/>.
@@ -28,6 +28,6 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
         }
 
         /// <inheritdoc/>
-        public ValueTask<TokenCredential> GetAccessTokenAsync() => new ValueTask<TokenCredential>(this.tokenCredential);
+        public ValueTask<TokenCredential> GetAccessTokenAsync() => new (this.tokenCredential);
     }
 }

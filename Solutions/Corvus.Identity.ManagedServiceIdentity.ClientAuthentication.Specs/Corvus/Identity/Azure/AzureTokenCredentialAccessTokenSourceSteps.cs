@@ -10,6 +10,8 @@
     using global::Azure.Core;
     using global::Azure.Identity;
 
+    using Microsoft.Extensions.DependencyInjection;
+
     using NUnit.Framework;
 
     using TechTalk.SpecFlow;
@@ -17,6 +19,8 @@
     [Binding]
     public class AzureTokenCredentialAccessTokenSourceSteps
     {
+        private readonly TaskCompletionSource<AccessToken> taskForResultFromUnderlyingCredential = new ();
+        private readonly IAccessTokenSource source;
 #nullable disable annotations
         private string[] scopes;
         private string claims;
@@ -24,29 +28,29 @@
         private Task<ClientAuthentication.AccessTokenDetail> accessTokenDetailReturnedTask;
 #nullable restore annotations
         private TokenRequestContext requestContextPassedToUnderlyingCredential;
-        private TaskCompletionSource<AccessToken> taskForResultFromUnderlyingCredential = new TaskCompletionSource<AccessToken>();
         private AccessToken resultFromUnderlyingCredential;
-
-        private AzureTokenCredentialAccessTokenSource source;
 
         public AzureTokenCredentialAccessTokenSourceSteps()
         {
-            this.source = new AzureTokenCredentialAccessTokenSource(new TestTokenCredential(this));
+            var services = new ServiceCollection();
+            services.AddServiceIdentityAzureTokenCredentialSourceFromAzureCoreTokenCredential(new TestTokenCredential(this));
+            ServiceProvider sp = services.BuildServiceProvider();
+            this.source = sp.GetRequiredService<IAccessTokenSource>();
         }
 
-        [Given(@"the AccessTokenRequest scope is '(.*)'")]
+        [Given("the AccessTokenRequest scope is '(.*)'")]
         public void GivenTheAccessTokenRequestScopeIs(string scope)
         {
             this.scopes = new[] { scope };
         }
 
-        [Given(@"the AccessTokenRequest has additional claims of '(.*)'")]
+        [Given("the AccessTokenRequest has additional claims of '(.*)'")]
         public void GivenTheAccessTokenRequestHasAdditionalClaimsOf(string claims)
         {
             this.claims = claims;
         }
 
-        [Given(@"the AccessTokenRequest has an authority id '(.*)'")]
+        [Given("the AccessTokenRequest has an authority id '(.*)'")]
         public void GivenTheAccessTokenRequestHasAnAuthorityId(string authorityId)
         {
             this.authorityId = authorityId;
@@ -60,7 +64,7 @@
                 CancellationToken.None).AsTask();
         }
 
-        [When(@"the underlying TokenCredential returns a successful result")]
+        [When("the underlying TokenCredential returns a successful result")]
         public void WhenTheUnderlyingTokenCredentialReturnsASuccessfulResult()
         {
             byte[] r = new byte[10];
@@ -71,7 +75,7 @@
             this.taskForResultFromUnderlyingCredential.SetResult(this.resultFromUnderlyingCredential);
         }
 
-        [When(@"the underlying TokenCredential throws a '(.*)'")]
+        [When("the underlying TokenCredential throws a '(.*)'")]
         public void WhenTheUnderlyingTokenCredentialThrowsA(string exceptionType)
         {
             this.taskForResultFromUnderlyingCredential.SetException(
@@ -85,7 +89,7 @@
         }
 
         [Then(@"the scope should have been passed on to TokenCredential\.GetTokenAsync")]
-        public void ThenTheScopeShouldHaveBeenPassedOnToTokenCredential_GetTokenAsync()
+        public void ThenTheScopeShouldHaveBeenPassedOnToTokenCredential_GetToken()
         {
             Assert.AreSame(this.scopes, this.requestContextPassedToUnderlyingCredential.Scopes);
         }
@@ -111,17 +115,17 @@
         [Then(@"the AccessToken returned by IAccessTokenSource\.GetAccessTokenAsync should be the same as was returned by TokenCredential\.GetTokenAsync")]
         public async Task ThenTheAccessTokenReturnedByIAccessTokenSource_GetAccessTokenAsyncShouldBeTheSameAsWasReturnedByTokenCredential_GetTokenAsync()
         {
-            Assert.AreSame(this.resultFromUnderlyingCredential.Token, (await this.accessTokenDetailReturnedTask).AccessToken);
+            Assert.AreSame(this.resultFromUnderlyingCredential.Token, (await this.accessTokenDetailReturnedTask.ConfigureAwait(false)).AccessToken);
         }
 
         [Then(@"the ExpiresOn returned by IAccessTokenSource\.GetAccessTokenAsync should be the same as was returned by TokenCredential\.GetTokenAsync")]
         public async Task ThenTheExpiresOnReturnedByIAccessTokenSource_GetAccessTokenAsyncShouldBeTheSameAsWasReturnedByTokenCredential_GetTokenAsync()
         {
-            Assert.AreEqual(this.resultFromUnderlyingCredential.ExpiresOn, (await this.accessTokenDetailReturnedTask).ExpiresOn);
+            Assert.AreEqual(this.resultFromUnderlyingCredential.ExpiresOn, (await this.accessTokenDetailReturnedTask.ConfigureAwait(false)).ExpiresOn);
         }
 
         [Then(@"the Claims should have been passed on to TokenCredential\.GetTokenAsync")]
-        public void ThenTheClaimsShouldHaveBeenPassedOnToTokenCredential_GetTokenAsync()
+        public void ThenTheClaimsShouldHaveBeenPassedOnToTokenCredential_GetToken()
         {
             Assert.AreSame(this.claims, this.requestContextPassedToUnderlyingCredential.Claims);
         }
@@ -137,7 +141,7 @@
         {
             try
             {
-                await this.accessTokenDetailReturnedTask;
+                await this.accessTokenDetailReturnedTask.ConfigureAwait(false);
                 Assert.Fail("Exception should have been thrown");
             }
             catch (Exception x)
@@ -151,7 +155,7 @@
         {
             try
             {
-                await this.accessTokenDetailReturnedTask;
+                await this.accessTokenDetailReturnedTask.ConfigureAwait(false);
                 Assert.Fail("Exception should have been thrown");
             }
             catch (Exception x)
@@ -162,7 +166,7 @@
 
         private class TestTokenCredential : TokenCredential
         {
-            private AzureTokenCredentialAccessTokenSourceSteps parent;
+            private readonly AzureTokenCredentialAccessTokenSourceSteps parent;
 
             public TestTokenCredential(AzureTokenCredentialAccessTokenSourceSteps azureTokenCredentialAccessTokenSourceSteps)
             {
@@ -177,7 +181,7 @@
             public override async ValueTask<AccessToken> GetTokenAsync(TokenRequestContext requestContext, CancellationToken cancellationToken)
             {
                 this.parent.requestContextPassedToUnderlyingCredential = requestContext;
-                return await this.parent.taskForResultFromUnderlyingCredential.Task;
+                return await this.parent.taskForResultFromUnderlyingCredential.Task.ConfigureAwait(false);
             }
         }
     }

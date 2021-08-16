@@ -28,7 +28,7 @@ namespace Corvus.Identity.ManagedServiceIdentity.ClientAuthentication
         
         private string[] _featureTags = ((string[])(null));
         
-#line 1 "ServiceIdentityTokenProvider.feature"
+#line 1 "LegacyServiceIdentityTokenProvider.feature"
 #line hidden
         
         [NUnit.Framework.OneTimeSetUpAttribute()]

@@ -39,7 +39,8 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
                         scopes: requiredTokenCharacteristics.Scopes,
                         claims: requiredTokenCharacteristics.Claims,
                         tenantId: requiredTokenCharacteristics.AuthorityId),
-                    cancellationToken);
+                    cancellationToken)
+                    .ConfigureAwait(false);
                 return new AccessTokenDetail(result.Token, result.ExpiresOn);
             }
             catch (Exception x)

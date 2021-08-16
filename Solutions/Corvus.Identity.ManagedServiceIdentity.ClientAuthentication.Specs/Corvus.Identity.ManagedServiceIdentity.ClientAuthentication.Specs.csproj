@@ -15,6 +15,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <SpecFlowObsoleteCodeBehindFiles Remove="Corvus\Identity\ManagedServiceIdentity\ClientAuthentication\LegacyServiceIdentityTokenProvider - Copy.feature.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Endjin.RecommendedPractices" Version="1.2.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -28,10 +31,22 @@
   <ItemGroup>
     <ProjectReference Include="..\Corvus.Identity.Azure\Corvus.Identity.Azure.csproj" />
     <ProjectReference Include="..\Corvus.Identity.ManagedServiceIdentity.ClientAuthentication\Corvus.Identity.ManagedServiceIdentity.ClientAuthentication.csproj" />
+    <ProjectReference Include="..\Corvus.Identity.MicrosoftRest\Corvus.Identity.MicrosoftRest.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Corvus\Identity\ManagedServiceIdentity\ClientAuthentication\ServiceIdentityMicrosoftRestTokenProvider.feature.cs">
+      <DependentUpon>ServiceIdentityMicrosoftRestTokenProvider.feature</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Update="specflow.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <SpecFlowFeatureFiles Update="Corvus\Identity\ManagedServiceIdentity\ClientAuthentication\ServiceIdentityMicrosoftRestTokenProvider.feature">
+      <Visible>$(UsingMicrosoftNETSdk)</Visible>
+      <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
+    </SpecFlowFeatureFiles>
   </ItemGroup>
 </Project>

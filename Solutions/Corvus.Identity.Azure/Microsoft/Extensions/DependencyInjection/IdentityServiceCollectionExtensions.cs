@@ -4,6 +4,9 @@
 
 namespace Microsoft.Extensions.DependencyInjection
 {
+    using Azure.Core;
+
+    using Corvus.Identity.ClientAuthentication;
     using Corvus.Identity.ClientAuthentication.Azure;
     using Corvus.Identity.ClientAuthentication.Azure.Internal;
 
@@ -13,9 +16,10 @@ namespace Microsoft.Extensions.DependencyInjection
     public static class IdentityServiceCollectionExtensions
     {
         /// <summary>
-        /// Adds an <see cref="IServiceIdentityAzureTokenCredentialSource"/> configured with a
-        /// legacy connection string of the kind recognized by <c>AzureServiceTokenProvider</c>
-        /// to a service collection.
+        /// Adds <see cref="IServiceIdentityAzureTokenCredentialSource"/> and
+        /// <see cref="IServiceIdentityAccessTokenSource"/> implementations to a service collection
+        /// configured with a legacy connection string of the kind recognized by
+        /// <c>AzureServiceTokenProvider</c>.
         /// </summary>
         /// <param name="services">The service collection.</param>
         /// <param name="legacyConnectionString">
@@ -26,8 +30,28 @@ namespace Microsoft.Extensions.DependencyInjection
             this IServiceCollection services,
             string legacyConnectionString)
         {
-            return services.AddSingleton<IServiceIdentityAzureTokenCredentialSource>(
-                new AzureTokenCredentialSource(LegacyAzureServiceTokenProviderConnectionString.ToTokenCredential(legacyConnectionString)));
+            return services.AddServiceIdentityAzureTokenCredentialSourceFromAzureCoreTokenCredential(LegacyAzureServiceTokenProviderConnectionString.ToTokenCredential(legacyConnectionString));
+        }
+
+        /// <summary>
+        /// Adds an <see cref="IServiceIdentityAzureTokenCredentialSource"/> that returns an
+        /// existing <see cref="TokenCredential"/>, and a
+        /// <see cref="IServiceIdentityAccessTokenSource"/> implementation that uses this to
+        /// provide plain access tokens.
+        /// </summary>
+        /// <param name="services">The service collection.</param>
+        /// <param name="tokenCredential">
+        /// The token credential that the <see cref="IServiceIdentityAzureTokenCredentialSource"/>
+        /// implementation will always return.
+        /// </param>
+        /// <returns>The modified service collection.</returns>
+        public static IServiceCollection AddServiceIdentityAzureTokenCredentialSourceFromAzureCoreTokenCredential(
+            this IServiceCollection services,
+            TokenCredential tokenCredential)
+        {
+            return services
+                .AddSingleton<IServiceIdentityAzureTokenCredentialSource>(new AzureTokenCredentialSource(tokenCredential))
+                .AddSingleton<IAccessTokenSource>(new AzureTokenCredentialAccessTokenSource(tokenCredential));
         }
     }
 }

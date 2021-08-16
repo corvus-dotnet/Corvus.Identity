@@ -22,7 +22,7 @@ namespace Corvus.Identity.Azure
     [Binding]
     public class LegacyAuthConnectionStringsSteps
     {
-        private LegacyAuthConnectionStringsFeature.Modes mode;
+        private readonly LegacyAuthConnectionStringsFeature.Modes mode;
         private TokenCredential? credential;
 
         public LegacyAuthConnectionStringsSteps()
@@ -44,7 +44,7 @@ namespace Corvus.Identity.Azure
                 services.AddServiceIdentityAzureTokenCredentialSourceFromLegacyConnectionString(connectionString);
                 ServiceProvider sp = services.BuildServiceProvider();
                 IServiceIdentityAzureTokenCredentialSource source = sp.GetRequiredService<IServiceIdentityAzureTokenCredentialSource>();
-                this.credential = await source.GetAccessTokenAsync();
+                this.credential = await source.GetAccessTokenAsync().ConfigureAwait(false);
             }
         }
 
@@ -63,7 +63,7 @@ namespace Corvus.Identity.Azure
             }
         }
 
-        [Then(@"the ClientSecretCredential tenantId should be '(.*)'")]
+        [Then("the ClientSecretCredential tenantId should be '(.*)'")]
         public void ThenTheClientSecretCredentialTenantIdShouldBe(string tenantId)
         {
             Assert.AreEqual(
@@ -71,7 +71,7 @@ namespace Corvus.Identity.Azure
                 ((LegacyAzureServiceTokenProviderConnectionString.TestableClientSecretCredential)this.credential!).TenantId);
         }
 
-        [Then(@"the ClientSecretCredential appId should be '(.*)'")]
+        [Then("the ClientSecretCredential appId should be '(.*)'")]
         public void ThenTheClientSecretCredentialAppIdShouldBe(string clientId)
         {
             Assert.AreEqual(
@@ -79,7 +79,7 @@ namespace Corvus.Identity.Azure
                 ((LegacyAzureServiceTokenProviderConnectionString.TestableClientSecretCredential)this.credential!).ClientId);
         }
 
-        [Then(@"the ClientSecretCredential clientSecret should be '(.*)'")]
+        [Then("the ClientSecretCredential clientSecret should be '(.*)'")]
         public void ThenTheClientSecretCredentialClientSecretShouldBe(string clientSecret)
         {
             Assert.AreEqual(

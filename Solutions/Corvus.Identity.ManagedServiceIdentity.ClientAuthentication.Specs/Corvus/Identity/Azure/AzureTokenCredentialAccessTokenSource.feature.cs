@@ -82,7 +82,7 @@ namespace Corvus.Identity.Azure
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Successful token acquisition with just scopes", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
-#line 7
+#line 6
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             bool isScenarioIgnored = default(bool);
@@ -102,32 +102,32 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 this.ScenarioStart();
-#line 8
+#line 7
     testRunner.Given("the AccessTokenRequest scope is \'https://management.core.windows.net/.default\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-#line 9
+#line 8
     testRunner.When("IAccessTokenSource.GetAccessTokenAsync is called", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 10
+#line 9
     testRunner.And("the underlying TokenCredential returns a successful result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 11
+#line 10
     testRunner.Then("the scope should have been passed on to TokenCredential.GetTokenAsync", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
-#line 12
+#line 11
     testRunner.And("the Claims passed to TokenCredential.GetTokenAsync should be null", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 13
+#line 12
     testRunner.And("the TenantId passed to TokenCredential.GetTokenAsync should be null", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 14
+#line 13
     testRunner.And("the ParentRequestId passed to TokenCredential.GetTokenAsync should be null", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 15
+#line 14
     testRunner.And("the AccessToken returned by IAccessTokenSource.GetAccessTokenAsync should be the " +
                         "same as was returned by TokenCredential.GetTokenAsync", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 16
+#line 15
     testRunner.And("the ExpiresOn returned by IAccessTokenSource.GetAccessTokenAsync should be the sa" +
                         "me as was returned by TokenCredential.GetTokenAsync", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
@@ -142,7 +142,7 @@ this.ScenarioInitialize(scenarioInfo);
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Successful token acquisition with scopes and claims", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
-#line 18
+#line 17
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             bool isScenarioIgnored = default(bool);
@@ -162,35 +162,35 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 this.ScenarioStart();
-#line 19
+#line 18
     testRunner.Given("the AccessTokenRequest scope is \'https://management.core.windows.net/.default\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-#line 20
+#line 19
     testRunner.And("the AccessTokenRequest has additional claims of \'claim1 claim2\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 21
+#line 20
     testRunner.When("IAccessTokenSource.GetAccessTokenAsync is called", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 22
+#line 21
     testRunner.And("the underlying TokenCredential returns a successful result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 23
+#line 22
     testRunner.Then("the scope should have been passed on to TokenCredential.GetTokenAsync", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
-#line 24
+#line 23
     testRunner.And("the Claims should have been passed on to TokenCredential.GetTokenAsync", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 25
+#line 24
     testRunner.And("the TenantId passed to TokenCredential.GetTokenAsync should be null", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 26
+#line 25
     testRunner.And("the ParentRequestId passed to TokenCredential.GetTokenAsync should be null", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 27
+#line 26
     testRunner.And("the AccessToken returned by IAccessTokenSource.GetAccessTokenAsync should be the " +
                         "same as was returned by TokenCredential.GetTokenAsync", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 28
+#line 27
     testRunner.And("the ExpiresOn returned by IAccessTokenSource.GetAccessTokenAsync should be the sa" +
                         "me as was returned by TokenCredential.GetTokenAsync", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
@@ -205,7 +205,7 @@ this.ScenarioInitialize(scenarioInfo);
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Successful token acquisition with scopes and authority id", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
-#line 30
+#line 29
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             bool isScenarioIgnored = default(bool);
@@ -225,36 +225,36 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 this.ScenarioStart();
-#line 31
+#line 30
     testRunner.Given("the AccessTokenRequest scope is \'https://management.core.windows.net/.default\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-#line 32
+#line 31
     testRunner.And("the AccessTokenRequest has an authority id \'mytenant\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 33
+#line 32
     testRunner.When("IAccessTokenSource.GetAccessTokenAsync is called", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 34
+#line 33
     testRunner.And("the underlying TokenCredential returns a successful result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 35
+#line 34
     testRunner.Then("the scope should have been passed on to TokenCredential.GetTokenAsync", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
-#line 36
+#line 35
     testRunner.And("the Claims passed to TokenCredential.GetTokenAsync should be null", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 37
+#line 36
     testRunner.And("the AuthorityId should have been passed on to TokenCredential.GetTokenAsync as th" +
                         "e TenantId", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 38
+#line 37
     testRunner.And("the ParentRequestId passed to TokenCredential.GetTokenAsync should be null", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 39
+#line 38
     testRunner.And("the AccessToken returned by IAccessTokenSource.GetAccessTokenAsync should be the " +
                         "same as was returned by TokenCredential.GetTokenAsync", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 40
+#line 39
     testRunner.And("the ExpiresOn returned by IAccessTokenSource.GetAccessTokenAsync should be the sa" +
                         "me as was returned by TokenCredential.GetTokenAsync", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
@@ -269,7 +269,7 @@ this.ScenarioInitialize(scenarioInfo);
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Successful token acquisition with scopes, claims, and authority id", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
-#line 42
+#line 41
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             bool isScenarioIgnored = default(bool);
@@ -289,39 +289,39 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 this.ScenarioStart();
-#line 43
+#line 42
     testRunner.Given("the AccessTokenRequest scope is \'https://management.core.windows.net/.default\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-#line 44
+#line 43
     testRunner.And("the AccessTokenRequest has additional claims of \'claim1 claim2\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 45
+#line 44
     testRunner.And("the AccessTokenRequest has an authority id \'mytenant\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 46
+#line 45
     testRunner.When("IAccessTokenSource.GetAccessTokenAsync is called", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 47
+#line 46
     testRunner.And("the underlying TokenCredential returns a successful result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 48
+#line 47
     testRunner.Then("the scope should have been passed on to TokenCredential.GetTokenAsync", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
-#line 49
+#line 48
     testRunner.And("the Claims should have been passed on to TokenCredential.GetTokenAsync", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 50
+#line 49
     testRunner.And("the AuthorityId should have been passed on to TokenCredential.GetTokenAsync as th" +
                         "e TenantId", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 51
+#line 50
     testRunner.And("the ParentRequestId passed to TokenCredential.GetTokenAsync should be null", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 52
+#line 51
     testRunner.And("the AccessToken returned by IAccessTokenSource.GetAccessTokenAsync should be the " +
                         "same as was returned by TokenCredential.GetTokenAsync", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 53
+#line 52
     testRunner.And("the ExpiresOn returned by IAccessTokenSource.GetAccessTokenAsync should be the sa" +
                         "me as was returned by TokenCredential.GetTokenAsync", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
@@ -336,7 +336,7 @@ this.ScenarioInitialize(scenarioInfo);
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Token acquisition fails with CredentialUnavailableException", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
-#line 57
+#line 61
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             bool isScenarioIgnored = default(bool);
@@ -356,20 +356,20 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 this.ScenarioStart();
-#line 58
+#line 62
     testRunner.Given("the AccessTokenRequest scope is \'https://management.core.windows.net/.default\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-#line 59
+#line 63
     testRunner.When("IAccessTokenSource.GetAccessTokenAsync is called", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 60
+#line 64
     testRunner.And("the underlying TokenCredential throws a \'CredentialUnavailableException\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 61
+#line 65
     testRunner.Then("IAccessTokenSource.GetAccessTokenAsync should have thrown an AccessTokenNotIssued" +
                         "Exception", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
-#line 62
+#line 66
     testRunner.And("the AccessTokenNotIssuedException.InnerException should be the exception thrown b" +
                         "y the underlying TokenCredential", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
@@ -384,7 +384,7 @@ this.ScenarioInitialize(scenarioInfo);
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Token acquisition fails with AuthenticationFailedException", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
-#line 64
+#line 68
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             bool isScenarioIgnored = default(bool);
@@ -404,20 +404,20 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 this.ScenarioStart();
-#line 65
+#line 69
     testRunner.Given("the AccessTokenRequest scope is \'https://management.core.windows.net/.default\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-#line 66
+#line 70
     testRunner.When("IAccessTokenSource.GetAccessTokenAsync is called", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 67
+#line 71
     testRunner.And("the underlying TokenCredential throws a \'AuthenticationFailedException\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 68
+#line 72
     testRunner.Then("IAccessTokenSource.GetAccessTokenAsync should have thrown an AccessTokenNotIssued" +
                         "Exception", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
-#line 69
+#line 73
     testRunner.And("the AccessTokenNotIssuedException.InnerException should be the exception thrown b" +
                         "y the underlying TokenCredential", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
