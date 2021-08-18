@@ -5,18 +5,14 @@
 namespace Corvus.Identity.ManagedServiceIdentity.ClientAuthentication
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
 
     using Corvus.Identity.ClientAuthentication;
-    using Corvus.Identity.MicrosoftRest;
+    using Corvus.Identity.ClientAuthentication.MicrosoftRest;
 
     using Idg.AsyncTest.TaskExtensions;
-
-    using Moq;
 
     using NUnit.Framework;
 

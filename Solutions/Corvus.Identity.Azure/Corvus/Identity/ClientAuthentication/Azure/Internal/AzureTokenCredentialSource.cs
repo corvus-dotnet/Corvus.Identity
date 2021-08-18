@@ -4,6 +4,7 @@
 
 namespace Corvus.Identity.ClientAuthentication.Azure.Internal
 {
+    using System;
     using System.Threading.Tasks;
 
     using global::Azure.Core;
@@ -24,7 +25,7 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
         /// </param>
         public AzureTokenCredentialSource(TokenCredential tokenCredential)
         {
-            this.tokenCredential = tokenCredential;
+            this.tokenCredential = tokenCredential ?? throw new ArgumentNullException(nameof(tokenCredential));
         }
 
         /// <inheritdoc/>

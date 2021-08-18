@@ -336,3 +336,5 @@ coverage.cobertura.xml
 /.vscode
 
 .docs/
+
+local.settings.json

@@ -20,6 +20,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Corvus.Identity.Abstraction
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Corvus.Identity.MicrosoftRest", "Corvus.Identity.MicrosoftRest\Corvus.Identity.MicrosoftRest.csproj", "{EFFDA5EA-A8F5-4942-B9F0-9B65D0170588}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{2DE5BB9E-59CC-4C88-934A-6AD0079AB3E6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Corvus.Identity.Examples.AzureFunctions", "Corvus.Identity.Examples.AzureFunctions\Corvus.Identity.Examples.AzureFunctions.csproj", "{DB3D155B-13F7-4285-B923-69917FB51135}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Corvus.Identity.Examples.UsingMicrosoftRest", "Corvus.Identity.Examples.UsingMicrosoftRest\Corvus.Identity.Examples.UsingMicrosoftRest.csproj", "{C3DA1FFA-7A6B-45BE-AAF9-E674C7747E82}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Corvus.Identity.Examples.UsingAzureCore", "Corvus.Identity.Examples.UsingAzureCore\Corvus.Identity.Examples.UsingAzureCore.csproj", "{09A0C593-AE3D-42D2-9D58-4EA045A67C92}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Corvus.Identity.Examples.UsingPlainTokens", "Corvus.Identity.Examples.UsingPlainTokens\Corvus.Identity.Examples.UsingPlainTokens.csproj", "{8FFF9508-9CE7-41AC-B1F2-BA86F9939ACA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -46,9 +56,31 @@ Global
 		{EFFDA5EA-A8F5-4942-B9F0-9B65D0170588}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EFFDA5EA-A8F5-4942-B9F0-9B65D0170588}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EFFDA5EA-A8F5-4942-B9F0-9B65D0170588}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB3D155B-13F7-4285-B923-69917FB51135}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB3D155B-13F7-4285-B923-69917FB51135}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB3D155B-13F7-4285-B923-69917FB51135}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB3D155B-13F7-4285-B923-69917FB51135}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C3DA1FFA-7A6B-45BE-AAF9-E674C7747E82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3DA1FFA-7A6B-45BE-AAF9-E674C7747E82}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3DA1FFA-7A6B-45BE-AAF9-E674C7747E82}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3DA1FFA-7A6B-45BE-AAF9-E674C7747E82}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09A0C593-AE3D-42D2-9D58-4EA045A67C92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09A0C593-AE3D-42D2-9D58-4EA045A67C92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09A0C593-AE3D-42D2-9D58-4EA045A67C92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09A0C593-AE3D-42D2-9D58-4EA045A67C92}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8FFF9508-9CE7-41AC-B1F2-BA86F9939ACA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FFF9508-9CE7-41AC-B1F2-BA86F9939ACA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FFF9508-9CE7-41AC-B1F2-BA86F9939ACA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FFF9508-9CE7-41AC-B1F2-BA86F9939ACA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{DB3D155B-13F7-4285-B923-69917FB51135} = {2DE5BB9E-59CC-4C88-934A-6AD0079AB3E6}
+		{C3DA1FFA-7A6B-45BE-AAF9-E674C7747E82} = {2DE5BB9E-59CC-4C88-934A-6AD0079AB3E6}
+		{09A0C593-AE3D-42D2-9D58-4EA045A67C92} = {2DE5BB9E-59CC-4C88-934A-6AD0079AB3E6}
+		{8FFF9508-9CE7-41AC-B1F2-BA86F9939ACA} = {2DE5BB9E-59CC-4C88-934A-6AD0079AB3E6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8AB59C41-0B95-4BBF-A747-B8D47ABFCC20}

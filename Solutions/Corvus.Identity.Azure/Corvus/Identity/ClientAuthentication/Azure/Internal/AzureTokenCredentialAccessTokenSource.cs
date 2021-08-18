@@ -12,9 +12,9 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
 
     /// <summary>
     /// Wrapper for a <see cref="TokenCredential"/> that implements
-    /// <see cref="IAccessTokenSource"/>.
+    /// <see cref="IServiceIdentityAccessTokenSource"/>.
     /// </summary>
-    internal class AzureTokenCredentialAccessTokenSource : IAccessTokenSource
+    internal class AzureTokenCredentialAccessTokenSource : IServiceIdentityAccessTokenSource
     {
         private readonly TokenCredential tokenCredential;
 
@@ -24,7 +24,7 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
         /// <param name="tokenCredential">The Azure token credential to wrap.</param>
         public AzureTokenCredentialAccessTokenSource(TokenCredential tokenCredential)
         {
-            this.tokenCredential = tokenCredential;
+            this.tokenCredential = tokenCredential ?? throw new ArgumentNullException(nameof(tokenCredential));
         }
 
         /// <inheritdoc/>

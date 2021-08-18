@@ -1,5 +1,4 @@
 - name: Introduction
   href: introduction.md
-- name: API
-  href: api/
-  homepage: api/index.md
+- name: Azure SDK changes
+  href: old-vs-new-azure-sdk.md

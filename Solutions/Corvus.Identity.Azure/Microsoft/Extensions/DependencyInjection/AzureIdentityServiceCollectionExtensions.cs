@@ -1,4 +1,4 @@
-﻿// <copyright file="IdentityServiceCollectionExtensions.cs" company="Endjin Limited">
+﻿// <copyright file="AzureIdentityServiceCollectionExtensions.cs" company="Endjin Limited">
 // Copyright (c) Endjin Limited. All rights reserved.
 // </copyright>
 
@@ -13,7 +13,7 @@ namespace Microsoft.Extensions.DependencyInjection
     /// <summary>
     /// DI initialization for services using Corvus.Identity.Azure.
     /// </summary>
-    public static class IdentityServiceCollectionExtensions
+    public static class AzureIdentityServiceCollectionExtensions
     {
         /// <summary>
         /// Adds <see cref="IServiceIdentityAzureTokenCredentialSource"/> and
@@ -34,6 +34,26 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
+        /// Adds <see cref="IServiceIdentityAzureTokenCredentialSource"/> and
+        /// <see cref="IServiceIdentityAccessTokenSource"/> implementations to a service collection
+        /// configured with a legacy connection string of the kind recognized by
+        /// <c>AzureServiceTokenProvider</c>.
+        /// </summary>
+        /// <param name="services">The service collection.</param>
+        /// <param name="legacyConnectionStringOptions">
+        /// A configuration object containing a connection string in the old format <c>AzureServiceTokenProvider</c> supports.
+        /// </param>
+        /// <returns>The modified service collection.</returns>
+        public static IServiceCollection AddServiceIdentityAzureTokenCredentialSourceFromLegacyConnectionString(
+            this IServiceCollection services,
+            LegacyAzureServiceTokenProviderOptions? legacyConnectionStringOptions)
+        {
+            string connectionString = legacyConnectionStringOptions?.AzureServicesAuthConnectionString ?? string.Empty;
+            return services.AddServiceIdentityAzureTokenCredentialSourceFromAzureCoreTokenCredential(
+                LegacyAzureServiceTokenProviderConnectionString.ToTokenCredential(connectionString));
+        }
+
+        /// <summary>
         /// Adds an <see cref="IServiceIdentityAzureTokenCredentialSource"/> that returns an
         /// existing <see cref="TokenCredential"/>, and a
         /// <see cref="IServiceIdentityAccessTokenSource"/> implementation that uses this to
@@ -51,7 +71,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             return services
                 .AddSingleton<IServiceIdentityAzureTokenCredentialSource>(new AzureTokenCredentialSource(tokenCredential))
-                .AddSingleton<IAccessTokenSource>(new AzureTokenCredentialAccessTokenSource(tokenCredential));
+                .AddSingleton<IServiceIdentityAccessTokenSource>(new AzureTokenCredentialAccessTokenSource(tokenCredential));
         }
     }
 }
