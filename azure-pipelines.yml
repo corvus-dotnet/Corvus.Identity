@@ -20,7 +20,7 @@ jobs:
   parameters:
     # DocFx currently only runs on Windows or via Mono. Not clear whether hosted
     # Linux agents have Mono, or if not, how to install, so using Windows agent
-    # for test purposes
+    # for test purposes.
     #vmImage: 'ubuntu-latest'
     vmImage: 'windows-latest'
     service_connection_nuget_org: $(Endjin_Service_Connection_NuGet_Org)
