@@ -35,7 +35,7 @@
             var services = new ServiceCollection();
             services.AddServiceIdentityAzureTokenCredentialSourceFromAzureCoreTokenCredential(new TestTokenCredential(this));
             ServiceProvider sp = services.BuildServiceProvider();
-            this.source = sp.GetRequiredService<IAccessTokenSource>();
+            this.source = sp.GetRequiredService<IServiceIdentityAccessTokenSource>();
         }
 
         [Given("the AccessTokenRequest scope is '(.*)'")]
