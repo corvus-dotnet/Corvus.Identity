@@ -37,4 +37,5 @@ jobs:
       - pwsh: |
           $DocFxPackageFolder = Get-ChildItem .\docfx.console*
           $DocFxPath = Join-Path $DocFxPackageFolder.Name 'tools/docfx.exe'
-          & ".\$DocFxPath" Documentation/docfx.json
+          & ".\$DocFxPath" build Documentation/docfx.json
+        displayName: 'DocFx validation'
