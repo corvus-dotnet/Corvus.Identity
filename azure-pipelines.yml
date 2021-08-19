@@ -35,6 +35,6 @@ jobs:
           command: 'custom'
           arguments: 'install docfx.console'
       - pwsh: |
-          $DocFxPackageFolder = Get-ChildItem .\docfx.console
+          $DocFxPackageFolder = Get-ChildItem .\docfx.console*
           $DocFxPath = Join-Path $DocFxPackageFolder.Name 'tools/docfx.exe'
           & ".\$DocFxPath" Documentation/docfx.json
