@@ -15,9 +15,6 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <SpecFlowObsoleteCodeBehindFiles Remove="Corvus\Identity\ManagedServiceIdentity\ClientAuthentication\LegacyServiceIdentityTokenProvider - Copy.feature.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Endjin.RecommendedPractices" Version="1.2.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -26,7 +23,7 @@
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Corvus.Testing.SpecFlow.NUnit" Version="1.4.3" />
+    <PackageReference Include="Corvus.Testing.SpecFlow.NUnit" Version="1.4.4" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Corvus.Identity.Azure\Corvus.Identity.Azure.csproj" />
