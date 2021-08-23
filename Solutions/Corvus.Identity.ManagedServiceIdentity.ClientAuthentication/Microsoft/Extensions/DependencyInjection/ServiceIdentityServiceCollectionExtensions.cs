@@ -21,6 +21,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">The service collection.</param>
         /// <param name="options">Configuration for the token source.</param>
         /// <returns>The modified service collection.</returns>
+        [Obsolete("Consider using Corvus.Identity.Azure's AddServiceIdentityAzureTokenCredentialSourceFromLegacyConnectionString, optionally with or Corvus.Identity.MicrosoftRest's AddMicrosoftRestAdapterForServiceIdentityAccessTokenSource instead")]
         public static IServiceCollection AddAzureManagedIdentityBasedTokenSource(
             this IServiceCollection services,
             AzureManagedIdentityTokenSourceOptions? options)
@@ -35,6 +36,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">The service collection.</param>
         /// <param name="getOptions">A callback method that will retrieve an <see cref="AzureManagedIdentityTokenSourceOptions" />.</param>
         /// <returns>The modified service collection.</returns>
+        [Obsolete("Consider using Corvus.Identity.Azure's AddServiceIdentityAzureTokenCredentialSourceFromLegacyConnectionString, optionally with or Corvus.Identity.MicrosoftRest's AddMicrosoftRestAdapterForServiceIdentityAccessTokenSource instead")]
         public static IServiceCollection AddAzureManagedIdentityBasedTokenSource(
             this IServiceCollection services,
             Func<IServiceProvider, AzureManagedIdentityTokenSourceOptions?> getOptions)

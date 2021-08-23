@@ -57,7 +57,11 @@ namespace Corvus.Identity.ClientAuthentication.MicrosoftRest
             this.scopes = scopes ?? throw new ArgumentNullException(nameof(scopes));
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Gets an authentication header value containing an access token.
+        /// </summary>
+        /// <param name="cancellationToken">A cancellation token.</param>
+        /// <returns>A task that produces an authentication header.</returns>
         public async Task<AuthenticationHeaderValue?> GetAuthenticationHeaderAsync(CancellationToken cancellationToken)
         {
             AccessTokenDetail token = await this.serviceIdentityTokenSource.GetAccessTokenAsync(

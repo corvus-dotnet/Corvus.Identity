@@ -19,6 +19,15 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services">The service collection.</param>
         /// <returns>The modified service collection.</returns>
+        /// <remarks>
+        /// <para>
+        /// This requires an implementation of <see cref="IServiceIdentityAccessTokenSource"/> to
+        /// be available. This library does not know how to obtain tokens: it is an adapter that
+        /// obtainstokens from the general-purpose <see cref="IServiceIdentityAccessTokenSource"/>
+        /// mechanism, and wraps them as an <see cref="Microsoft.Rest.ITokenProvider"/>, so
+        /// something else needs to provide the basic ability to provide the tokens being wrapped.
+        /// </para>
+        /// </remarks>
         public static IServiceCollection AddMicrosoftRestAdapterForServiceIdentityAccessTokenSource(
             this IServiceCollection services)
         {

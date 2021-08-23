@@ -6,10 +6,14 @@
             "files": [
               "**.csproj"
             ],
+            "exclude": [ "**/Corvus.Identity.Examples*", "**/*Specs/" ],
             "src": "../Solutions"
           }
         ],
-        "dest": "Corvus.Identity",
+        "dest": "api",
+        "properties": {
+          "TargetFramework": "netcoreapp3.1"
+        },
         "disableGitFeatures": false,
         "disableDefaultFilter": false
       }
