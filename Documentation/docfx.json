@@ -45,7 +45,8 @@
       "overwrite": [
         {
           "files": [
-            "apidoc/**.md"
+            "apidoc/**.md",
+            "namespaces/**.md"
           ],
           "exclude": [
             "obj/**",
@@ -60,6 +61,7 @@
         "default"
       ],
       "postProcessors": [],
+      "xrefService": [ "https://xref.docs.microsoft.com/query?uid={uid}" ],
       "markdownEngineName": "markdig",
       "noLangKeyword": false,
       "keepFileLink": false,

@@ -1,3 +1,7 @@
+---
+uid: azure-sdk-2019-rewrite
+---
+
 # 'Old' vs 'new' (2019) Azure SDK
 
 The Azure SDK started introducing some substantial changes in 2019, and as we have adapted to these, a couple of aspects of `Corvus.Identity` have become slightly confusing:
