@@ -1,12 +1,12 @@
 # Getting started with `Corvus.Identity` when using old-style Azure SDK libraries
 
-Old-style Azure client libraries are those whose names begin with `Microsoft.` and which use the `Microsoft.Rest.ClientRuntime` library's `ITokenProvider` type to manage authentication. (See the [Azure SDK changes](old-vs-new-azure-sdk.md) article for details.) If all of the client libraries you need to use are of this kind, you can follow these instructions when writing code that needs to authenticate using the hosting service's identity.
+Old-style Azure client libraries are those whose names begin with `Microsoft.` and which use the [`Microsoft.Rest.ClientRuntime`](https://www.nuget.org/packages/Microsoft.Rest.ClientRuntime/) library's [`ITokenProvider`](xref:Microsoft.Rest.ITokenProvider) type to manage authentication. (See the [Azure SDK changes](old-vs-new-azure-sdk.md) article for details.) If all of the client libraries you need to use are of this kind, you can follow these instructions when writing code that needs to authenticate using the hosting service's identity.
 
-If you are writing shared components, add a reference to the `Corvus.Identity.MicrosoftRest` NuGet package.
+If you are writing shared components, add a reference to the [`Corvus.Identity.MicrosoftRest`](https://www.nuget.org/packages/Corvus.Identity.MicrosoftRest/) NuGet package.
 
-If you are writing  an application, add references to both the `Corvus.Identity.MicrosoftRest` and `Corvus.Identity.Azure` NuGet packages.
+If you are writing  an application, add references to both the [`Corvus.Identity.MicrosoftRest`](https://www.nuget.org/packages/Corvus.Identity.MicrosoftRest/) and [`Corvus.Identity.Azure`](https://www.nuget.org/packages/Corvus.Identity.Azure/) NuGet packages.
 
-The `Corvus.Identity.MicrosoftRest` package is designed to be used through dependency injection. In your application's startup code, add the following where you initialize the `IServiceCollection` (where `config` refers to your application's `IConfiguration`):
+The [`Corvus.Identity.MicrosoftRest`](https://www.nuget.org/packages/Corvus.Identity.MicrosoftRest/) package is designed to be used through dependency injection. In your application's startup code, add the following where you initialize the [`IServiceCollection`](xref:Microsoft.Extensions.DependencyInjection.IServiceCollection) (where `config` refers to your application's [`IConfiguration`](xref:Microsoft.Extensions.Configuration.IConfiguration)):
 
 ```cs
 // Makes IServiceIdentityMicrosoftRestTokenProviderSource available through DI. Note that
@@ -19,7 +19,7 @@ services.AddServiceIdentityAzureTokenCredentialSourceFromLegacyConnectionString(
     config.Get<LegacyAzureServiceTokenProviderOptions>());
 ```
 
-With this in place, you can then write classes that take a dependency on [`IServiceIdentityMicrosoftRestTokenProviderSource`](xref:Corvus.Identity.ClientAuthentication.MicrosoftRest.IServiceIdentityMicrosoftRestTokenProviderSource), which provides a straightforward way to obtain credentials in the form required by old-style `Microsoft.Rest`-based client libraries:
+With this in place, you can then write classes that take a dependency on [`IServiceIdentityMicrosoftRestTokenProviderSource`](xref:Corvus.Identity.ClientAuthentication.MicrosoftRest.IServiceIdentityMicrosoftRestTokenProviderSource), which provides a straightforward way to obtain credentials in the form required by old-style [`Microsoft.Rest`](xref:Microsoft.Rest)-based client libraries, which you can see at the start of the `GetWebAppsAsync` method in the following example:
 
 ```cs
 public class UseWebAppManagementWithOldSdk
@@ -61,15 +61,15 @@ public class UseWebAppManagementWithOldSdk
     }
 ```
 
-This is using the `Microsoft.Azure.Management.Websites` client library's `WebSiteManagementClient` class. This code initializes it with a `TokenCredentials` initialized with an `ITokenProvider` obtained from the [`IServiceIdentityMicrosoftRestTokenProviderSource`](xref:Corvus.Identity.ClientAuthentication.MicrosoftRest.IServiceIdentityMicrosoftRestTokenProviderSource) it acquired through dependency injection.
+This is using the [`Microsoft.Azure.Management.Websites`](https://www.nuget.org/packages/Microsoft.Azure.Management.Websites/) client library's [`WebSiteManagementClient`](xref:Microsoft.Azure.Management.WebSites.WebSiteManagementClient) class. This code initializes it with a [`TokenCredentials`](xref:Microsoft.Rest.TokenCredentials) initialized with an [`ITokenProvider`](xref:Microsoft.Rest.ITokenProvider) obtained from the [`IServiceIdentityMicrosoftRestTokenProviderSource`](xref:Corvus.Identity.ClientAuthentication.MicrosoftRest.IServiceIdentityMicrosoftRestTokenProviderSource) it acquired through dependency injection.
 
-This same basic pattern works for any client library that uses the `ITokenProvider` mechanism defined by the `Microsoft.Rest` libraries.
+This same basic pattern works for any client library that uses the [`ITokenProvider`](xref:Microsoft.Rest.ITokenProvider) mechanism defined by the [`Microsoft.Rest`](xref:Microsoft.Rest) libraries.
 
 ## Alternatives
 
 The code shown above allows application configuration to use old-style connection strings of the kind supported by the old `AzureServiceTokenProvider` type. (Microsoft chose to drop support for this style of configuration in their SDK redesign. `Corvus.Identity` enables you to continue to use it.)
 
-If you want to support this use of connection strings but for some reason you don't want to use Microsoft's `IConfiguration` mechanism, you can either construct a `LegacyAzureServiceTokenProviderOptions` directly, putting the connection string into its [`AzureServicesAuthConnectionString` property](xref:Corvus.Identity.ClientAuthentication.Azure.LegacyAzureServiceTokenProviderOptions.AzureServicesAuthConnectionString), or you can just use the overload the takes a plain string:
+If you want to support this use of connection strings but for some reason you don't want to use Microsoft's [`IConfiguration`](xref:Microsoft.Extensions.Configuration.IConfiguration) mechanism, you can either construct a [`LegacyAzureServiceTokenProviderOptions`](xref:Corvus.Identity.ClientAuthentication.Azure.LegacyAzureServiceTokenProviderOptions) directly, putting the connection string into its [`AzureServicesAuthConnectionString` property](xref:Corvus.Identity.ClientAuthentication.Azure.LegacyAzureServiceTokenProviderOptions.AzureServicesAuthConnectionString), or you can just use the overload the takes a plain string:
 
 ```cs
 // Makes IServiceIdentityMicrosoftRestTokenProviderSource available through DI. Note that
@@ -96,3 +96,5 @@ services.AddMicrosoftRestAdapterForServiceIdentityAccessTokenSource();
 services.AddServiceIdentityAzureTokenCredentialSourceFromAzureCoreTokenCredential(
     new DefaultAzureCredential());
 ```
+
+This uses [`DefaultAzureCredential`](xref:Azure.Identity.DefaultAzureCredential), but you can supply any type derived from [`TokenCredential`](xref:Azure.Core.TokenCredential) if you want other behaviours.

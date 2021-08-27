@@ -1,15 +1,15 @@
 # Getting started with `Corvus.Identity` when using a mixture of new- and old-style Azure SDK libraries
 
-New-style libraries are those whose names begin with `Azure.` and which use the `Azure.Core` library's `TokenCredential` type to manage authentication. Old-style Azure client libraries typically have names beginning with `Microsoft.` and use the `Microsoft.Rest.ClientRuntime` library's `ITokenProvider` type to manage authentication. (See the [Azure SDK changes](old-vs-new-azure-sdk.md) article for details.) If you need to use a mixture of each type of client library, you can follow these instructions when writing code that needs to authenticate using the hosting service's identity.
+New-style libraries are those whose names begin with `Azure.` and which use the [`Azure.Core`](xref:Azure.Core) library's [`TokenCredential`](xref:Azure.Core.TokenCredential) type to manage authentication. Old-style Azure client libraries typically have names beginning with `Microsoft.` and use the [`Microsoft.Rest.ClientRuntime`](https://www.nuget.org/packages/Microsoft.Rest.ClientRuntime/) library's [`ITokenProvider`](xref:Microsoft.Rest.ITokenProvider) type to manage authentication. (See the [Azure SDK changes](old-vs-new-azure-sdk.md) article for details.) If you need to use a mixture of each type of client library, you can follow these instructions when writing code that needs to authenticate using the hosting service's identity.
 
-Add references to both the `Corvus.Identity.MicrosoftRest` and `Corvus.Identity.Azure` NuGet packages.
+Add references to both the [`Corvus.Identity.MicrosoftRest`](https://www.nuget.org/packages/Corvus.Identity.MicrosoftRest/) and [`Corvus.Identity.Azure`](https://www.nuget.org/packages/Corvus.Identity.Azure/) NuGet packages.
 
-These packages are designed to be used through dependency injection. In your application's startup code, add the following where you initialize the `IServiceCollection` (where `config` refers to your application's `IConfiguration`):
+These packages are designed to be used through dependency injection. In your application's startup code, add the following where you initialize the [`IServiceCollection`](xref:Microsoft.Extensions.DependencyInjection.IServiceCollection) (where `config` refers to your application's [`IConfiguration`](xref:Microsoft.Extensions.Configuration.IConfiguration)):
 
 ```cs
 // Makes IServiceIdentityMicrosoftRestTokenProviderSource, IServiceIdentityAccessTokenSource,
 // and IServiceIdentityAzureTokenCredentialSource available through DI. We're using the form
-// that supports an `AzureServicesAuthConnectionString` configuration setting, choosing which
+// that supports an `AzureServicesAuthConnectionString` configuration setting to choose which
 // credentials mechanism to use.
 services.AddMicrosoftRestAdapterForServiceIdentityAccessTokenSource();
 services.AddServiceIdentityAzureTokenCredentialSourceFromLegacyConnectionString(
@@ -18,7 +18,7 @@ services.AddServiceIdentityAzureTokenCredentialSourceFromLegacyConnectionString(
 
 With this in place, you can then write classes that take a dependency either (or both) of two interfaces for obtaining credentials.
 
-When working with a new-style client library, you can write classes that take a dependency on [`IServiceIdentityAzureTokenCredentialSource`](xref:Corvus.Identity.ClientAuthentication.Azure.IServiceIdentityAzureTokenCredentialSource), which provides a straightforward way to obtain credentials in the form required by modern Azure SDK client libraries:
+When working with a new-style client library, you can write classes that take a dependency on [`IServiceIdentityAzureTokenCredentialSource`](xref:Corvus.Identity.ClientAuthentication.Azure.IServiceIdentityAzureTokenCredentialSource), which provides a straightforward way to obtain credentials in the form required by modern Azure SDK client libraries. All it requires is a single call to the [`GetAccessTokenAsync`](xref:Corvus.Identity.ClientAuthentication.Azure.IAzureTokenCredentialSource.GetAccessTokenAsync) method, which you can see at the start of the `GetSecretAsync` method in the following example:
 
 ```cs
 public class UseAzureKeyVaultWithNewSdk
@@ -47,11 +47,11 @@ public class UseAzureKeyVaultWithNewSdk
 }
 ```
 
-This is using the Azure Key Vault client library's `SecretClient` class. This code initializes it with a `TokenCredential` obtained from the [`IServiceIdentityAzureTokenCredentialSource`](xref:Corvus.Identity.ClientAuthentication.Azure.IServiceIdentityAzureTokenCredentialSource) it acquired through dependency injection.
+This is using the Azure Key Vault client library's [`SecretClient`](xref:Azure.Security.KeyVault.Secrets.SecretClient) class. This code initializes it with a [`TokenCredential`](xref:Azure.Core.TokenCredential) obtained from the [`IServiceIdentityAzureTokenCredentialSource`](xref:Corvus.Identity.ClientAuthentication.Azure.IServiceIdentityAzureTokenCredentialSource) it acquired through dependency injection.
 
-This same basic pattern works for any client library that uses the `TokenCredential` mechanism defined by `Azure.Core`.
+This same basic pattern works for any client library that uses the [`TokenCredential`](xref:Azure.Core.TokenCredential) mechanism defined by [`Azure.Core`](xref:Azure.Core).
 
-When working with an old-style client library, you can write classes that take a dependency on [`IServiceIdentityMicrosoftRestTokenProviderSource`](xref:Corvus.Identity.ClientAuthentication.MicrosoftRest.IServiceIdentityMicrosoftRestTokenProviderSource), which provides a straightforward way to obtain credentials in the form required by old-style `Microsoft.Rest`-based client libraries:
+When working with an old-style client library, you can write classes that take a dependency on [`IServiceIdentityMicrosoftRestTokenProviderSource`](xref:Corvus.Identity.ClientAuthentication.MicrosoftRest.IServiceIdentityMicrosoftRestTokenProviderSource), which provides a straightforward way to obtain credentials in the form required by old-style [`Microsoft.Rest`](xref:Microsoft.Rest)-based client libraries, which you can see at the start of the `GetWebAppsAsync` method in the following example:
 
 ```cs
 public class UseWebAppManagementWithOldSdk
@@ -93,15 +93,15 @@ public class UseWebAppManagementWithOldSdk
     }
 ```
 
-This is using the `Microsoft.Azure.Management.Websites` client library's `WebSiteManagementClient` class. This code initializes it with a `TokenCredentials` initialized with an `ITokenProvider` obtained from the [`IServiceIdentityMicrosoftRestTokenProviderSource`](xref:Corvus.Identity.ClientAuthentication.MicrosoftRest.IServiceIdentityMicrosoftRestTokenProviderSource) it acquired through dependency injection.
+This is using the [`Microsoft.Azure.Management.Websites`](https://www.nuget.org/packages/Microsoft.Azure.Management.Websites/) client library's [`WebSiteManagementClient`](xref:Microsoft.Azure.Management.WebSites.WebSiteManagementClient) class. This code initializes it with a [`TokenCredentials`](xref:Microsoft.Rest.TokenCredentials) initialized with an [`ITokenProvider`](xref:Microsoft.Rest.ITokenProvider) obtained from the [`IServiceIdentityMicrosoftRestTokenProviderSource`](xref:Corvus.Identity.ClientAuthentication.MicrosoftRest.IServiceIdentityMicrosoftRestTokenProviderSource) it acquired through dependency injection.
 
-This same basic pattern works for any client library that uses the `ITokenProvider` mechanism defined by the `Microsoft.Rest` libraries.
+This same basic pattern works for any client library that uses the [`ITokenProvider`](xref:Microsoft.Rest.ITokenProvider) mechanism defined by the [`Microsoft.Rest`](xref:Microsoft.Rest) libraries.
 
 ## Alternatives
 
 The code shown above allows application configuration to use old-style connection strings of the kind supported by the old `AzureServiceTokenProvider` type. (Microsoft chose to drop support for this style of configuration in their SDK redesign. `Corvus.Identity` enables you to continue to use it.)
 
-If you want to support this use of connection strings but for some reason you don't want to use Microsoft's `IConfiguration` mechanism, you can either construct a `LegacyAzureServiceTokenProviderOptions` directly, putting the connection string into its [`AzureServicesAuthConnectionString` property](xref:Corvus.Identity.ClientAuthentication.Azure.LegacyAzureServiceTokenProviderOptions.AzureServicesAuthConnectionString), or you can just use the overload the takes a plain string:
+If you want to support this use of connection strings but for some reason you don't want to use Microsoft's [`IConfiguration`](xref:Microsoft.Extensions.Configuration.IConfiguration) mechanism, you can either construct a [`LegacyAzureServiceTokenProviderOptions`](xref:Corvus.Identity.ClientAuthentication.Azure.LegacyAzureServiceTokenProviderOptions) directly, putting the connection string into its [`AzureServicesAuthConnectionString` property](xref:Corvus.Identity.ClientAuthentication.Azure.LegacyAzureServiceTokenProviderOptions.AzureServicesAuthConnectionString), or you can just use the overload the takes a plain string:
 
 ```cs
 // Makes IServiceIdentityMicrosoftRestTokenProviderSource, IServiceIdentityAccessTokenSource,
@@ -113,7 +113,7 @@ services.AddServiceIdentityAzureTokenCredentialSourceFromLegacyConnectionString(
     myAuthenticationConnectionString);
 ```
 
-This connection string system is helpful because it enabled you to ensure that when code was deployed to production, it used the appropriate mechanisms (typically a Managed Identity) but enabled you to configure a service principle manually for local debugging. The new-style SDK provides no configuration-driven mechanism for switching between these two systems.
+This connection string system is helpful because it enabled you to ensure that when code was deployed to production, it used the appropriate mechanisms (typically a Managed Identity) but enabled you to configure a service principle manually for local debugging. The new-style SDK provides no configuration-driven mechanism for switching between these two systems, but `Corvus.Identity` provides these methods to enable you to continue using this mechanism after upgrading to new client libraries.
 
 If, however, you do not want support for these kinds of connection strings, you can instead use this alternative registration call:
 
@@ -126,3 +126,5 @@ services.AddMicrosoftRestAdapterForServiceIdentityAccessTokenSource();
 services.AddServiceIdentityAzureTokenCredentialSourceFromAzureCoreTokenCredential(
     new DefaultAzureCredential());
 ```
+
+This uses [`DefaultAzureCredential`](xref:Azure.Identity.DefaultAzureCredential), but you can supply any type derived from [`TokenCredential`](xref:Azure.Core.TokenCredential) if you want other behaviours.

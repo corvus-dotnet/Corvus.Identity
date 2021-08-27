@@ -13,7 +13,7 @@ namespace Corvus.Identity.Examples.UsingPlainTokens
     using Corvus.Identity.ClientAuthentication;
 
     /// <summary>
-    /// A service that reads from the graph API.
+    /// A service that reads a list of resource groups from the ARM API.
     /// </summary>
     public class ReadResourceGroupsWithPlainTokens
     {

@@ -15,8 +15,6 @@ namespace Corvus.Identity.ClientAuthentication
     /// we're not using that type is that this library does not impose dependencies on any
     /// particular set of client libraries.
     /// </para>
-    /// <para>
-    /// </para>
     /// </remarks>
     public struct AccessTokenDetail
     {
