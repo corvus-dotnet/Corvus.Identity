@@ -18,24 +18,8 @@ resources:
 jobs:
 - template: templates/build.and.release.yml@recommended_practices
   parameters:
-    # DocFx currently only runs on Windows or via Mono. Not clear whether hosted
-    # Linux agents have Mono, or if not, how to install, so using Windows agent
-    # for test purposes.
-    #vmImage: 'ubuntu-latest'
-    vmImage: 'windows-latest'
+    vmImage: 'ubuntu-latest'
     service_connection_nuget_org: $(Endjin_Service_Connection_NuGet_Org)
     service_connection_github: $(Endjin_Service_Connection_GitHub)
     solution_to_build: $(Endjin_Solution_To_Build)
     netSdkVersion: '3.x'
-
-    postSpecsReport:
-      - task: NuGetCommand@2
-        displayName: Install DocFX
-        inputs:
-          command: 'custom'
-          arguments: 'install docfx.console'
-      - pwsh: |
-          $DocFxPackageFolder = Get-ChildItem .\docfx.console*
-          $DocFxPath = Join-Path $DocFxPackageFolder.Name 'tools/docfx.exe'
-          & ".\$DocFxPath" build Documentation/docfx.json
-        displayName: 'DocFx validation'
