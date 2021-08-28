@@ -4,15 +4,18 @@
 
 namespace Corvus.Identity.ManagedServiceIdentity.ClientAuthentication
 {
+    using System;
     using System.Net.Http.Headers;
     using System.Threading;
     using System.Threading.Tasks;
+
     using Microsoft.Rest;
 
     /// <summary>
     /// A token provider for <c>Microsoft.Rest</c>-based clients that obtains its tokens from
     /// <see cref="IServiceIdentityTokenSource"/>.
     /// </summary>
+    [Obsolete("Consider using Corvus.Identity.MicrosoftRest's ServiceIdentityMicrosoftRestTokenProvider instead")]
     public class ServiceIdentityTokenProvider : ITokenProvider
     {
         private readonly IServiceIdentityTokenSource serviceIdentityTokenSource;

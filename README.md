@@ -10,7 +10,7 @@ It is built for netstandard2.0.
 ## Features
 
 A bridge between the `Microsoft.Rest.ITokenSource` required by the majority of ca 2018 Azure Client SDK libraries,
-and the `AzureServiceTokenProvider` type provided by the `Microsoft.Azure.Services.AppAuthentication` library.
+and the `AzureServiceTokenProvider` type provided by the [`Microsoft.Azure.Services.AppAuthentication`](https://www.nuget.org/packages/Microsoft.Azure.Services.AppAuthentication/) library.
 
 
 ## Licenses

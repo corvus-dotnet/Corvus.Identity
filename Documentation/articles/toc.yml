@@ -1,0 +1,11 @@
+- name: Getting started
+  href: getting-started.md
+  items:
+    - name: With new-style client libraries
+      href: getting-started-new-style.md
+    - name: With old-style client libraries
+      href: getting-started-old-style.md
+    - name: With a mixture of old- and new-style client libraries
+      href: getting-started-mixed-style.md
+- name: Azure SDK changes
+  href: old-vs-new-azure-sdk.md

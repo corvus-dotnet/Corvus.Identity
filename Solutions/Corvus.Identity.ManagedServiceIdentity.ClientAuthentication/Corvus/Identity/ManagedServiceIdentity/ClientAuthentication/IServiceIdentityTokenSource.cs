@@ -4,6 +4,7 @@
 
 namespace Corvus.Identity.ManagedServiceIdentity.ClientAuthentication
 {
+    using System;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -36,6 +37,7 @@ namespace Corvus.Identity.ManagedServiceIdentity.ClientAuthentication
     /// services that are able to recognize its MSI.
     /// </para>
     /// </remarks>
+    [Obsolete("Consider using Corvus.Identity.Abstractions's IServiceIdentityAccessTokenSource, Corvus.Identity.Azure's IServiceIdentityAzureTokenCredentialSource, or Corvus.Identity.MicrosoftRest's IServiceIdentityMicrosoftRestTokenProviderSource instead")]
     public interface IServiceIdentityTokenSource
     {
         /// <summary>

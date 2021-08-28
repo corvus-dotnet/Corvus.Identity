@@ -1,0 +1,12 @@
+# When DocFx runs, it generates files in here based on the contents of the XML documentation in the
+# library. These should not be committed to source control because they are essentially build
+# artifacts. (The source of truth is the XML documentation in the source code itself.) However,
+# to be able to add additional content to the API docs (e.g., the index.md file that gets shown
+# at the root of the API documentation) we need to put additional files in here.
+# The slightly unhelpful upshot is that this folder ends up being a mixture of artifacts generated
+# during the documentation build, and actual source files, but this seems to be how it's done with
+# DocFx. It means we can't exclude this whole folder like you would with a bin or obj folder.
+# The purpose of this .gitignore file is to prevent any of the generated artifacts from being
+# added to the repo.
+*.yml
+.manifest

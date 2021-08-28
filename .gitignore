@@ -334,3 +334,7 @@ coverage.cobertura.xml
 
 # VS Code config files
 /.vscode
+
+.docs/
+
+local.settings.json

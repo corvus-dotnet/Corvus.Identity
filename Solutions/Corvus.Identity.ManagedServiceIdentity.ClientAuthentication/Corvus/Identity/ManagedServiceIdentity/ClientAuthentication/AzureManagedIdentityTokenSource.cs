@@ -4,7 +4,9 @@
 
 namespace Corvus.Identity.ManagedServiceIdentity.ClientAuthentication
 {
+    using System;
     using System.Threading.Tasks;
+
     using Microsoft.Azure.Services.AppAuthentication;
 
     /// <summary>
@@ -15,6 +17,7 @@ namespace Corvus.Identity.ManagedServiceIdentity.ClientAuthentication
     /// To use this, call the <see cref="Microsoft.Extensions.DependencyInjection.ServiceIdentityServiceCollectionExtensions.AddAzureManagedIdentityBasedTokenSource(Microsoft.Extensions.DependencyInjection.IServiceCollection, AzureManagedIdentityTokenSourceOptions)"/>
     /// method during dependency injection initialization.
     /// </remarks>
+    [Obsolete]
     internal class AzureManagedIdentityTokenSource : IServiceIdentityTokenSource
     {
         private readonly AzureServiceTokenProvider azureServiceTokenProvider;
