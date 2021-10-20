@@ -30,12 +30,18 @@ namespace Corvus.Identity.Examples.AzureFunctions
 
             services.AddServiceIdentityAzureTokenCredentialSourceFromLegacyConnectionString(
                 config.Get<LegacyAzureServiceTokenProviderOptions>());
+            services.AddAzureTokenCredentialSourceFromDynamicConfiguration();
+
             services.AddMicrosoftRestAdapterForServiceIdentityAccessTokenSource();
+            services.AddMicrosoftRestTokenProviderSourceDynamicConfiguration();
 
             services.AddSingleton(config.GetSection("ExampleSettings").Get<ExampleSettings>());
-            services.AddSingleton<UseAzureKeyVaultWithNewSdk>();
-            services.AddSingleton<UseWebAppManagementWithOldSdk>();
-            services.AddSingleton<ReadResourceGroupsWithPlainTokens>();
+            services.AddSingleton<UseAzureKeyVaultAsServiceIdentityWithNewSdk>();
+            services.AddSingleton<UseAzureKeyVaultWithIdentityFromConfigWithNewSdk>();
+            services.AddSingleton<UseWebAppManagementAsServiceIdentityWithOldSdk>();
+            services.AddSingleton<UseWebAppManagementWithIdentityFromConfigWithOldSdk>();
+            services.AddSingleton<ReadResourceGroupsAsServiceIdentityWithPlainTokens>();
+            services.AddSingleton<ReadResourceGroupsWithIdentityFromConfigWithPlainTokens>();
         }
     }
 }

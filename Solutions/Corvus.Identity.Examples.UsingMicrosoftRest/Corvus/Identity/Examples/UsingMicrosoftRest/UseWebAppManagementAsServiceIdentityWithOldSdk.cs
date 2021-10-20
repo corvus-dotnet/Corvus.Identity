@@ -1,4 +1,4 @@
-﻿// <copyright file="UseWebAppManagementWithOldSdk.cs" company="Endjin Limited">
+﻿// <copyright file="UseWebAppManagementAsServiceIdentityWithOldSdk.cs" company="Endjin Limited">
 // Copyright (c) Endjin Limited. All rights reserved.
 // </copyright>
 
@@ -19,17 +19,17 @@ namespace Corvus.Identity.Examples.UsingMicrosoftRest
     /// <summary>
     /// A service that discovers web apps through ARM.
     /// </summary>
-    public class UseWebAppManagementWithOldSdk
+    public class UseWebAppManagementAsServiceIdentityWithOldSdk
     {
         private readonly IServiceIdentityMicrosoftRestTokenProviderSource tokenProviderSource;
 
         /// <summary>
-        /// Creates a <see cref="UseWebAppManagementWithOldSdk"/>.
+        /// Creates a <see cref="UseWebAppManagementAsServiceIdentityWithOldSdk"/>.
         /// </summary>
         /// <param name="tokenProviderSource">
         /// The source from which to obtain <see cref="ITokenProvider"/> instances.
         /// </param>
-        public UseWebAppManagementWithOldSdk(
+        public UseWebAppManagementAsServiceIdentityWithOldSdk(
             IServiceIdentityMicrosoftRestTokenProviderSource tokenProviderSource)
         {
             this.tokenProviderSource = tokenProviderSource ?? throw new ArgumentNullException(nameof(tokenProviderSource));

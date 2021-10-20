@@ -60,7 +60,7 @@
         public void WhenIAccessTokenSource_GetAccessTokenAsyncIsCalled()
         {
             this.accessTokenDetailReturnedTask = this.source.GetAccessTokenAsync(
-                new ClientAuthentication.AccessTokenRequest(this.scopes, this.claims, this.authorityId),
+                new AccessTokenRequest(this.scopes, this.claims, this.authorityId),
                 CancellationToken.None).AsTask();
         }
 

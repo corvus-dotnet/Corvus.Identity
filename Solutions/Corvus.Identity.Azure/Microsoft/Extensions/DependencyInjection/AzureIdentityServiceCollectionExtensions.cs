@@ -4,11 +4,11 @@
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    using Azure.Core;
-
     using Corvus.Identity.ClientAuthentication;
     using Corvus.Identity.ClientAuthentication.Azure;
     using Corvus.Identity.ClientAuthentication.Azure.Internal;
+
+    using global::Azure.Core;
 
     /// <summary>
     /// DI initialization for services using Corvus.Identity.Azure.
@@ -69,9 +69,53 @@ namespace Microsoft.Extensions.DependencyInjection
             this IServiceCollection services,
             TokenCredential tokenCredential)
         {
+            AzureTokenCredentialSource source = new (tokenCredential);
             return services
-                .AddSingleton<IServiceIdentityAzureTokenCredentialSource>(new AzureTokenCredentialSource(tokenCredential))
-                .AddSingleton<IServiceIdentityAccessTokenSource>(new AzureTokenCredentialAccessTokenSource(tokenCredential));
+                .AddSingleton<IServiceIdentityAzureTokenCredentialSource>(new ServiceIdentityAzureTokenCredentialSource(source))
+                .AddSingleton<IServiceIdentityAccessTokenSource>(
+                    new ServiceIdentityAccessTokenSource(new AzureTokenCredentialAccessTokenSource(source)));
+        }
+
+        /// <summary>
+        /// Adds an <see cref="IServiceIdentityAzureTokenCredentialSource"/> and a
+        /// <see cref="IServiceIdentityAccessTokenSource"/> implementation that provide credentials
+        /// for the identity described in a <see cref="ClientIdentityConfiguration"/>.
+        /// </summary>
+        /// <param name="services">The service collection.</param>
+        /// <param name="configuration">
+        /// A <see cref="ClientIdentityConfiguration"/> describing the identity to use as the
+        /// ambient service identity.
+        /// </param>
+        /// <returns>The modified service collection.</returns>
+        public static IServiceCollection AddServiceIdentityAzureTokenCredentialSourceFromClientIdentityConfiguration(
+            this IServiceCollection services,
+            ClientIdentityConfiguration configuration)
+        {
+            return services
+                .AddAzureTokenCredentialSourceFromDynamicConfiguration()
+                .AddSingleton<IServiceIdentityAzureTokenCredentialSource>(sp =>
+                    new ServiceIdentityAzureTokenCredentialSource(
+                        new AzureTokenCredentialSourceForSpecificConfiguration(
+                            configuration,
+                            sp.GetRequiredService<IAzureTokenCredentialSourceFromDynamicConfiguration>())))
+                .AddSingleton<IServiceIdentityAccessTokenSource>(sp =>
+                    new ServiceIdentityAccessTokenSource(
+                        new AzureTokenCredentialAccessTokenSource(
+                            sp.GetRequiredService<IServiceIdentityAzureTokenCredentialSource>())));
+        }
+
+        /// <summary>
+        /// Makes an <see cref="IAzureTokenCredentialSourceFromDynamicConfiguration"/> implementation
+        /// available.
+        /// </summary>
+        /// <param name="services">The service collection.</param>
+        /// <returns>The modified service collection.</returns>
+        public static IServiceCollection AddAzureTokenCredentialSourceFromDynamicConfiguration(
+            this IServiceCollection services)
+        {
+            return services
+                .AddSingleton<IAzureTokenCredentialSourceFromDynamicConfiguration, AzureTokenCredentialSourceFromConfiguration>()
+                .AddSingleton<IAccessTokenSourceFromDynamicConfiguration, AccessTokenSourceFromDynamicConfiguration>();
         }
     }
 }

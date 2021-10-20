@@ -9,11 +9,11 @@ namespace Corvus.Identity.ClientAuthentication.MicrosoftRest.Internal
     using Microsoft.Rest;
 
     /// <summary>
-    /// A source of <see cref="ITokenProvider"/>s that represent the service's identity.
+    /// A source of <see cref="ITokenProvider"/>s based on an <see cref="IAccessTokenSource"/>.
     /// </summary>
-    internal class MicrosoftRestTokenProviderSource : IServiceIdentityMicrosoftRestTokenProviderSource
+    internal class MicrosoftRestTokenProviderSource : IMicrosoftRestTokenProviderSource
     {
-        private readonly IServiceIdentityAccessTokenSource serviceIdentityTokenSource;
+        private readonly IAccessTokenSource tokenSource;
 
         /// <summary>
         /// Creates a <see cref="MicrosoftRestTokenProviderSource"/>.
@@ -22,13 +22,13 @@ namespace Corvus.Identity.ClientAuthentication.MicrosoftRest.Internal
         /// The source from which to obtain access tokens.
         /// </param>
         public MicrosoftRestTokenProviderSource(
-            IServiceIdentityAccessTokenSource serviceIdentityTokenSource)
+            IAccessTokenSource serviceIdentityTokenSource)
         {
-            this.serviceIdentityTokenSource = serviceIdentityTokenSource;
+            this.tokenSource = serviceIdentityTokenSource;
         }
 
         /// <inheritdoc/>
         public ValueTask<ITokenProvider> GetTokenProviderAsync(string[] scopes)
-            => new (new ServiceIdentityMicrosoftRestTokenProvider(this.serviceIdentityTokenSource, scopes));
+            => new (new MicrosoftRestTokenProvider(this.tokenSource, scopes));
     }
 }

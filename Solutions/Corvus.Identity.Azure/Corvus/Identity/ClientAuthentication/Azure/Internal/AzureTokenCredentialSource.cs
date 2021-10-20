@@ -5,6 +5,7 @@
 namespace Corvus.Identity.ClientAuthentication.Azure.Internal
 {
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
 
     using global::Azure.Core;
@@ -13,7 +14,7 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
     /// <see cref="IServiceIdentityAzureTokenCredentialSource"/> that returns a particular
     /// <see cref="TokenCredential"/>.
     /// </summary>
-    internal class AzureTokenCredentialSource : IServiceIdentityAzureTokenCredentialSource
+    internal class AzureTokenCredentialSource : IAzureTokenCredentialSource
     {
         private readonly TokenCredential tokenCredential;
 
@@ -29,6 +30,17 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
         }
 
         /// <inheritdoc/>
-        public ValueTask<TokenCredential> GetAccessTokenAsync() => new (this.tokenCredential);
+        public ValueTask<TokenCredential> GetAccessTokenAsync() => this.GetTokenCredentialAsync();
+
+        /// <inheritdoc/>
+        public ValueTask<TokenCredential> GetTokenCredentialAsync(CancellationToken cancellationToken = default)
+             => new (this.tokenCredential);
+
+        /// <inheritdoc/>
+        public ValueTask<TokenCredential> GetReplacementForFailedTokenCredentialAsync(
+            TokenCredential failedTokenCredential, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
