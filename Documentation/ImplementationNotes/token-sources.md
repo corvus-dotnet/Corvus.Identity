@@ -44,5 +44,32 @@ All of the interfaces described above end up at `AzureTokenCredentialSource`, a 
 
 Of slightly more interest is `AzureTokenCredentialSourceFromConfiguration` (`Corvus.Identity`'s only implementation of `IAzureTokenCredentialSourceFromDynamicConfiguration`) which hands out `AzureTokenCredentialSource` instances in exchange for `ClientIdentityConfiguration` instances. This is the part of the library that knows how to process an `ClientIdentityConfiguration`.
 
+### The `Microsoft.Rest.ITokenProvider` implementations sit on `IAccessTokenSource`, not `IAzureTokenCredentialSource`
+
+Although the `Azure.Core.TokenCredential` implementations are the only ones that do real work in `Corvus.Identity` (ignoring the legacy `Corvus.Identity.ManagedServiceIdentity.ClientAuthentication` component) the `Microsoft.Rest`-flavoured ones don't wrap it directly. Instead, they wrap `IAccessTokenSource`, `IAccessTokenSourceFromDynamicConfiguration`, and `IServiceIdentityAccessTokenSource` (and our implementations of those then defer to the `TokenCredential`-based implementations).
+
+This might seem unnecessarily inefficient? Why not just defer directly to `IAzureTokenCredentialSource`, `IAzureTokenCredentialSourceFromDynamicConfiguration`, and `IServiceIdentityAzureTokenCredentialSource`? Fundamentally, what the `Microsoft.Rest.ITokenProvider`-based implementations need to be able to do is get hold of access tokens. They don't care about `Azure.Core.TokenCredentials`—those are just a means to an end. The `Microsoft.Rest`-flavoured wrappers would need to do the work to ask a `TokenCredential` for an access token, and we already have classes that do that: the implementations of `IAccessToken` etc.
+
+So there are two benefits:
+
+1. we avoid duplicating the code that extracts tokens from a `TokenCredential`
+2. we make it possible for applications to plug in alternative access token sources via DI
+
 ### Layering of `IServiceIdentityXxx` implementations
 
+In all three of the credential forms in the table above, there is an an interface representing how to get a credential in that form representing the service identity (e.g., an Azure Managed Identity). In all cases, this interface derives from the more general-purpose interface listed in the *Caller decides* column in the table above. So `IServiceIdentityAzureTokenCredentialSource` is an `IAzureTokenCredentialSource`, `IServiceIdentityAccessTokenSource` is an `IAccessTokenSource`, and `IServiceIdentityMicrosoftRestTokenProviderSource` is an `IMicrosoftRestTokenProviderSource`.
+
+Given this, you might expect all three source types to implement the service identity interfaces in the same way. However, they don't, and this section explains why.
+
+ The `Azure.Core.TokenCredential` implementation (which, remember, is the only one that really knows how to get credentials) actually has two implementations of `IAzureTokenCredentialSource`, because there are two significantly different ways the application can determine which credential gets used:
+ 
+ * applications can supply a `TokenCredential` directly
+ * applications can supply a `ClientIdentityConfiguration`
+
+ The first of these is trivial: we just need to hand back out the token we were given. The second can entail considerable slow work (e.g., looking up a secret or even multiple secrets in Azure Key Vault), and non-trivial behaviour such as caching. While it would be possible to roll these two modes into a single class, with `if` statements to select the strategy, it seems simpler to define two classes. (`AzureTokenCredentialSource` is the trivial one. `AzureTokenCredentialSourceForSpecificConfiguration` is the one that knows how to build a `TokenCredential` from a `ClientIdentityConfiguration`.)
+ 
+When it comes to the service identity `ServiceIdentityAzureTokenCredentialSource` implements `IServiceIdentityAzureTokenCredentialSource` by delegating to an `IAzureTokenCredentialSource`. Delegation is the right approach here because there are multiple `IAzureTokenCredentialSource` credential source implementations. If the application startup code calls `AddServiceIdentityAzureTokenCredentialSourceFromAzureCoreTokenCredential`, it is telling us to use a specific `TokenCredential` as the service identity, so the `ServiceIdentityAzureTokenCredentialSource` ends up delegating to the simple `AzureTokenCredentialSource`. But if the application calls `AddServiceIdentityAzureTokenCredentialSourceFromClientIdentityConfiguration`, instead we get a `ServiceIdentityAzureTokenCredentialSource` delegating to an `AzureTokenCredentialSourceForSpecificConfiguration`.
+
+Things are slightly different when we come to `IAccessTokenSource` and friends. Remember, our only implementation of these is a wrapper on top of the `Azure.Core.TokenProvider`-based implementations. So the core of this is `AzureTokenCredentialAccessTokenSource`, which implements `IAccessTokenSource` as a wrapper around any `IAzureTokenCredentialSource`. So at this level, we don't need two styles of implementation. We have `AzureTokenCredentialAccessTokenSource`, the only direct implementation of `IAccessTokenSource`, and this is a wrapper around an `IAzureTokenCredentialSource`. (The credential source strategy, then, is determined by the particular `IAzureTokenCredentialSource` that this supplied.) And then for the service identity version, we just derive a type from that, `ServiceIdentityAccessTokenSource`, which implements `IServiceIdentityAccessTokenSource`. Since `IServiceIdentityAccessTokenSource` doesn't define any additional members—it inherits `IAccessTokenSource`, the distinction being that this derived interface specifically represents the service identity—this `ServiceIdentityAccessTokenSource` is very simple. Its only member is a constructor calling the base class. This constructor depends on `IServiceIdentityAzureTokenCredentialSource`, meaning that DI will supply the token credential source that is specifically for the service identity, and that's the job done.
+
+The `Microsoft.Rest` version uses inheritance instead of delegation for exactly the same reason.

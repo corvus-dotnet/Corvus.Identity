@@ -72,8 +72,7 @@ namespace Microsoft.Extensions.DependencyInjection
             AzureTokenCredentialSource source = new (tokenCredential);
             return services
                 .AddSingleton<IServiceIdentityAzureTokenCredentialSource>(new ServiceIdentityAzureTokenCredentialSource(source))
-                .AddSingleton<IServiceIdentityAccessTokenSource>(
-                    new ServiceIdentityAccessTokenSource(new AzureTokenCredentialAccessTokenSource(source)));
+                .AddSingleton<IServiceIdentityAccessTokenSource, ServiceIdentityAccessTokenSource>();
         }
 
         /// <summary>
@@ -98,10 +97,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         new AzureTokenCredentialSourceForSpecificConfiguration(
                             configuration,
                             sp.GetRequiredService<IAzureTokenCredentialSourceFromDynamicConfiguration>())))
-                .AddSingleton<IServiceIdentityAccessTokenSource>(sp =>
-                    new ServiceIdentityAccessTokenSource(
-                        new AzureTokenCredentialAccessTokenSource(
-                            sp.GetRequiredService<IServiceIdentityAzureTokenCredentialSource>())));
+                .AddSingleton<IServiceIdentityAccessTokenSource, ServiceIdentityAccessTokenSource>();
         }
 
         /// <summary>
