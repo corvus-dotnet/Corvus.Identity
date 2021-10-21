@@ -29,7 +29,7 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
         public AzureTokenCredentialSourceFromConfiguration(
             IKeyVaultSecretClientFactory secretClientFactory)
         {
-            this.secretClientFactory = secretClientFactory;
+            this.secretClientFactory = secretClientFactory ?? throw new ArgumentNullException(nameof(SecretClient));
         }
 
         /// <inheritdoc/>

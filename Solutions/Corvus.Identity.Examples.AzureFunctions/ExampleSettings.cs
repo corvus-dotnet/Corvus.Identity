@@ -40,5 +40,11 @@ namespace Corvus.Identity.Examples.AzureFunctions
         /// <see cref="UseMicrosoftRestFunction.UseConfiguredAsync(Microsoft.AspNetCore.Http.HttpRequest)"/>.
         /// </summary>
         public ClientIdentityConfiguration ArmClientIdentity { get; set; }
+
+        /// <summary>
+        /// Gets or sets the configuration determining the client identity to use as the ambient
+        /// service identity. (Leave null to use the legacy connection string instead.)
+        /// </summary>
+        public ClientIdentityConfiguration ServiceIdentity { get; set; }
     }
 }
