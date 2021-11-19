@@ -29,7 +29,8 @@ namespace Corvus.Identity.Examples.UsingAzureCore
         public UseAzureKeyVaultAsServiceIdentityWithNewSdk(
             IServiceIdentityAzureTokenCredentialSource tokenCredentialSource)
         {
-            this.tokenCredentialSource = tokenCredentialSource;
+            this.tokenCredentialSource = tokenCredentialSource
+                ?? throw new ArgumentNullException(nameof(tokenCredentialSource));
         }
 
         /// <summary>
@@ -46,7 +47,8 @@ namespace Corvus.Identity.Examples.UsingAzureCore
         /// </returns>
         public async Task<string> GetSecretAsync(Uri keyVaultUri, string secretName)
         {
-            TokenCredential credential = await this.tokenCredentialSource.GetTokenCredentialAsync().ConfigureAwait(false);
+            TokenCredential credential = await this.tokenCredentialSource.GetTokenCredentialAsync()
+                .ConfigureAwait(false);
             var client = new SecretClient(keyVaultUri, credential);
 
             Response<KeyVaultSecret> vaultResponse = await client.GetSecretAsync(secretName).ConfigureAwait(false);

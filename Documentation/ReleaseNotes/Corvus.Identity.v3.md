@@ -4,7 +4,7 @@
 
 New features:
 
-Client identity configuration
+Client identity configuration, with support for `Azure.Core`-style authentication. See [Configuration and Azure AD Client Identities](../articles/configuration.md) for details
 
 
 
