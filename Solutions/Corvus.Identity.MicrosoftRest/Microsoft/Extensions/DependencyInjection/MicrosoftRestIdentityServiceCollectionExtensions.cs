@@ -31,7 +31,22 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddMicrosoftRestAdapterForServiceIdentityAccessTokenSource(
             this IServiceCollection services)
         {
-            return services.AddSingleton<IServiceIdentityMicrosoftRestTokenProviderSource, MicrosoftRestTokenProviderSource>();
+            return services
+                .AddSingleton<IServiceIdentityMicrosoftRestTokenProviderSource, ServiceIdentityMicrosoftRestTokenProviderSource>();
+        }
+
+        /// <summary>
+        /// Makes an <see cref="IMicrosoftRestTokenProviderSourceFromDynamicConfiguration"/> implementation
+        /// available.
+        /// </summary>
+        /// <param name="services">The service collection.</param>
+        /// <returns>The modified service collection.</returns>
+        public static IServiceCollection AddMicrosoftRestTokenProviderSourceDynamicConfiguration(
+            this IServiceCollection services)
+        {
+            return services
+                .AddAzureTokenCredentialSourceFromDynamicConfiguration()
+                .AddSingleton<IMicrosoftRestTokenProviderSourceFromDynamicConfiguration, MicrosoftRestTokenProviderSourceFromDynamicConfiguration>();
         }
     }
 }

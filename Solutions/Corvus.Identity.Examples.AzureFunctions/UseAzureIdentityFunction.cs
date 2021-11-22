@@ -18,24 +18,30 @@ namespace Corvus.Identity.Examples.AzureFunctions
     /// </summary>
     public class UseAzureIdentityFunction
     {
-        private readonly UseAzureKeyVaultWithNewSdk client;
+        private readonly UseAzureKeyVaultAsServiceIdentityWithNewSdk serviceIdClient;
         private readonly ILogger<UseAzureIdentityFunction> logger;
         private readonly ExampleSettings settings;
+        private readonly UseAzureKeyVaultWithIdentityFromConfigWithNewSdk configIdClient;
 
         /// <summary>
         /// Creates a <see cref="UseAzureIdentityFunction"/>.
         /// </summary>
         /// <param name="settings">Example settings.</param>
-        /// <param name="client">
-        /// The client wrapper for accessing the key vault.
+        /// <param name="serviceIdClient">
+        /// The client wrapper for accessing the key vault using the service identity.
+        /// </param>
+        /// <param name="configIdClient">
+        /// The client wrapper for accessing the key vault using a configured identity.
         /// </param>
         /// <param name="logger">Logger.</param>
         public UseAzureIdentityFunction(
             ExampleSettings settings,
-            UseAzureKeyVaultWithNewSdk client,
+            UseAzureKeyVaultAsServiceIdentityWithNewSdk serviceIdClient,
+            UseAzureKeyVaultWithIdentityFromConfigWithNewSdk configIdClient,
             ILogger<UseAzureIdentityFunction> logger)
         {
-            this.client = client ?? throw new ArgumentNullException(nameof(client));
+            this.serviceIdClient = serviceIdClient ?? throw new ArgumentNullException(nameof(serviceIdClient));
+            this.configIdClient = configIdClient ?? throw new ArgumentNullException(nameof(serviceIdClient));
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
             this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
         }
@@ -47,13 +53,34 @@ namespace Corvus.Identity.Examples.AzureFunctions
         /// <returns>
         /// A task that determines the response.
         /// </returns>
-        [FunctionName("UseAzureIdentity")]
-        public async Task<IActionResult> Run(
+        [FunctionName("UseServiceAzureIdentity")]
+        public async Task<IActionResult> UseServiceAzureIdentityAsync(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req)
         {
             this.logger.LogInformation($"Request: {req.Path}");
 
-            string secret = await this.client.GetSecretAsync(new Uri(this.settings.KeyVaultUri), this.settings.KeyVaultSecretName).ConfigureAwait(false);
+            string secret = await this.serviceIdClient.GetSecretAsync(new Uri(this.settings.KeyVaultUri), this.settings.KeyVaultSecretName).ConfigureAwait(false);
+
+            return new OkObjectResult(secret);
+        }
+
+        /// <summary>
+        /// Function endpoint.
+        /// </summary>
+        /// <param name="req">HTTP request.</param>
+        /// <returns>
+        /// A task that determines the response.
+        /// </returns>
+        [FunctionName("UseConfiguredAzureIdentity")]
+        public async Task<IActionResult> UseConfiguredAzureIdentity(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req)
+        {
+            this.logger.LogInformation($"Request: {req.Path}");
+
+            string secret = await this.configIdClient.GetSecretAsync(
+                this.settings.KeyVaultClientIdentity,
+                new Uri(this.settings.KeyVaultUri),
+                this.settings.KeyVaultSecretName).ConfigureAwait(false);
 
             return new OkObjectResult(secret);
         }

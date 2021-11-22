@@ -80,6 +80,13 @@ namespace Corvus.Identity.ManagedServiceIdentity.ClientAuthentication
                 this.TokenRequest = requiredTokenCharacteristics;
                 return await this.UnderlyingGetAccessTokenResultSource.Task.ConfigureAwait(false);
             }
+
+            public ValueTask<AccessTokenDetail> GetReplacementForFailedAccessTokenAsync(
+                AccessTokenDetail failedToken,
+                CancellationToken cancellationToken)
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }

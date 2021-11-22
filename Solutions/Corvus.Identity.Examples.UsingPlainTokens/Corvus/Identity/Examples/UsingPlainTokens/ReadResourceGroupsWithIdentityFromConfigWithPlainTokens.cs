@@ -1,4 +1,4 @@
-﻿// <copyright file="ReadResourceGroupsWithPlainTokens.cs" company="Endjin Limited">
+﻿// <copyright file="ReadResourceGroupsWithIdentityFromConfigWithPlainTokens.cs" company="Endjin Limited">
 // Copyright (c) Endjin Limited. All rights reserved.
 // </copyright>
 
@@ -11,53 +11,56 @@ namespace Corvus.Identity.Examples.UsingPlainTokens
     using System.Threading.Tasks;
 
     using Corvus.Identity.ClientAuthentication;
+    using Corvus.Identity.ClientAuthentication.Azure;
 
     /// <summary>
-    /// A service that reads a list of resource groups from the ARM API.
+    /// A service that reads a list of resource groups from the ARM API using an identity specified
+    /// as a <see cref="ClientIdentityConfiguration"/>.
     /// </summary>
-    public class ReadResourceGroupsWithPlainTokens
+    public class ReadResourceGroupsWithIdentityFromConfigWithPlainTokens
     {
-        private readonly IServiceIdentityAccessTokenSource tokenSource;
+        private readonly IAccessTokenSourceFromDynamicConfiguration tokenSourceFromConfig;
         private readonly IHttpClientFactory httpClientFactory;
-        private AccessTokenDetail? lastFetchedAccessToken;
 
         /// <summary>
-        /// Creates a <see cref="ReadResourceGroupsWithPlainTokens"/>.
+        /// Creates a <see cref="ReadResourceGroupsAsServiceIdentityWithPlainTokens"/>.
         /// </summary>
-        /// <param name="tokenSource">
+        /// <param name="tokenSourceFromConfig">
         /// The source from which to obtain tokens representing the service's identity.
         /// </param>
         /// <param name="httpClientFactory">
         /// A source for HttpClient instances.
         /// </param>
-        public ReadResourceGroupsWithPlainTokens(
-            IServiceIdentityAccessTokenSource tokenSource,
+        public ReadResourceGroupsWithIdentityFromConfigWithPlainTokens(
+            IAccessTokenSourceFromDynamicConfiguration tokenSourceFromConfig,
             IHttpClientFactory httpClientFactory)
         {
-            this.tokenSource = tokenSource ?? throw new ArgumentNullException(nameof(tokenSource));
+            this.tokenSourceFromConfig = tokenSourceFromConfig ?? throw new ArgumentNullException(nameof(tokenSourceFromConfig));
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
 
         /// <summary>
         /// Reads "me" endpoint.
         /// </summary>
+        /// <param name="identity">
+        /// Configuration describing the identity with which to connect to Azure Key Vault.
+        /// </param>
         /// <param name="subscriptionId">The subscription for which to list resource groups.</param>
         /// <returns>
         /// A task that produces the contents of the response from ARM.
         /// </returns>
-        public async Task<string> GetResourceGroupsAsync(string subscriptionId)
+        public async Task<string> GetResourceGroupsAsync(
+            ClientIdentityConfiguration identity,
+            string subscriptionId)
         {
             using HttpClient http = this.httpClientFactory.CreateClient("ReadGraphWithPlainTokens");
 
-            if (!this.lastFetchedAccessToken.HasValue ||
-                ((this.lastFetchedAccessToken.Value.ExpiresOn - DateTimeOffset.UtcNow) < TimeSpan.FromMinutes(1)))
-            {
-                this.lastFetchedAccessToken = await this.tokenSource.GetAccessTokenAsync(
-                    new AccessTokenRequest(new[] { "https://management.azure.com//.default" }),
-                    CancellationToken.None).ConfigureAwait(false);
-            }
+            IAccessTokenSource tokenSource = await this.tokenSourceFromConfig.AccessTokenSourceForConfigurationAsync(identity).ConfigureAwait(false);
+            AccessTokenDetail accessToken = await tokenSource.GetAccessTokenAsync(
+                new AccessTokenRequest(new[] { "https://management.azure.com//.default" }),
+                CancellationToken.None).ConfigureAwait(false);
 
-            string accessTokenText = this.lastFetchedAccessToken.Value.AccessToken;
+            string accessTokenText = accessToken.AccessToken;
             var req = new HttpRequestMessage(HttpMethod.Get, new Uri($"https://management.azure.com/subscriptions/{subscriptionId}/resourcegroups?api-version=2021-04-01"));
             req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessTokenText);
 

@@ -20,26 +20,32 @@ namespace Corvus.Identity.Examples.AzureFunctions
     /// </summary>
     public class UseMicrosoftRestFunction
     {
-        private readonly UseWebAppManagementWithOldSdk client;
+        private readonly UseWebAppManagementAsServiceIdentityWithOldSdk serviceIdClient;
         private readonly ILogger<UseMicrosoftRestFunction> logger;
         private readonly ExampleSettings settings;
+        private readonly UseWebAppManagementWithIdentityFromConfigWithOldSdk configIdClient;
 
         /// <summary>
         /// Creates a <see cref="UseMicrosoftRestFunction"/>.
         /// </summary>
         /// <param name="settings">Example settings.</param>
-        /// <param name="client">
-        /// The client wrapper for accessing the key vault.
+        /// <param name="serviceIdClient">
+        /// The client wrapper for accessing the key vault using the service identity.
+        /// </param>
+        /// <param name="configIdClient">
+        /// The client wrapper for accessing the key vault using a configured identity.
         /// </param>
         /// <param name="logger">Logger.</param>
         public UseMicrosoftRestFunction(
             ExampleSettings settings,
-            UseWebAppManagementWithOldSdk client,
+            UseWebAppManagementAsServiceIdentityWithOldSdk serviceIdClient,
+            UseWebAppManagementWithIdentityFromConfigWithOldSdk configIdClient,
             ILogger<UseMicrosoftRestFunction> logger)
         {
-            this.client = client ?? throw new System.ArgumentNullException(nameof(client));
+            this.serviceIdClient = serviceIdClient ?? throw new System.ArgumentNullException(nameof(serviceIdClient));
             this.logger = logger ?? throw new System.ArgumentNullException(nameof(logger));
             this.settings = settings ?? throw new System.ArgumentNullException(nameof(settings));
+            this.configIdClient = configIdClient;
         }
 
         /// <summary>
@@ -49,13 +55,34 @@ namespace Corvus.Identity.Examples.AzureFunctions
         /// <returns>
         /// A task that determines the response.
         /// </returns>
-        [FunctionName("UseMicrosoftRest")]
-        public async Task<IActionResult> Run(
+        [FunctionName("UseServiceIdentityMicrosoftRestToken")]
+        public async Task<IActionResult> UseServiceAzureIdentityAsync(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req)
         {
             this.logger.LogInformation($"Request: {req.Path}");
 
-            List<string> sites = await this.client.GetWebAppsAsync(this.settings.AzureSubscriptionId).ConfigureAwait(false);
+            List<string> sites = await this.serviceIdClient.GetWebAppsAsync(this.settings.AzureSubscriptionId).ConfigureAwait(false);
+
+            return new OkObjectResult(string.Join(", ", sites));
+        }
+
+        /// <summary>
+        /// Function endpoint.
+        /// </summary>
+        /// <param name="req">HTTP request.</param>
+        /// <returns>
+        /// A task that determines the response.
+        /// </returns>
+        [FunctionName("UseConfiguredMicrosoftRestToken")]
+        public async Task<IActionResult> UseConfiguredAsync(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req)
+        {
+            this.logger.LogInformation($"Request: {req.Path}");
+
+            List<string> sites = await this.configIdClient.GetWebAppsAsync(
+                this.settings.ArmClientIdentity,
+                this.settings.AzureSubscriptionId)
+                .ConfigureAwait(false);
 
             return new OkObjectResult(string.Join(", ", sites));
         }

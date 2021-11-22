@@ -338,3 +338,5 @@ coverage.cobertura.xml
 .docs/
 
 local.settings.json
+
+*.feature.cs

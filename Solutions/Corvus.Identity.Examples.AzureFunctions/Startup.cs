@@ -24,18 +24,33 @@ namespace Corvus.Identity.Examples.AzureFunctions
         public override void Configure(IFunctionsHostBuilder builder)
         {
             IConfiguration config = builder.GetContext().Configuration;
+            ExampleSettings appSettings = config.GetSection("ExampleSettings").Get<ExampleSettings>();
+
             IServiceCollection services = builder.Services;
 
             services.AddHttpClient();
 
-            services.AddServiceIdentityAzureTokenCredentialSourceFromLegacyConnectionString(
-                config.Get<LegacyAzureServiceTokenProviderOptions>());
-            services.AddMicrosoftRestAdapterForServiceIdentityAccessTokenSource();
+            services.AddAzureTokenCredentialSourceFromDynamicConfiguration();
+            if (appSettings.ServiceIdentity is null)
+            {
+                services.AddServiceIdentityAzureTokenCredentialSourceFromLegacyConnectionString(
+                    config.Get<LegacyAzureServiceTokenProviderOptions>());
+            }
+            else
+            {
+                services.AddServiceIdentityAzureTokenCredentialSourceFromClientIdentityConfiguration(appSettings.ServiceIdentity);
+            }
 
-            services.AddSingleton(config.GetSection("ExampleSettings").Get<ExampleSettings>());
-            services.AddSingleton<UseAzureKeyVaultWithNewSdk>();
-            services.AddSingleton<UseWebAppManagementWithOldSdk>();
-            services.AddSingleton<ReadResourceGroupsWithPlainTokens>();
+            services.AddMicrosoftRestAdapterForServiceIdentityAccessTokenSource();
+            services.AddMicrosoftRestTokenProviderSourceDynamicConfiguration();
+
+            services.AddSingleton(appSettings);
+            services.AddSingleton<UseAzureKeyVaultAsServiceIdentityWithNewSdk>();
+            services.AddSingleton<UseAzureKeyVaultWithIdentityFromConfigWithNewSdk>();
+            services.AddSingleton<UseWebAppManagementAsServiceIdentityWithOldSdk>();
+            services.AddSingleton<UseWebAppManagementWithIdentityFromConfigWithOldSdk>();
+            services.AddSingleton<ReadResourceGroupsAsServiceIdentityWithPlainTokens>();
+            services.AddSingleton<ReadResourceGroupsWithIdentityFromConfigWithPlainTokens>();
         }
     }
 }
