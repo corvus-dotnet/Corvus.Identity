@@ -26,7 +26,7 @@ namespace Corvus.Identity.ClientAuthentication.Azure
         /// <para>
         /// This method was erroneously given the same name as
         /// <see cref="IAccessTokenSource.GetAccessTokenAsync(AccessTokenRequest, System.Threading.CancellationToken)"/>.
-        /// It should have been named <see cref="GetTokenCredentialAsync"/>, and new code should use that instaed.
+        /// It should have been named <see cref="GetTokenCredentialAsync"/>, and new code should use that instead.
         /// </para>
         /// </remarks>
         [Obsolete("This method was misnamed in v2 of this library. Use the functionally identical GetTokenCredentialAsync instead.")]
@@ -62,7 +62,7 @@ namespace Corvus.Identity.ClientAuthentication.Azure
         /// can happen fairly frequently, but in any case it will always happen eventually.
         /// </para>
         /// <para>
-        /// This method enables the application to obtain update credentials. It also enables the
+        /// This method enables the application to obtain updated credentials. It also enables the
         /// <see cref="IAzureTokenCredentialSource"/> implementation to know that the credentials
         /// in question are no longer valid. Implementations that cache credentials can choose to
         /// stop handing out the now-failed cached credentials to any futher calls to

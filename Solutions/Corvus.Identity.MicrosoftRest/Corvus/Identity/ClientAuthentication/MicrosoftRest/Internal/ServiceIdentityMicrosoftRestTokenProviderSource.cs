@@ -5,7 +5,7 @@
 namespace Corvus.Identity.ClientAuthentication.MicrosoftRest.Internal
 {
     /// <summary>
-    /// Wraps an <see cref="IMicrosoftRestTokenProviderSource"/> as an
+    /// Wraps an <see cref="IServiceIdentityAccessTokenSource"/> as an
     /// <see cref="IServiceIdentityMicrosoftRestTokenProviderSource"/>.
     /// </summary>
     internal class ServiceIdentityMicrosoftRestTokenProviderSource :

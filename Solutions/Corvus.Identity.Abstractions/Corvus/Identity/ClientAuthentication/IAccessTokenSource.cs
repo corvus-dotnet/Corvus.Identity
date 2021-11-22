@@ -56,7 +56,7 @@ namespace Corvus.Identity.ClientAuthentication
         /// can happen fairly frequently, but in any case it will always happen eventually.
         /// </para>
         /// <para>
-        /// This method enables the application to obtain update credentials. It also enables the
+        /// This method enables the application to obtain updated credentials. It also enables the
         /// <see cref="IAccessTokenSource"/> implementation to know that the credentials
         /// in question are no longer valid. Implementations that cache credentials can choose to
         /// stop handing out the now-failed cached credentials to any futher calls to

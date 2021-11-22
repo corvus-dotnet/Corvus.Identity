@@ -71,21 +71,6 @@ namespace Corvus.Identity.Azure
             this.tokenCredentials.SetNamedCredential(credentialName, credential);
         }
 
-        ////[Given(@"the key vault '(.*)' returns '(.*)' for the secret named '(.*)'")]
-        ////public void GivenTheKeyVaultReturnsForTheSecretNamed(string vaultName, string secretValue, string secretName)
-        ////{
-        ////    this.keyVault.A
-        ////}
-
-        ////[Then(@"a TokenCredential of type '(.*)' is returned")]
-        ////public void ThenATokenCredentialOfTypeIsReturned(string typeSimpleName)
-        ////{
-        ////    string fullTypeName = $"Azure.Identity.{typeSimpleName}";
-        ////    Type expectedType = typeof(DefaultAzureCredential).Assembly.GetType(fullTypeName)
-        ////        ?? throw new InvalidOperationException($"Test specifies {typeSimpleName}; failed to find ${fullTypeName}");
-        ////    Assert.IsInstanceOf(expectedType, this.credentials);
-        ////}
-
         public void Dispose()
         {
             this.serviceProvider?.Dispose();
