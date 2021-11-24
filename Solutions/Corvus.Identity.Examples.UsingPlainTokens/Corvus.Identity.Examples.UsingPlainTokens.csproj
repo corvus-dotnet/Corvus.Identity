@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Corvus.Identity.Abstractions\Corvus.Identity.Abstractions.csproj" />
+    <ProjectReference Include="..\Corvus.Identity.Azure\Corvus.Identity.Azure.csproj" />
   </ItemGroup>
 
 </Project>

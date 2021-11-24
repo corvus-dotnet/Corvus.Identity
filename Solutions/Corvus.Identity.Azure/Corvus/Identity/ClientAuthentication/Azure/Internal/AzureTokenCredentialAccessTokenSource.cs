@@ -11,20 +11,21 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
     using global::Azure.Core;
 
     /// <summary>
-    /// Wrapper for a <see cref="TokenCredential"/> that implements
-    /// <see cref="IServiceIdentityAccessTokenSource"/>.
+    /// Wrapper for an <see cref="IAzureTokenCredentialSource"/> that implements
+    /// <see cref="IAccessTokenSource"/>.
     /// </summary>
-    internal class AzureTokenCredentialAccessTokenSource : IServiceIdentityAccessTokenSource
+    internal class AzureTokenCredentialAccessTokenSource : IAccessTokenSource
     {
-        private readonly TokenCredential tokenCredential;
+        private readonly IAzureTokenCredentialSource tokenCredentialSource;
 
         /// <summary>
         /// Creates a <see cref="AzureTokenCredentialAccessTokenSource"/>.
         /// </summary>
-        /// <param name="tokenCredential">The Azure token credential to wrap.</param>
-        public AzureTokenCredentialAccessTokenSource(TokenCredential tokenCredential)
+        /// <param name="tokenCredentialSource">The source of Azure token credentials to wrap.</param>
+        public AzureTokenCredentialAccessTokenSource(
+            IAzureTokenCredentialSource tokenCredentialSource)
         {
-            this.tokenCredential = tokenCredential ?? throw new ArgumentNullException(nameof(tokenCredential));
+            this.tokenCredentialSource = tokenCredentialSource;
         }
 
         /// <inheritdoc/>
@@ -34,7 +35,10 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
         {
             try
             {
-                AccessToken result = await this.tokenCredential.GetTokenAsync(
+                TokenCredential tokenCredential = await this.tokenCredentialSource
+                    .GetTokenCredentialAsync(cancellationToken)
+                    .ConfigureAwait(false);
+                AccessToken result = await tokenCredential.GetTokenAsync(
                     new TokenRequestContext(
                         scopes: requiredTokenCharacteristics.Scopes,
                         claims: requiredTokenCharacteristics.Claims,
@@ -47,6 +51,14 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
             {
                 throw new AccessTokenNotIssuedException(x);
             }
+        }
+
+        /// <inheritdoc/>
+        public ValueTask<AccessTokenDetail> GetReplacementForFailedAccessTokenAsync(
+            AccessTokenDetail failedToken,
+            CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
         }
     }
 }

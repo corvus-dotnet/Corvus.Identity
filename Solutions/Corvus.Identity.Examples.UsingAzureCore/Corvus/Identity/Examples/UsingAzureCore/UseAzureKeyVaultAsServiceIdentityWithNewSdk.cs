@@ -1,4 +1,4 @@
-﻿// <copyright file="UseAzureKeyVaultWithNewSdk.cs" company="Endjin Limited">
+﻿// <copyright file="UseAzureKeyVaultAsServiceIdentityWithNewSdk.cs" company="Endjin Limited">
 // Copyright (c) Endjin Limited. All rights reserved.
 // </copyright>
 
@@ -14,22 +14,23 @@ namespace Corvus.Identity.Examples.UsingAzureCore
     using Corvus.Identity.ClientAuthentication.Azure;
 
     /// <summary>
-    /// A service that retrieves a secret from Azure Key Vault.
+    /// A service that retrieves a secret from Azure Key Vault, using the service's own identity.
     /// </summary>
-    public class UseAzureKeyVaultWithNewSdk
+    public class UseAzureKeyVaultAsServiceIdentityWithNewSdk
     {
         private readonly IServiceIdentityAzureTokenCredentialSource tokenCredentialSource;
 
         /// <summary>
-        /// Creates a <see cref="UseAzureKeyVaultWithNewSdk"/>.
+        /// Creates a <see cref="UseAzureKeyVaultAsServiceIdentityWithNewSdk"/>.
         /// </summary>
         /// <param name="tokenCredentialSource">
         /// The source from which to obtain <see cref="TokenCredential"/> instances.
         /// </param>
-        public UseAzureKeyVaultWithNewSdk(
+        public UseAzureKeyVaultAsServiceIdentityWithNewSdk(
             IServiceIdentityAzureTokenCredentialSource tokenCredentialSource)
         {
-            this.tokenCredentialSource = tokenCredentialSource;
+            this.tokenCredentialSource = tokenCredentialSource
+                ?? throw new ArgumentNullException(nameof(tokenCredentialSource));
         }
 
         /// <summary>
@@ -46,12 +47,13 @@ namespace Corvus.Identity.Examples.UsingAzureCore
         /// </returns>
         public async Task<string> GetSecretAsync(Uri keyVaultUri, string secretName)
         {
-            TokenCredential credential = await this.tokenCredentialSource.GetAccessTokenAsync().ConfigureAwait(false);
+            TokenCredential credential = await this.tokenCredentialSource.GetTokenCredentialAsync()
+                .ConfigureAwait(false);
             var client = new SecretClient(keyVaultUri, credential);
 
-            Response<KeyVaultSecret> secret = await client.GetSecretAsync(secretName).ConfigureAwait(false);
+            Response<KeyVaultSecret> vaultResponse = await client.GetSecretAsync(secretName).ConfigureAwait(false);
 
-            return secret.Value.Value;
+            return vaultResponse.Value.Value;
         }
     }
 }
