@@ -10,7 +10,7 @@ Client identity configuration, with support for `Azure.Core`-style authenticatio
 
 ### Potentially breaking changes
 
-There have been additions to two interfaces. These are breaking changes for any client of this library that chooses to implement these interfaces. However, these are not really design to be implemented by other libraries; these interfaces exist to enable the implementations to be consumed through DI.
+There have been additions to two interfaces. These are breaking changes for any client of this library that chooses to implement these interfaces. However, these are not really designed to be implemented by other libraries; these interfaces exist to enable the implementations to be consumed through DI.
 
 The changes will be binary-compatible for code that only consumes these interfaces, because such code won't even know about the new members. The changes are also source-compatible except for projects that treat warnings as errors, in which case the deprecation of an existing member will cause a compiler error.
 
