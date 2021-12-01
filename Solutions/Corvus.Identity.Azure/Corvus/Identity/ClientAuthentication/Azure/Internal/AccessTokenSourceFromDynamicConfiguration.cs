@@ -35,7 +35,12 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
         public ValueTask<IAccessTokenSource> AccessTokenSourceForConfigurationAsync(
             ClientIdentityConfiguration configuration,
             CancellationToken cancellationToken = default)
-            => new ValueTask<IAccessTokenSource>(new AzureTokenCredentialAccessTokenSource(
-                new AzureTokenCredentialSourceForSpecificConfiguration(configuration, this.tokenCredentialSource)));
+        {
+            return new ValueTask<IAccessTokenSource>(
+                new AzureTokenCredentialAccessTokenSource(
+                    new AzureTokenCredentialSourceForSpecificConfiguration(
+                        configuration,
+                        this.tokenCredentialSource)));
+        }
     }
 }
