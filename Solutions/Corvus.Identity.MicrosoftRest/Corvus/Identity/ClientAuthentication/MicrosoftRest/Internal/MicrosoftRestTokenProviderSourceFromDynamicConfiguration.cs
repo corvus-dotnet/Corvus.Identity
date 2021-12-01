@@ -30,7 +30,7 @@ namespace Corvus.Identity.ClientAuthentication.MicrosoftRest.Internal
 
         /// <inheritdoc/>
         public async ValueTask<IMicrosoftRestTokenProviderSource> TokenProviderSourceForConfigurationAsync(
-            ClientIdentityConfiguration configuration, CancellationToken cancellationToken = default)
+            ClientIdentityConfiguration configuration, CancellationToken cancellationToken)
         {
             IAccessTokenSource tokenSource = await this.tokenSourceFromDynamicConfiguration.AccessTokenSourceForConfigurationAsync(
                 configuration, cancellationToken)

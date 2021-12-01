@@ -72,6 +72,6 @@ namespace Corvus.Identity.ClientAuthentication.Azure
         /// </remarks>
         ValueTask<TokenCredential> GetReplacementForFailedTokenCredentialAsync(
             TokenCredential failedTokenCredential,
-            CancellationToken cancellationToken);
+            CancellationToken cancellationToken = default);
     }
 }
