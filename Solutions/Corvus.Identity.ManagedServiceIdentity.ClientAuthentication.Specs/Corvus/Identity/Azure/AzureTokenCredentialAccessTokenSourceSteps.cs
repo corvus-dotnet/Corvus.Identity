@@ -25,7 +25,7 @@
         private string[] scopes;
         private string claims;
         private string authorityId;
-        private Task<ClientAuthentication.AccessTokenDetail> accessTokenDetailReturnedTask;
+        private Task<AccessTokenDetail> accessTokenDetailReturnedTask;
 #nullable restore annotations
         private TokenRequestContext requestContextPassedToUnderlyingCredential;
         private AccessToken resultFromUnderlyingCredential;
