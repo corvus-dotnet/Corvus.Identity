@@ -6,7 +6,7 @@ Application code often needs to determine how to authenticate when using service
 
 ## Configuration examples
 
-The following sections show examples of how to define a [`ClientIdentityConfiguration`](xref:Corvus.Identity.ClientAuthentication.Azure.ClientIdentityConfiguration) for various common scenarios. (These examples are all in JSON, because this is a common choice for storing configuration. But although `ClientIdentityConfiguration` is designed to work well with JSON mechanisms such as [`Microsoft.Extensions.Configuration.Json`](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.configuration.json), any configuration provide can be used. These settings could be supplied via environment variables, for example.)
+The following sections show examples of how to define a [`ClientIdentityConfiguration`](xref:Corvus.Identity.ClientAuthentication.Azure.ClientIdentityConfiguration) for various common scenarios. (These examples are all in JSON, because this is a common choice for storing configuration. But although `ClientIdentityConfiguration` is designed to work well with JSON mechanisms such as [`Microsoft.Extensions.Configuration.Json`](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.configuration.json), any configuration provider can be used. These settings could be supplied via environment variables, for example.)
 
 ### Managed Identity
 
