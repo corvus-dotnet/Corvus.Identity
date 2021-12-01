@@ -8,6 +8,8 @@ namespace Microsoft.Extensions.DependencyInjection
     using Corvus.Identity.ClientAuthentication.MicrosoftRest;
     using Corvus.Identity.ClientAuthentication.MicrosoftRest.Internal;
 
+    using Microsoft.Rest;
+
     /// <summary>
     /// DI initialization for services using Corvus.Identity.ClientAuthentication.MicrosoftRest.
     /// </summary>
@@ -24,7 +26,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// This requires an implementation of <see cref="IServiceIdentityAccessTokenSource"/> to
         /// be available. This library does not know how to obtain tokens: it is an adapter that
         /// obtainstokens from the general-purpose <see cref="IServiceIdentityAccessTokenSource"/>
-        /// mechanism, and wraps them as an <see cref="Rest.ITokenProvider"/>, so
+        /// mechanism, and wraps them as an <see cref="ITokenProvider"/>, so
         /// something else needs to provide the basic ability to provide the tokens being wrapped.
         /// </para>
         /// </remarks>
