@@ -24,7 +24,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// This requires an implementation of <see cref="IServiceIdentityAccessTokenSource"/> to
         /// be available. This library does not know how to obtain tokens: it is an adapter that
         /// obtainstokens from the general-purpose <see cref="IServiceIdentityAccessTokenSource"/>
-        /// mechanism, and wraps them as an <see cref="Microsoft.Rest.ITokenProvider"/>, so
+        /// mechanism, and wraps them as an <see cref="Rest.ITokenProvider"/>, so
         /// something else needs to provide the basic ability to provide the tokens being wrapped.
         /// </para>
         /// </remarks>

@@ -61,8 +61,8 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
             if (this.source is null)
             {
                 this.source = await this.sourceSource
-                .CredentialSourceForConfigurationAsync(this.configuration, cancellationToken)
-                .ConfigureAwait(false);
+                    .CredentialSourceForConfigurationAsync(this.configuration, cancellationToken)
+                    .ConfigureAwait(false);
             }
 
             return this.source;

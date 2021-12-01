@@ -12,7 +12,7 @@ namespace Corvus.Identity.ClientAuthentication.Azure
     /// <remarks>
     /// <para>
     /// The <see cref="LegacyAzureServiceTokenProviderConnectionString"/> class and the
-    /// <see cref="AzureIdentityServiceCollectionExtensions.AddServiceIdentityAzureTokenCredentialSourceFromLegacyConnectionString(Microsoft.Extensions.DependencyInjection.IServiceCollection, string)"/>
+    /// <see cref="AzureIdentityServiceCollectionExtensions.AddServiceIdentityAzureTokenCredentialSourceFromLegacyConnectionString(IServiceCollection, string)"/>
     /// method both enable applications to continue to use connection strings of the form supported
     /// by <c>AzureServiceTokenProvider</c> in the <c>Microsoft.Azure.Services.AppAuthentication</c>
     /// NuGet package. Conventionally, this connection string is stored in a setting named
