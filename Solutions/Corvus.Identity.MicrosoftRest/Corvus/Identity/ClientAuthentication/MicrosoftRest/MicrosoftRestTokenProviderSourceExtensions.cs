@@ -4,8 +4,6 @@
 
 namespace Corvus.Identity.ClientAuthentication.MicrosoftRest
 {
-    using System.Threading.Tasks;
-
     using Microsoft.Rest;
 
     /// <summary>
@@ -25,9 +23,9 @@ namespace Corvus.Identity.ClientAuthentication.MicrosoftRest
         /// <returns>
         /// A task that produces a <see cref="ITokenProvider"/>.
         /// </returns>
-        public static ValueTask<ITokenProvider> GetTokenProviderAsync(
+        public static ITokenProvider GetTokenProvider(
             this IMicrosoftRestTokenProviderSource source,
             string scope)
-            => source.GetTokenProviderAsync(new[] { scope });
+            => source.GetTokenProvider(new[] { scope });
     }
 }

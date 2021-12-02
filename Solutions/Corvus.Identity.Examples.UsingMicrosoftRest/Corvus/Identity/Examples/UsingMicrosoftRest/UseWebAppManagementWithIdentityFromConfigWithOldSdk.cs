@@ -53,9 +53,8 @@ namespace Corvus.Identity.Examples.UsingMicrosoftRest
             IMicrosoftRestTokenProviderSource tokenProviderSource = await this.tokenProviderSourceFromConfig
                 .TokenProviderSourceForConfigurationAsync(identity)
                 .ConfigureAwait(false);
-            ITokenProvider tokenProvider = await tokenProviderSource.GetTokenProviderAsync(
-                "https://management.azure.com//.default")
-                .ConfigureAwait(false);
+            ITokenProvider tokenProvider = tokenProviderSource.GetTokenProvider(
+                "https://management.azure.com//.default");
             var credentials = new TokenCredentials(tokenProvider);
             var client = new WebSiteManagementClient(credentials)
             {
