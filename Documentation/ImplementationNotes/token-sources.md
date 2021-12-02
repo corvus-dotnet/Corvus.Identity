@@ -46,6 +46,10 @@ All of the interfaces described above end up at `AzureTokenCredentialSource`, a 
 
 Of slightly more interest is `AzureTokenCredentialSourceFromConfiguration` (`Corvus.Identity`'s only implementation of `IAzureTokenCredentialSourceFromDynamicConfiguration`) which hands out `AzureTokenCredentialSource` instances in exchange for `ClientIdentityConfiguration` instances. This is the part of the library that knows how to process an `ClientIdentityConfiguration`.
 
+This diagram shows the simplest use case in which an application works directly with the `IAzureTokenCredentialSourceFromDynamicConfiguration` interface to obtain credentials:
+
+![Diagram showing that an application using the Corvus.Identity.Azure NuGet package passes a ClientIdentityConfiguration to the AzureTokenCredentialSourceFromConfiguration implementation of the IAzureTokenCredentialSourceFromDynamicConfiguration, which creates a suitable TokenCredential as implemented by the Azure.Identity NuGet package, and then wraps this in an AzureTokenCredentialSource which it returns to the application as an IAzureTokenCredentialSource](token-source-layering-real-work.svg)
+
 ### The `Microsoft.Rest.ITokenProvider` implementations sit on `IAccessTokenSource`, not `IAzureTokenCredentialSource`
 
 Although the `Azure.Core.TokenCredential` implementations are the only ones that do real work in `Corvus.Identity` (ignoring the legacy `Corvus.Identity.ManagedServiceIdentity.ClientAuthentication` component) the `Microsoft.Rest`-flavoured ones don't wrap it directly. Instead, they wrap `IAccessTokenSource`, `IAccessTokenSourceFromDynamicConfiguration`, and `IServiceIdentityAccessTokenSource` (and our implementations of those then defer to the `TokenCredential`-based implementations).
