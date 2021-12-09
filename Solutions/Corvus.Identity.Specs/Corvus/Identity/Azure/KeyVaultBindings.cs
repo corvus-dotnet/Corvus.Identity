@@ -45,7 +45,7 @@
             this.secretClientFactory.AddSecret(keyVault, secret, secretName);
         }
 
-        [When(@"in this test we identify the token credential passed when creating the key vault '(.*)' as '(.*)'")]
+        [When("in this test we identify the token credential passed when creating the key vault '(.*)' as '(.*)'")]
         public void WhenInThisTestWeIdentifyTheTokenCredentialPassedWhenCreatingTheKeyVaultAs(
             string keyVaultName,
             string credentialName)
@@ -80,8 +80,8 @@
 
             private class FakeSecretClient : SecretClient
             {
-                private FakeKeyVaultSecretClientFactory fakeKeyVaultSecretClientFactory;
-                private string keyVaultName;
+                private readonly FakeKeyVaultSecretClientFactory fakeKeyVaultSecretClientFactory;
+                private readonly string keyVaultName;
 
                 public FakeSecretClient(FakeKeyVaultSecretClientFactory fakeKeyVaultSecretClientFactory, string keyVaultName)
                 {

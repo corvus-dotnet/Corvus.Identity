@@ -29,7 +29,7 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
         public AzureTokenCredentialSourceFromConfiguration(
             IKeyVaultSecretClientFactory secretClientFactory)
         {
-            this.secretClientFactory = secretClientFactory ?? throw new ArgumentNullException(nameof(SecretClient));
+            this.secretClientFactory = secretClientFactory ?? throw new ArgumentNullException(nameof(secretClientFactory));
         }
 
         /// <inheritdoc/>
@@ -62,14 +62,14 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
                         : new ManagedIdentityCredential();
                     SecretClient keyVaultSecretClient = this.secretClientFactory.GetSecretClientFor(
                         keyVaultConfig.VaultName, keyVaultCredential);
-                    Response<KeyVaultSecret> secretResponse = await keyVaultSecretClient.GetSecretAsync(keyVaultConfig.SecretName).ConfigureAwait(false);
+                    Response<KeyVaultSecret> secretResponse = await keyVaultSecretClient.GetSecretAsync(keyVaultConfig.SecretName, cancellationToken: cancellationToken).ConfigureAwait(false);
 
                     secret = secretResponse.Value.Value;
                 }
                 else
                 {
                     throw new ArgumentException(
-                        $"Configuration seems to want Azure AD Client ID and Secret, but not enough information provided",
+                        "Configuration seems to want Azure AD Client ID and Secret, but not enough information provided",
                         nameof(configuration));
                 }
 

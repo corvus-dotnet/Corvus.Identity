@@ -58,14 +58,9 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
 
         private async ValueTask<IAzureTokenCredentialSource> EnsureSource(CancellationToken cancellationToken)
         {
-            if (this.source is null)
-            {
-                this.source = await this.sourceSource
+            return this.source ??= await this.sourceSource
                     .CredentialSourceForConfigurationAsync(this.configuration, cancellationToken)
                     .ConfigureAwait(false);
-            }
-
-            return this.source;
         }
     }
 }
