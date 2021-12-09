@@ -64,11 +64,18 @@ namespace Corvus.Identity.Azure
 
             this.credsFromConfig = this.serviceProvider.GetRequiredService<IAzureTokenCredentialSourceFromDynamicConfiguration>();
 
-            IAzureTokenCredentialSource source =
-                await this.credsFromConfig.CredentialSourceForConfigurationAsync(this.configuration!.ClientIdentity!).ConfigureAwait(false);
-            TokenCredential credential = await source.GetTokenCredentialAsync().ConfigureAwait(false);
+            try
+            {
+                IAzureTokenCredentialSource source =
+                    await this.credsFromConfig.CredentialSourceForConfigurationAsync(this.configuration!.ClientIdentity!).ConfigureAwait(false);
+                TokenCredential credential = await source.GetTokenCredentialAsync().ConfigureAwait(false);
 
-            this.tokenCredentials.SetNamedCredential(credentialName, credential);
+                this.tokenCredentials.SetNamedCredential(credentialName, credential);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
         }
 
         public void Dispose()

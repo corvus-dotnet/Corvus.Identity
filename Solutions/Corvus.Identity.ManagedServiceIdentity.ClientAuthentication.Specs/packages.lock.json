@@ -1742,7 +1742,8 @@
           "Azure.Identity": "1.4.0",
           "Azure.Security.KeyVault.Secrets": "4.2.0",
           "Corvus.Identity.Abstractions": "1.0.0",
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "3.1.0"
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "3.1.0",
+          "Moq": "4.16.1"
         }
       },
       "corvus.identity.managedserviceidentity.clientauthentication": {

@@ -22,9 +22,13 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
         /// <param name="credential">
         /// The credentials with which to initialize the <see cref="SecretClient"/>.
         /// </param>
+        /// <param name="options">
+        /// The secret client options to specify extra behaviour on the <see cref="SecretClient"/>.
+        /// </param>
         /// <returns>A <see cref="SecretClient"/>.</returns>
         SecretClient GetSecretClientFor(
             string keyVaultName,
-            TokenCredential credential);
+            TokenCredential credential,
+            SecretClientOptions? options = default);
     }
 }
