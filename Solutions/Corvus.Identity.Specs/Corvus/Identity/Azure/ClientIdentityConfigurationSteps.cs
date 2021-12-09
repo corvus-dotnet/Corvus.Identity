@@ -19,7 +19,7 @@ namespace Corvus.Identity.Azure
     using TechTalk.SpecFlow;
 
     [Binding]
-    public class ClientIdentityConfigurationSteps : IDisposable
+    public sealed class ClientIdentityConfigurationSteps : IDisposable
     {
         private readonly TokenCredentialBindings tokenCredentials;
         private readonly KeyVaultBindings keyVault;

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29102.190
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31919.166
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DevOps", "DevOps", "{D29CABE7-467E-4CF6-B44B-3C58AB76145A}"
 	ProjectSection(SolutionItems) = preProject
@@ -11,9 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DevOps", "DevOps", "{D29CAB
 		..\GitVersion.yml = ..\GitVersion.yml
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Corvus.Identity.ManagedServiceIdentity.ClientAuthentication", "Corvus.Identity.ManagedServiceIdentity.ClientAuthentication\Corvus.Identity.ManagedServiceIdentity.ClientAuthentication.csproj", "{A83D2A90-3FCE-45FE-892F-E778E8A018FF}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Corvus.Identity.ManagedServiceIdentity.ClientAuthentication.Specs", "Corvus.Identity.ManagedServiceIdentity.ClientAuthentication.Specs\Corvus.Identity.ManagedServiceIdentity.ClientAuthentication.Specs.csproj", "{24D0BC07-9757-4111-A60B-5D9E2326E3A4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Corvus.Identity.Specs", "Corvus.Identity.Specs\Corvus.Identity.Specs.csproj", "{24D0BC07-9757-4111-A60B-5D9E2326E3A4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Corvus.Identity.Azure", "Corvus.Identity.Azure\Corvus.Identity.Azure.csproj", "{831D509C-4971-453D-86B8-ADC4AB7CD592}"
 EndProject
@@ -37,10 +35,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{A83D2A90-3FCE-45FE-892F-E778E8A018FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A83D2A90-3FCE-45FE-892F-E778E8A018FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A83D2A90-3FCE-45FE-892F-E778E8A018FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A83D2A90-3FCE-45FE-892F-E778E8A018FF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{24D0BC07-9757-4111-A60B-5D9E2326E3A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{24D0BC07-9757-4111-A60B-5D9E2326E3A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{24D0BC07-9757-4111-A60B-5D9E2326E3A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
