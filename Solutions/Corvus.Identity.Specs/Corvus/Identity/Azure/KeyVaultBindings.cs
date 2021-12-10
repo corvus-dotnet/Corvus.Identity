@@ -16,6 +16,7 @@
 
     using TechTalk.SpecFlow;
     using Moq;
+    using NUnit.Framework;
 
     [Binding]
     public class KeyVaultBindings
@@ -56,10 +57,16 @@
             this.tokenCredentials.SetNamedCredential(credentialName, keyVaultCredentials);
         }
 
+        [Then(@"the key vault client should have been used (\d+) times")]
+        public void ThenTheKeyVaultClientShouldNotHaveBeenUsed(int times)
+        {
+            Assert.AreEqual(times, this.VaultCredentialPairs.Count);
+        }
+
         private class FakeKeyVaultSecretClientFactory : IKeyVaultSecretClientFactory
         {
             private readonly IList<(string KeyVaultName, TokenCredential Credential)> vaultCredentialPairs;
-            private readonly Dictionary<(string vaultName, string secretName), string> secrets = new ();
+            private readonly Dictionary<(string VaultName, string secretName), string> secrets = new ();
 
             public FakeKeyVaultSecretClientFactory(
                 IList<(string KeyVaultName, TokenCredential Credential)> vaultCredentialPairs)

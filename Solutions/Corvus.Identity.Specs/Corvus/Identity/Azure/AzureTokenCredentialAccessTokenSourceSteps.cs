@@ -84,7 +84,7 @@
                     "CredentialUnavailableException" => new CredentialUnavailableException("That's not there"),
                     "AuthenticationFailedException" => new AuthenticationFailedException("That didn't work"),
 
-                    _ => new InvalidOperationException($"Bad exceptionType in test: {exceptionType}")
+                    _ => new InvalidOperationException($"Bad exceptionType in test: {exceptionType}"),
                 });
         }
 

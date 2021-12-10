@@ -41,8 +41,10 @@ namespace Corvus.Identity.ClientAuthentication
         /// Gets a new <see cref="AccessTokenDetail"/> to replace one that seems to have stopped
         /// working.
         /// </summary>
-        /// <param name="failedToken">
-        /// The token that no longer works.
+        /// <param name="requiredTokenCharacteristics">
+        /// Describes the scope (and optionally, other characteristics) required for the token -
+        /// these should match the characteristics that were passed when the token was acquired from
+        /// <see cref="GetAccessTokenAsync(AccessTokenRequest, CancellationToken)"/>.
         /// </param>
         /// <param name="cancellationToken">
         /// May enable the request to be cancelled.
@@ -65,7 +67,7 @@ namespace Corvus.Identity.ClientAuthentication
         /// </para>
         /// </remarks>
         ValueTask<AccessTokenDetail> GetReplacementForFailedAccessTokenAsync(
-            AccessTokenDetail failedToken,
+            AccessTokenRequest requiredTokenCharacteristics,
             CancellationToken cancellationToken = default);
     }
 }

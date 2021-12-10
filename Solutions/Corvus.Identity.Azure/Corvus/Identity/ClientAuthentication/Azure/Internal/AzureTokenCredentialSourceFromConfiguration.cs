@@ -19,6 +19,7 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
     internal class AzureTokenCredentialSourceFromConfiguration : IAzureTokenCredentialSourceFromDynamicConfiguration
     {
         private readonly IKeyVaultSecretClientFactory secretClientFactory;
+        private readonly IKeyVaultSecretCache secretCache;
 
         /// <summary>
         /// Creates an <see cref="AzureTokenCredentialSourceFromConfiguration"/>.
@@ -26,10 +27,15 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
         /// <param name="secretClientFactory">
         /// Creates new <see cref="SecretClient"/> instances.
         /// </param>
+        /// <param name="secretCache">
+        /// Provides caching to avoid repeated lookups in key vault.
+        /// </param>
         public AzureTokenCredentialSourceFromConfiguration(
-            IKeyVaultSecretClientFactory secretClientFactory)
+            IKeyVaultSecretClientFactory secretClientFactory,
+            IKeyVaultSecretCache secretCache)
         {
             this.secretClientFactory = secretClientFactory ?? throw new ArgumentNullException(nameof(secretClientFactory));
+            this.secretCache = secretCache;
         }
 
         /// <inheritdoc/>
@@ -57,14 +63,60 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
                 }
                 else if (configuration.AzureAdAppClientSecretInKeyVault is KeyVaultSecretConfiguration keyVaultConfig)
                 {
-                    TokenCredential keyVaultCredential = keyVaultConfig.VaultClientIdentity is not null
-                        ? await (await this.CredentialSourceForConfigurationAsync(keyVaultConfig.VaultClientIdentity, cancellationToken).ConfigureAwait(false)).GetTokenCredentialAsync(cancellationToken).ConfigureAwait(false)
-                        : new ManagedIdentityCredential();
-                    SecretClient keyVaultSecretClient = this.secretClientFactory.GetSecretClientFor(
-                        keyVaultConfig.VaultName, keyVaultCredential);
-                    Response<KeyVaultSecret> secretResponse = await keyVaultSecretClient.GetSecretAsync(keyVaultConfig.SecretName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    if (this.secretCache.TryGetSecret(
+                        keyVaultConfig.VaultName,
+                        keyVaultConfig.SecretName,
+                        keyVaultConfig.VaultClientIdentity,
+                        out string? secretIfAvailable))
+                    {
+                        secret = secretIfAvailable;
+                    }
+                    else
+                    {
+                        TokenCredential keyVaultCredential = keyVaultConfig.VaultClientIdentity is not null
+                            ? await (await this.CredentialSourceForConfigurationAsync(keyVaultConfig.VaultClientIdentity, cancellationToken).ConfigureAwait(false)).GetTokenCredentialAsync(cancellationToken).ConfigureAwait(false)
+                            : new ManagedIdentityCredential();
+                        SecretClient keyVaultSecretClient = this.secretClientFactory.GetSecretClientFor(
+                            keyVaultConfig.VaultName, keyVaultCredential);
+                        Response<KeyVaultSecret> secretResponse = await keyVaultSecretClient.GetSecretAsync(keyVaultConfig.SecretName, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-                    secret = secretResponse.Value.Value;
+                        secret = secretResponse.Value.Value;
+                        this.secretCache.AddSecret(
+                            keyVaultConfig.VaultName,
+                            keyVaultConfig.SecretName,
+                            keyVaultConfig.VaultClientIdentity,
+                            secret);
+                    }
+
+                    return new AzureTokenCredentialSource(
+                        new TestableClientSecretCredential(
+                            configuration.AzureAdAppTenantId!,
+                            configuration.AzureAdAppClientId!,
+                            secret),
+                        async cancellationToken =>
+                        {
+                            // This gets called if the client application believes that the
+                            // TokenCredential we gave it before is no longer valid. That can
+                            // happen in key rotation situations. So we flush cached copies of
+                            // the secret for these credentials, and also any nested credentials
+                            // that were used in the population of these ones, and then try again.
+                            RecursivelyFlushCacheEntries(keyVaultConfig);
+                            IAzureTokenCredentialSource result = await this.CredentialSourceForConfigurationAsync(
+                                configuration, cancellationToken).ConfigureAwait(false);
+                            return await result.GetTokenCredentialAsync(cancellationToken).ConfigureAwait(false);
+
+                            void RecursivelyFlushCacheEntries(KeyVaultSecretConfiguration keyVaultSecretConfiguration)
+                            {
+                                this.secretCache.InvalidateSecret(
+                                    keyVaultSecretConfiguration.VaultName,
+                                    keyVaultSecretConfiguration.SecretName,
+                                    keyVaultSecretConfiguration.VaultClientIdentity);
+                                if (keyVaultSecretConfiguration.VaultClientIdentity?.AzureAdAppClientSecretInKeyVault is KeyVaultSecretConfiguration childSecretConfiguration)
+                                {
+                                    RecursivelyFlushCacheEntries(childSecretConfiguration);
+                                }
+                            }
+                        });
                 }
                 else
                 {
@@ -73,10 +125,12 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
                         nameof(configuration));
                 }
 
-                return new AzureTokenCredentialSource(new TestableClientSecretCredential(
-                    configuration.AzureAdAppTenantId!,
-                    configuration.AzureAdAppClientId!,
-                    secret));
+                return new AzureTokenCredentialSource(
+                    new TestableClientSecretCredential(
+                        configuration.AzureAdAppTenantId!,
+                        configuration.AzureAdAppClientId!,
+                        secret),
+                    null);
             }
 
             TokenCredential tokenCredential = identitySourceType switch
@@ -92,7 +146,7 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
                     $"Unsupported IdentitySourceType: ${identitySourceType}",
                     nameof(configuration)),
             };
-            return new AzureTokenCredentialSource(tokenCredential);
+            return new AzureTokenCredentialSource(tokenCredential, null);
         }
     }
 }

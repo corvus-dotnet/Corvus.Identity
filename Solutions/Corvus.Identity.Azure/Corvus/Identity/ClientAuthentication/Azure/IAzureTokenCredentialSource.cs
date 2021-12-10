@@ -47,9 +47,6 @@ namespace Corvus.Identity.ClientAuthentication.Azure
         /// Gets a new <see cref="TokenCredential"/> to replace one that seems to have stopped
         /// working.
         /// </summary>
-        /// <param name="failedTokenCredential">
-        /// The credential that no longer works.
-        /// </param>
         /// <param name="cancellationToken">
         /// May enable the request to be cancelled.
         /// </param>
@@ -71,7 +68,6 @@ namespace Corvus.Identity.ClientAuthentication.Azure
         /// </para>
         /// </remarks>
         ValueTask<TokenCredential> GetReplacementForFailedTokenCredentialAsync(
-            TokenCredential failedTokenCredential,
             CancellationToken cancellationToken = default);
     }
 }

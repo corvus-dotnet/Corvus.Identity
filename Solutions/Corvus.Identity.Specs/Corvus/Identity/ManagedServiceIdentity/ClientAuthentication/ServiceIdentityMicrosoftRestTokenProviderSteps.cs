@@ -82,7 +82,7 @@ namespace Corvus.Identity.ManagedServiceIdentity.ClientAuthentication
             }
 
             public ValueTask<AccessTokenDetail> GetReplacementForFailedAccessTokenAsync(
-                AccessTokenDetail failedToken,
+                AccessTokenRequest requiredTokenCharacteristics,
                 CancellationToken cancellationToken)
             {
                 throw new NotImplementedException();

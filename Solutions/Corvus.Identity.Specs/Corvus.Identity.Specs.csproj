@@ -11,7 +11,7 @@
          public for technical reasaons, but they are not meant for public consumption, so XML doc comments are only
          appropriate if they aid understanding within the project.
     -->
-    <NoWarn>SA0001;SA1204;SA1600;SA1602;CS1591</NoWarn>
+    <NoWarn>SA0001;SA1204;SA1201;SA1600;SA1602;CS1591</NoWarn>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
@@ -48,9 +48,6 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="[6.0.*,)" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="[6.0.*,)" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[6.0.*,)" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
     <PackageReference Include="Corvus.Testing.SpecFlow.NUnit" Version="1.4.7" />
   </ItemGroup>
   <ItemGroup>
