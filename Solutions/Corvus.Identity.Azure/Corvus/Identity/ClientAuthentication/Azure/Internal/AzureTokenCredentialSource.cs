@@ -50,7 +50,7 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
 
         /// <inheritdoc/>
         public ValueTask<TokenCredential> GetReplacementForFailedTokenCredentialAsync(
-            TokenCredential failedTokenCredential, CancellationToken cancellationToken)
+            CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

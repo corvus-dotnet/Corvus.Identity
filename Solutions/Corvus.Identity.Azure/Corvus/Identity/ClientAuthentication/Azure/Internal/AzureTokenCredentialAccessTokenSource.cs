@@ -55,7 +55,7 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
 
         /// <inheritdoc/>
         public ValueTask<AccessTokenDetail> GetReplacementForFailedAccessTokenAsync(
-            AccessTokenDetail failedToken,
+            AccessTokenRequest requiredTokenCharacteristics,
             CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
