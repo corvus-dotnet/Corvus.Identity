@@ -11,8 +11,6 @@
     using global::Azure.Core;
     using global::Azure.Identity;
 
-    using Microsoft.Extensions.DependencyInjection;
-
     using NUnit.Framework;
 
     using TechTalk.SpecFlow;
@@ -35,11 +33,6 @@
 
         public AzureTokenCredentialAccessTokenSourceSteps()
         {
-            ////var services = new ServiceCollection();
-            ////services.AddServiceIdentityAzureTokenCredentialSourceFromAzureCoreTokenCredential(new TestTokenCredential(this));
-            ////ServiceProvider sp = services.BuildServiceProvider();
-            ////this.source = sp.GetRequiredService<IServiceIdentityAccessTokenSource>();
-
             this.source = new AzureTokenCredentialAccessTokenSource(
                 new AzureTokenCredentialSource(
                     new TestTokenCredential(this),
