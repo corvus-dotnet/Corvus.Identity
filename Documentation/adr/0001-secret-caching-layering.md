@@ -6,7 +6,7 @@ Proposed
 
 ## Context
 
-Azure Key Vault is a relatively slow service, and can sometimes take several seconds to return information. Since `Corvus.Identity` often needs to read credentials our of Azure Key Vault, we want to be able to cache information to avoid reading the same secrets repeatedly. We also require an application-controllable cache invalidation mechanism to enable key rotation: the application needs to be able to let `Corvus.Identity` know that the credentials loaded for a particular identity are no longer working, and that if possible, it should try to reload them from source.
+Azure Key Vault is a relatively slow service, and can sometimes take several seconds to return information. Since `Corvus.Identity` often needs to read credentials out of Azure Key Vault, we want to be able to cache information to avoid reading the same secrets repeatedly. We also require an application-controllable cache invalidation mechanism to enable key rotation: the application needs to be able to let `Corvus.Identity` know that the credentials loaded for a particular identity are no longer working, and that if possible, it should try to reload them from source.
 
 ### Option 1: embed caching in the Azure.Core pipeline
 
@@ -44,9 +44,10 @@ This has the following disadvantages
 
 Another implementation option is for the secret cache to be a separate feature used alongside the `SecretClient`. An application can consult the cache and then fall back to the `SecretClient` if necessary.
 
-This has the following advantages:
+This has the following advantages (which include all the advantages of Option 2):
 
 * the cache becomes very simple: it only has to be a cache, and does not need to be anything else (e.g., a proxy for the Key Vault)
+* the client identity affinity can be expressed directly in the API
 * the full power of the Azure Key Vault client SDK remains available because that's what the application uses
 
 This has these disadvantages:
