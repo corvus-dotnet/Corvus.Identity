@@ -35,7 +35,7 @@ namespace Corvus.Identity.ClientAuthentication
         /// </exception>
         ValueTask<AccessTokenDetail> GetAccessTokenAsync(
             AccessTokenRequest requiredTokenCharacteristics,
-            CancellationToken cancellationToken);
+            CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Gets a new <see cref="AccessTokenDetail"/> to replace one that seems to have stopped
@@ -68,6 +68,6 @@ namespace Corvus.Identity.ClientAuthentication
         /// </remarks>
         ValueTask<AccessTokenDetail> GetReplacementForFailedAccessTokenAsync(
             AccessTokenRequest requiredTokenCharacteristics,
-            CancellationToken cancellationToken);
+            CancellationToken cancellationToken = default);
     }
 }

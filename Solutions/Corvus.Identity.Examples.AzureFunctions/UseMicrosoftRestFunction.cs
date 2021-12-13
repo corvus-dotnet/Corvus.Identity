@@ -4,6 +4,7 @@
 
 namespace Corvus.Identity.Examples.AzureFunctions
 {
+    using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
@@ -42,9 +43,9 @@ namespace Corvus.Identity.Examples.AzureFunctions
             UseWebAppManagementWithIdentityFromConfigWithOldSdk configIdClient,
             ILogger<UseMicrosoftRestFunction> logger)
         {
-            this.serviceIdClient = serviceIdClient ?? throw new System.ArgumentNullException(nameof(serviceIdClient));
-            this.logger = logger ?? throw new System.ArgumentNullException(nameof(logger));
-            this.settings = settings ?? throw new System.ArgumentNullException(nameof(settings));
+            this.serviceIdClient = serviceIdClient ?? throw new ArgumentNullException(nameof(serviceIdClient));
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
             this.configIdClient = configIdClient;
         }
 

@@ -32,7 +32,7 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
         public AzureTokenCredentialSourceFromConfiguration(
             ICachingKeyVaultSecretClientFactory secretClientFactory)
         {
-            this.cachingSecretClientFactory = secretClientFactory ?? throw new ArgumentNullException(nameof(SecretClient));
+            this.cachingSecretClientFactory = secretClientFactory ?? throw new ArgumentNullException(nameof(secretClientFactory));
         }
 
         /// <inheritdoc/>
@@ -62,17 +62,20 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
                 {
                     SecretClient keyVaultSecretClient = await this.cachingSecretClientFactory.GetSecretClientForAsync(
                         keyVaultConfig.VaultName,
-                        IdentityConfigurationExpandingNull(keyVaultConfig.VaultClientIdentity),
+                        keyVaultConfig.VaultClientIdentity ?? DefaultClientIdentity,
                         cancellationToken)
                         .ConfigureAwait(false);
-                    Response<KeyVaultSecret> secretResponse = await keyVaultSecretClient.GetSecretAsync(keyVaultConfig.SecretName).ConfigureAwait(false);
+                    Response<KeyVaultSecret> secretResponse = await keyVaultSecretClient.GetSecretAsync(
+                        keyVaultConfig.SecretName,
+                        cancellationToken: cancellationToken)
+                        .ConfigureAwait(false);
 
                     secret = secretResponse.Value.Value;
                 }
                 else
                 {
                     throw new ArgumentException(
-                        $"Configuration seems to want Azure AD Client ID and Secret, but not enough information provided",
+                        "Configuration seems to want Azure AD Client ID and Secret, but not enough information provided",
                         nameof(configuration));
                 }
 
@@ -97,8 +100,5 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
             };
             return new AzureTokenCredentialSource(tokenCredential);
         }
-
-        private static ClientIdentityConfiguration IdentityConfigurationExpandingNull(ClientIdentityConfiguration? clientIdentity)
-            => clientIdentity ?? DefaultClientIdentity;
     }
 }

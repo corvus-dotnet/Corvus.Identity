@@ -106,6 +106,17 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services">The service collection.</param>
         /// <returns>The modified service collection.</returns>
+        /// <remarks>
+        /// <para>
+        /// A "dynamic" configuration is one where the code provides a configuration object at
+        /// runtime, as opposed to relying on something ambient such as application settings, or
+        /// a service identity. (We use the term "dynamic configuration" because if we just used
+        /// the term "configuration" that has a tendancy to make it sound like the relevant
+        /// settings are being read out of an application's configuration settings, and the
+        /// whole point here is that we are using <see cref="ClientIdentityConfiguration"/>
+        /// instances that weren't just loaded from some static configuration file.)
+        /// </para>
+        /// </remarks>
         public static IServiceCollection AddAzureTokenCredentialSourceFromDynamicConfiguration(
             this IServiceCollection services)
         {

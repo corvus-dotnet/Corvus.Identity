@@ -50,7 +50,7 @@
             this.secretClientFactory.AddSecret(keyVault, secret, secretName);
         }
 
-        [When(@"in this test we identify the token credential passed when creating the key vault '(.*)' as '(.*)'")]
+        [When("in this test we identify the token credential passed when creating the key vault '(.*)' as '(.*)'")]
         public void WhenInThisTestWeIdentifyTheTokenCredentialPassedWhenCreatingTheKeyVaultAs(
             string keyVaultName,
             string credentialName)

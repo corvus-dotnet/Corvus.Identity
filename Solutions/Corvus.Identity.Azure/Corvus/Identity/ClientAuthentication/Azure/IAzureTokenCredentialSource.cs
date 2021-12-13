@@ -25,7 +25,7 @@ namespace Corvus.Identity.ClientAuthentication.Azure
         /// <remarks>
         /// <para>
         /// This method was erroneously given the same name as
-        /// <see cref="IAccessTokenSource.GetAccessTokenAsync(AccessTokenRequest, System.Threading.CancellationToken)"/>.
+        /// <see cref="IAccessTokenSource.GetAccessTokenAsync(AccessTokenRequest, CancellationToken)"/>.
         /// It should have been named <see cref="GetTokenCredentialAsync"/>, and new code should use that instead.
         /// </para>
         /// </remarks>
@@ -68,6 +68,6 @@ namespace Corvus.Identity.ClientAuthentication.Azure
         /// </para>
         /// </remarks>
         ValueTask<TokenCredential> GetReplacementForFailedTokenCredentialAsync(
-            CancellationToken cancellationToken);
+            CancellationToken cancellationToken = default);
     }
 }

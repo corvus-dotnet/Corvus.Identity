@@ -44,9 +44,8 @@ namespace Corvus.Identity.Examples.UsingMicrosoftRest
         /// </returns>
         public async Task<List<string>> GetWebAppsAsync(string subscriptionId)
         {
-            ITokenProvider tokenProvider = await this.tokenProviderSource.GetTokenProviderAsync(
-                "https://management.azure.com//.default")
-                .ConfigureAwait(false);
+            ITokenProvider tokenProvider = this.tokenProviderSource.GetTokenProvider(
+                "https://management.azure.com//.default");
             var credentials = new TokenCredentials(tokenProvider);
             var client = new WebSiteManagementClient(credentials)
             {

@@ -1,4 +1,4 @@
-﻿// <copyright file="ServiceIdentityTokenProviderCommonSteps.cs" company="Endjin Limited">
+﻿// <copyright file="TokenProviderSteps.cs" company="Endjin Limited">
 // Copyright (c) Endjin Limited. All rights reserved.
 // </copyright>
 
@@ -18,7 +18,7 @@ namespace Corvus.Identity.ManagedServiceIdentity.ClientAuthentication
     using TechTalk.SpecFlow;
 
     [Binding]
-    public class ServiceIdentityTokenProviderCommonSteps
+    public class TokenProviderSteps
     {
         public ITokenProvider? Provider { get; set; }
 
@@ -54,13 +54,6 @@ namespace Corvus.Identity.ManagedServiceIdentity.ClientAuthentication
         {
             AuthenticationHeaderValue header = await this.Result.WithTimeout().ConfigureAwait(false);
             Assert.AreEqual(parameter, header.Parameter);
-        }
-
-        [Then(@"the result produced by ITokenProvider\.GetAuthenticationHeaderAsync should be null")]
-        public async Task ThenTheResultProducedByITokenProvider_GetAuthenticationHeaderAsyncShouldBeNullAsync()
-        {
-            AuthenticationHeaderValue header = await this.Result.WithTimeout().ConfigureAwait(false);
-            Assert.IsNull(header);
         }
     }
 }

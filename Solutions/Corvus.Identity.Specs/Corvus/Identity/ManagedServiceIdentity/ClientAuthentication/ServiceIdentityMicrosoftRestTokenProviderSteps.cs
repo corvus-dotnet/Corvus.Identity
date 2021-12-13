@@ -22,11 +22,11 @@ namespace Corvus.Identity.ManagedServiceIdentity.ClientAuthentication
     public class ServiceIdentityMicrosoftRestTokenProviderSteps
     {
         private readonly FakeTokenSource source;
-        private readonly ServiceIdentityTokenProviderCommonSteps common;
+        private readonly TokenProviderSteps common;
         private Exception? exceptionFromUnderlyingSource;
 
         public ServiceIdentityMicrosoftRestTokenProviderSteps(
-            ServiceIdentityTokenProviderCommonSteps common)
+            TokenProviderSteps common)
         {
             this.source = new FakeTokenSource();
             this.common = common;
