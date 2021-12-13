@@ -112,6 +112,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return services
                 .AddSingleton<IAzureTokenCredentialSourceFromDynamicConfiguration, AzureTokenCredentialSourceFromConfiguration>()
                 .AddSingleton<IAccessTokenSourceFromDynamicConfiguration, AccessTokenSourceFromDynamicConfiguration>()
+                .AddSingleton<ICachingKeyVaultSecretClientFactory, CachingKeyVaultSecretClientFactory>()
                 .AddSingleton<IKeyVaultSecretClientFactory, KeyVaultSecretClientFactory>();
         }
     }

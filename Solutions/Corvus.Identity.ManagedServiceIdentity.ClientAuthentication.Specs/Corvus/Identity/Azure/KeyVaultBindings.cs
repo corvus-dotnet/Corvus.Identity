@@ -3,8 +3,9 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Text.Json;
     using System.Linq;
+    using System.Text.Json;
+    using System.Text.Json.Nodes;
     using System.Threading;
     using System.Threading.Tasks;
     using Corvus.Identity.ClientAuthentication.Azure.Internal;
@@ -14,11 +15,15 @@
     using global::Azure.Security.KeyVault.Secrets;
     using Microsoft.Extensions.DependencyInjection;
     using Moq;
+    using NUnit.Framework;
     using TechTalk.SpecFlow;
+    using TechTalk.SpecFlow.Assist;
 
     [Binding]
     public class KeyVaultBindings
     {
+        private readonly List<(string KeyVaultName, TokenCredential Credential)> vaultCredentialPairs = new ();
+        private readonly List<SecretRow> secretsFetched = new ();
         private readonly FakeKeyVaultSecretClientFactory secretClientFactory;
         private readonly TokenCredentialBindings tokenCredentials;
 
@@ -26,12 +31,13 @@
             TokenCredentialBindings tokenCredentials)
         {
             List<(string KeyVaultName, TokenCredential Credential)> vaultCredentialPairs = new ();
-            this.secretClientFactory = new FakeKeyVaultSecretClientFactory(vaultCredentialPairs);
-            this.VaultCredentialPairs = vaultCredentialPairs;
+            this.secretClientFactory = new FakeKeyVaultSecretClientFactory(this);
             this.tokenCredentials = tokenCredentials;
         }
 
-        public IReadOnlyList<(string KeyVaultName, TokenCredential Credential)> VaultCredentialPairs { get; }
+        public IReadOnlyList<(string KeyVaultName, TokenCredential Credential)> VaultCredentialPairs => this.vaultCredentialPairs;
+
+        public IReadOnlyList<SecretRow> SecretsFetched => this.secretsFetched;
 
         public void AddKeyVaultFactoryForTests(IServiceCollection services)
         {
@@ -42,22 +48,6 @@
         public void GivenTheKeyVaultReturnsForTheSecretNamed(string keyVault, string secret, string secretName)
         {
             this.secretClientFactory.AddSecret(keyVault, secret, secretName);
-        }
-
-        [Given(@"there is no cached TokenCredential for the secret named '(.*)'")]
-        public void GivenThereIsNoCachedTokenCredentialForTheSecretNamed(string secretName)
-        {
-#pragma warning disable CS0618 // Type or member is obsolete
-            ScenarioContext.Current.Pending();
-#pragma warning restore CS0618 // Type or member is obsolete
-        }
-
-        [Given(@"there is a cached TokenCredential for the secret named '(.*)'")]
-        public void GivenThereIsACachedTokenCredentialForTheSecretNamed(string p0)
-        {
-#pragma warning disable CS0618 // Type or member is obsolete
-            ScenarioContext.Current.Pending();
-#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         [When(@"in this test we identify the token credential passed when creating the key vault '(.*)' as '(.*)'")]
@@ -71,54 +61,53 @@
             this.tokenCredentials.SetNamedCredential(credentialName, keyVaultCredentials);
         }
 
-        [Then(@"the secret named '(.*)' is retrieved from key vault")]
-        public void ThenTheSecretNamedIsRetrievedFromKeyVault(string secretName)
+        [Then("the following secrets are retrieved from key vault")]
+        public void TheseSecretsareRetrieve(Table table)
         {
-#pragma warning disable CS0618 // Type or member is obsolete
-            ScenarioContext.Current.Pending();
-#pragma warning restore CS0618 // Type or member is obsolete
+            var rows = table.CreateSet<SecretRow>().ToList();
+
+            Assert.AreEqual(rows.Count, this.SecretsFetched.Count);
+
+            foreach ((SecretRow expected, SecretRow actual) in rows.Zip(this.SecretsFetched))
+            {
+                Assert.AreEqual(expected.VaultName, actual.VaultName);
+                Assert.AreEqual(expected.SecretName, actual.SecretName);
+            }
         }
 
-        [Then(@"the secret named '(.*)' is not retrieved from key vault")]
-        public void ThenTheSecretNamedIsNotRetrievedFromKeyVault(string p0)
-        {
-#pragma warning disable CS0618 // Type or member is obsolete
-            ScenarioContext.Current.Pending();
-#pragma warning restore CS0618 // Type or member is obsolete
-        }
-
-        [Then(@"the cache should contain a secret named '(.*)'")]
-        public void ThenTheCacheShouldContainASecretNamed(string p0)
-        {
-#pragma warning disable CS0618 // Type or member is obsolete
-            ScenarioContext.Current.Pending();
-#pragma warning restore CS0618 // Type or member is obsolete
-        }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage(
+            "StyleCop.CSharp.NamingRules",
+            "SA1313:Parameter names should begin with lower-case letter",
+            Justification = "StyleCop 1.1 doesn't understand that these are property names")]
+        public record SecretRow(string VaultName, string SecretName, TokenCredential Credential);
 
         private class FakeKeyVaultSecretClientFactory : IKeyVaultSecretClientFactory
         {
-            private readonly IList<(string KeyVaultName, TokenCredential Credential)> vaultCredentialPairs;
+            private readonly KeyVaultBindings parent;
+            private readonly KeyVaultSecretClientFactory realKeyVaultSecretClientFactory;
             private readonly Dictionary<(string vaultName, string secretName), string> secrets = new ();
             private readonly Dictionary<string, FakeResponsePolicy> vaultMockResponsePolicies = new ();
 
-            private readonly KeyVaultSecretClientFactory realKeyVaultSecretClientFactory;
-
             public FakeKeyVaultSecretClientFactory(
-                IList<(string KeyVaultName, TokenCredential Credential)> vaultCredentialPairs)
+                KeyVaultBindings parent)
             {
-                this.vaultCredentialPairs = vaultCredentialPairs;
+                this.parent = parent;
                 this.realKeyVaultSecretClientFactory = new KeyVaultSecretClientFactory();
             }
 
-            public SecretClient GetSecretClientFor(string keyVaultName, TokenCredential credential, SecretClientOptions? options)
+            public SecretClient GetSecretClientFor(
+                string keyVaultName,
+                TokenCredential credential,
+                SecretClientOptions? options)
             {
-                this.vaultCredentialPairs.Add((keyVaultName, credential));
+                this.parent.vaultCredentialPairs.Add((keyVaultName, credential));
 
-                options ??= KeyVaultSecretClientFactory.GetDefaultSecretClientOptions();
+                options ??= new SecretClientOptions();
 
                 if (!this.vaultMockResponsePolicies.TryGetValue(keyVaultName, out FakeResponsePolicy? policy))
                 {
-                    policy = new FakeResponsePolicy(keyVaultName, this);
+                    policy = new FakeResponsePolicy(this.parent, keyVaultName, credential, this);
+                    this.vaultMockResponsePolicies.Add(keyVaultName, policy);
                 }
 
                 options.AddPolicy(policy, HttpPipelinePosition.PerCall);
@@ -133,12 +122,20 @@
 
             private class FakeResponsePolicy : HttpPipelinePolicy
             {
-                private readonly string name;
+                private readonly KeyVaultBindings parent;
+                private readonly string keyVaultName;
+                private readonly TokenCredential credential;
                 private readonly FakeKeyVaultSecretClientFactory factory;
 
-                public FakeResponsePolicy(string keyVaultName, FakeKeyVaultSecretClientFactory factory)
+                public FakeResponsePolicy(
+                    KeyVaultBindings parent,
+                    string keyVaultName,
+                    TokenCredential credential,
+                    FakeKeyVaultSecretClientFactory factory)
                 {
-                    this.name = keyVaultName;
+                    this.parent = parent;
+                    this.keyVaultName = keyVaultName;
+                    this.credential = credential;
                     this.factory = factory;
                 }
 
@@ -158,15 +155,26 @@
 
                     string secretName = requestPath[9..^1];
 
-                    if (this.factory.secrets.TryGetValue((this.name, secretName), out string? secretValue))
+                    this.parent.secretsFetched.Add(new SecretRow(
+                        this.keyVaultName, secretName, this.credential));
+
+                    if (this.factory.secrets.TryGetValue((this.keyVaultName, secretName), out string? secretValue))
                     {
-                        KeyVaultSecret secret = SecretModelFactory.KeyVaultSecret(
-                            SecretModelFactory.SecretProperties(null, null, secretName),
-                            value: secretValue);
+                        // Irritatingly, although KeyVaultSecret is perfectly capable of serializing
+                        // itself to JSON, the relevant methods are all internal and do not seem to
+                        // be callable directly. And simply passing the thing to JsonSerializer
+                        // produces entirely the wrong results. So we need to build our JSON
+                        // from scratch.
+                        var responseBody = new JsonObject
+                        {
+                            ["value"] = secretValue,
+                        };
 
                         var responseStream = new MemoryStream();
-                        var writer = new Utf8JsonWriter(responseStream);
-                        JsonSerializer.Serialize(writer, secret, default);
+                        using (Utf8JsonWriter writer = new (responseStream))
+                        {
+                            responseBody.WriteTo(writer);
+                        }
 
                         responseStream.Position = 0;
 
@@ -179,7 +187,7 @@
                         return new ValueTask(Task.CompletedTask);
                     }
 
-                    throw new InvalidOperationException($"No secret {secretName} exists for vault {this.name}");
+                    throw new InvalidOperationException($"No secret {secretName} exists for vault {this.keyVaultName}");
                 }
             }
         }

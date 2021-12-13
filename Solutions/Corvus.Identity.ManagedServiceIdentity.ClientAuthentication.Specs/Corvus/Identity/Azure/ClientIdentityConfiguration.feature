@@ -66,65 +66,6 @@ Scenario: Service principle client ID in configuration and secret in key vault v
 	And the ClientSecretCredential 'TargetCredentials' clientSecret should be 's3cret!'
     And the TokenCredential 'MyVault' should be of type 'ManagedIdentityCredential'
 
-# caching 
-
-Scenario: Secret isn't in the cache so we talk to key vault
-    Given configuration of
-        """
-        {
-          "ClientIdentity": {
-            "AzureAdAppTenantId": "b39db674-9ba1-4343-8d4e-004675b5d7a8",
-            "AzureAdAppClientId": "831c7dcb-516a-4e6b-9b74-347264c67397",
-            "AzureAdAppClientSecretInKeyVault": {
-              "VaultName": "myvault",
-              "SecretName": "MyAzureAdAppClientSecret" 
-            }
-          }
-        }
-        """
-    And the key vault 'myvault' returns 's3cret!' for the secret named 'MyAzureAdAppClientSecret'
-    And there is no cached TokenCredential for the secret named 'MyAzureAdAppClientSecret'
-    When a TokenCredential is fetched for this configuration as credential 'TargetCredentials'
-    And in this test we identify the token credential passed when creating the key vault 'myvault' as 'MyVault'
-    Then the secret named 'MyAzureAdAppClientSecret' is retrieved from key vault
-    And the cache should contain a secret named 'MyAzureAdAppClientSecret'
-    And the ClientSecretCredential 'TargetCredentials' clientSecret should be 's3cret!'
-    And the TokenCredential 'MyVault' should be of type 'ManagedIdentityCredential'
-
-
-
-Scenario: Secret is in the cache so we don't talk to key vault
-    Given configuration of
-        """
-        {
-          "ClientIdentity": {
-            "AzureAdAppTenantId": "b39db674-9ba1-4343-8d4e-004675b5d7a8",
-            "AzureAdAppClientId": "831c7dcb-516a-4e6b-9b74-347264c67397",
-            "AzureAdAppClientSecretInKeyVault": {
-              "VaultName": "myvault",
-              "SecretName": "MyAzureAdAppClientSecret" 
-            }
-          }
-        }
-        """
-    And the key vault 'myvault' returns 's3cret!' for the secret named 'MyAzureAdAppClientSecret'
-    And there is a cached TokenCredential for the secret named 'MyAzureAdAppClientSecret'
-    When a TokenCredential is fetched for this configuration as credential 'TargetCredentials'
-    And in this test we identify the token credential passed when creating the key vault 'myvault' as 'MyVault'
-    Then the secret named 'MyAzureAdAppClientSecret' is not retrieved from key vault
-
-Scenario: Secret is in the cache but has expired so we talk to key vault
-
-Scenario: Multiple concurrent requests to for the secret results in a single call to key vault
-
-# Cache invalidation
-
-Scenario: Requesting a replacement token for Service principle client ID in configuration and secret in key vault via service identity should result in a call to key vault and should replace the failed token in the cache
-
-Scenario: Requesting a replacement token when the existing token has been evicted and no replacent has been set and should result in a call to key vault
-
-Scenario: Requesting a replacement token for which an updated token exists in the cache and should not result in a call to key vault
-
 
 # Using an outline here purely so that we can use symbolic names for the various values.
 Scenario Outline: Service principle client ID in configuration and secret in key vault via different service identity with client ID in config and secret in key vault via service identity

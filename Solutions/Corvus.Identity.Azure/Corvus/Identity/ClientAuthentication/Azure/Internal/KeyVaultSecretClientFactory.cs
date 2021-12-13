@@ -15,18 +15,6 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
     /// </summary>
     internal class KeyVaultSecretClientFactory : IKeyVaultSecretClientFactory
     {
-        /// <summary>
-        /// Provides access to the default options that will be used by <see cref="GetSecretClientFor"/>
-        /// if no value is provided for the <c>options</c> parameter.
-        /// </summary>
-        /// <returns>The <see cref="SecretClientOptions"/>.</returns>
-        public static SecretClientOptions GetDefaultSecretClientOptions()
-        {
-            var options = new SecretClientOptions();
-            options.AddPolicy(new KeyVaultProxy(), HttpPipelinePosition.PerCall);
-            return options;
-        }
-
         /// <inheritdoc/>
         public SecretClient GetSecretClientFor(
             string keyVaultName,
@@ -36,7 +24,7 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
             return new SecretClient(
                 new Uri($"https://{keyVaultName}.vault.azure.net/"),
                 credential,
-                options ?? GetDefaultSecretClientOptions());
+                options);
         }
     }
 }
