@@ -85,7 +85,7 @@ namespace Corvus.Identity.ManagedServiceIdentity.ClientAuthentication
                 AccessTokenRequest requiredTokenCharacteristics,
                 CancellationToken cancellationToken)
             {
-                throw new NotImplementedException();
+                throw new NotSupportedException();
             }
         }
     }
