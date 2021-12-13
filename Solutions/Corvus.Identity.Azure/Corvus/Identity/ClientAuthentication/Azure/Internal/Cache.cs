@@ -77,6 +77,15 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
         }
 
         /// <summary>
+        /// Revmoes an item from the cache.
+        /// </summary>
+        /// <param name="uri">The uri of the item to remove.</param>
+        internal void Remove(string uri)
+        {
+            this.cache.Remove(uri);
+        }
+
+        /// <summary>
         /// Clears the cache.
         /// </summary>
         internal void Clear()

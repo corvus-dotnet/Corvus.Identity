@@ -82,7 +82,13 @@ namespace Corvus.Identity.Azure
             this.results.Add(resultLabel, result.Value.Value);
         }
 
-        [Then(@"the returned secret '([^']*)' has the value '([^']*)'")]
+        [When("the secret named '([^']*)' in key vault '([^']*)' is invalidated")]
+        public void WhenTheSecretNamedInKeyVaultIsInvalidated(string mySecret, string myvault)
+        {
+            this.secretClientFactory.InvalidateSecret(myvault, mySecret);
+        }
+
+        [Then("the returned secret '([^']*)' has the value '([^']*)'")]
         public void ThenTheReturnedSecretHasTheValue(string resultLabel, string expectedSecretValue)
         {
             Assert.AreEqual(expectedSecretValue, this.results[resultLabel]);

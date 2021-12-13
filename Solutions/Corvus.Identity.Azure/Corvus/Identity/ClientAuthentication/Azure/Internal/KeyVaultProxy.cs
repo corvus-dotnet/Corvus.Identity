@@ -62,6 +62,15 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
             GC.SuppressFinalize(this);
         }
 
+        /// <summary>
+        /// Removes a secret from the cache, if it is present.
+        /// </summary>
+        /// <param name="secretName">The name of the secret to remove.</param>
+        internal void InvalidateSecret(string secretName)
+        {
+            this.cache.Remove($"/secrets/{secretName}/");
+        }
+
         private static async ValueTask ProcessNextAsync(bool isAsync, HttpMessage message, ReadOnlyMemory<HttpPipelinePolicy> pipeline)
         {
             if (isAsync)
@@ -74,19 +83,11 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
             }
         }
 
-        private static bool IsSupported(string uri)
+        private static bool IsSupported(string uriPath)
         {
-            // Find the beginning of the path component after the scheme.
-            int pos = uri.IndexOf('/', 8);
-            if (pos > 0)
-            {
-                uri = uri.Substring(pos);
-                return uri.StartsWith("/secrets/", StringComparison.OrdinalIgnoreCase)
-                    || uri.StartsWith("/keys/", StringComparison.OrdinalIgnoreCase)
-                    || uri.StartsWith("/certificates/", StringComparison.OrdinalIgnoreCase);
-            }
-
-            return false;
+            return uriPath.StartsWith("/secrets/", StringComparison.OrdinalIgnoreCase)
+                || uriPath.StartsWith("/keys/", StringComparison.OrdinalIgnoreCase)
+                || uriPath.StartsWith("/certificates/", StringComparison.OrdinalIgnoreCase);
         }
 
         private async ValueTask ProcessAsync(bool isAsync, HttpMessage message, ReadOnlyMemory<HttpPipelinePolicy> pipeline)
@@ -94,7 +95,7 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
             Request request = message.Request;
             if (request.Method == RequestMethod.Get)
             {
-                string uri = request.Uri.ToUri().GetLeftPart(UriPartial.Path);
+                string uri = request.Uri.Path;
                 if (IsSupported(uri))
                 {
                     message.Response = await this.cache.GetOrAddAsync(isAsync, uri, this.Ttl, async () =>

@@ -61,6 +61,21 @@ Scenario: Secret requested twice through different SecretClients and on behalf o
     And the returned secret 'r1' has the value 's3cret!'
     And the returned secret 'r2' has the value 's3cret!'
 
+
+Scenario: Secret requested, invalidated, then requested again through one SecretClient, so we talk to key vault both times
+    Given a caching SecretClient 'c1' for the key vault 'myvault' and the identity configuration 'ManagedIdentity'
+    And the key vault 'myvault' returns 's3cret!' for the secret named 'MySecret'
+    When a secret named 'MySecret' is fetched through the caching SecretClient 'c1' and then labelled 'r1'
+    And the secret named 'MySecret' in key vault 'myvault' is invalidated
+    And a secret named 'MySecret' is fetched through the caching SecretClient 'c1' and then labelled 'r2'
+    Then the following secrets are retrieved from key vault
+    | VaultName | SecretName | WithClientIdentity |
+    | myvault   | MySecret   | ManagedIdentity    |
+    | myvault   | MySecret   | ManagedIdentity    |
+    And the returned secret 'r1' has the value 's3cret!'
+    And the returned secret 'r2' has the value 's3cret!'
+
+
 # TODO:
 # Scenario: Secret is in the cache but has expired so we talk to key vault
 # Scenario: Multiple concurrent requests to for the secret results in a single call to key vault

@@ -33,5 +33,13 @@ namespace Corvus.Identity.ClientAuthentication.Azure
             string keyVaultName,
             ClientIdentityConfiguration clientIdentity,
             CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Tells the cache that a secret is no longer valid, and should not be returned from
+        /// the cache again, with a fresh looking being performed if it is asked for again.
+        /// </summary>
+        /// <param name="keyVaultName">The name of they key vault.</param>
+        /// <param name="mySecret">The secret name.</param>
+        void InvalidateSecret(string keyVaultName, string mySecret);
     }
 }

@@ -24,7 +24,7 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
         private readonly object sync = new ();
         private readonly IServiceProvider serviceProvider;
         private readonly IKeyVaultSecretClientFactory underlyingSecretClientFactory;
-        private readonly Dictionary<(string VaultName, string ClientIdentity), SecretClient> secretClientsByVaultNameAndClientIdentity = new ();
+        private readonly Dictionary<(string VaultName, string ClientIdentity), (SecretClient Client, KeyVaultProxy Proxy)> secretClientsByVaultNameAndClientIdentity = new ();
         private IAzureTokenCredentialSourceFromDynamicConfiguration? tokenCredentialSource;
 
         /// <summary>
@@ -68,9 +68,9 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
             // is an optimistic locking strategy, which ConcurrentDictionary isn't built for.)
             lock (this.sync)
             {
-                if (this.secretClientsByVaultNameAndClientIdentity.TryGetValue(vaultAndClientKey, out SecretClient? secretClient))
+                if (this.secretClientsByVaultNameAndClientIdentity.TryGetValue(vaultAndClientKey, out (SecretClient Client, KeyVaultProxy Proxy) result))
                 {
-                    return secretClient;
+                    return result.Client;
                 }
             }
 
@@ -83,31 +83,47 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
 
             lock (this.sync)
             {
-                if (this.secretClientsByVaultNameAndClientIdentity.TryGetValue(vaultAndClientKey, out SecretClient? secretClient))
+                if (this.secretClientsByVaultNameAndClientIdentity.TryGetValue(vaultAndClientKey, out (SecretClient Client, KeyVaultProxy Proxy) clientAndProxy))
                 {
                     // In the time it took us to retrieve the token credential, it looks like some
                     // other thread got in there before us, so we discard the credentials we just
                     // created, and return the SecretClient that 'won'.
-                    return secretClient;
+                    return clientAndProxy.Client;
                 }
                 else
                 {
-                    secretClient = this.underlyingSecretClientFactory.GetSecretClientFor(
+                    (SecretClientOptions Options, KeyVaultProxy Proxy) optionsAndProxy = MakeSecretClientOptions();
+                    SecretClient secretClient = this.underlyingSecretClientFactory.GetSecretClientFor(
                         keyVaultName,
                         credential,
-                        MakeSecretClientOptions());
-                    this.secretClientsByVaultNameAndClientIdentity.Add(vaultAndClientKey, secretClient);
+                        optionsAndProxy.Options);
+                    this.secretClientsByVaultNameAndClientIdentity.Add(vaultAndClientKey, (secretClient, optionsAndProxy.Proxy));
+                    return secretClient;
                 }
-
-                return secretClient;
             }
         }
 
-        private static SecretClientOptions MakeSecretClientOptions()
+        /// <inheritdoc/>
+        public void InvalidateSecret(string keyVaultName, string mySecret)
+        {
+            lock (this.sync)
+            {
+                foreach (((string VaultName, string ClientIdentity) key, (SecretClient Client, KeyVaultProxy Proxy) entry) in this.secretClientsByVaultNameAndClientIdentity)
+                {
+                    if (key.VaultName == keyVaultName)
+                    {
+                        entry.Proxy.InvalidateSecret(mySecret);
+                    }
+                }
+            }
+        }
+
+        private static (SecretClientOptions Options, KeyVaultProxy Proxy) MakeSecretClientOptions()
         {
             var options = new SecretClientOptions();
-            options.AddPolicy(new KeyVaultProxy(), HttpPipelinePosition.PerCall);
-            return options;
+            var proxy = new KeyVaultProxy();
+            options.AddPolicy(proxy, HttpPipelinePosition.PerCall);
+            return (options, proxy);
         }
     }
 }
