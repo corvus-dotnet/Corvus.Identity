@@ -19,6 +19,9 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
         /// <param name="secretName">The name of the secret.</param>
         /// <param name="clientIdentity">
         /// The identity that will be used to access the key vault if the secret is not cached.
+        /// This can be null because <see cref="KeyVaultSecretConfiguration.VaultClientIdentity"/>
+        /// is allowed to be null, and that's typically where this comes from. A null value here
+        /// signifies that we want to use the service identity.
         /// </param>
         /// <param name="secret">The secret, or null if the secret is not available.</param>
         /// <returns>
@@ -36,7 +39,8 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
         /// <param name="vaultName">The name of the vault containing the secret.</param>
         /// <param name="secretName">The name of the secret.</param>
         /// <param name="clientIdentity">
-        /// The identity that was used to access the key vault.
+        /// The identity that was used to access the key vault, or null if the service identity was
+        /// used.
         /// </param>
         /// <param name="secret">The secret.</param>
         void AddSecret(
