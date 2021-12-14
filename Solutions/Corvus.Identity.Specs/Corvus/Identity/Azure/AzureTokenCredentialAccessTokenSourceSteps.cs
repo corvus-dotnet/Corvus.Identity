@@ -26,7 +26,6 @@
         private string claims;
         private string authorityId;
         private Task<AccessTokenDetail> accessTokenDetailReturnedTask;
-        private Task<AccessTokenDetail> replacedTokenDetailTask;
 #nullable restore annotations
         private TokenRequestContext requestContextPassedToUnderlyingCredential;
         private AccessToken resultFromUnderlyingCredential;
@@ -69,7 +68,7 @@
         [When(@"IAccessTokenSource\.GetReplacementForFailedAccessTokenAsync is called")]
         public void WhenIAccessTokenSource_GetReplacementForFailedAccessTokenAsyncIsCalled()
         {
-            this.replacedTokenDetailTask = this.source.GetReplacementForFailedAccessTokenAsync(
+            this.accessTokenDetailReturnedTask = this.source.GetReplacementForFailedAccessTokenAsync(
                 new AccessTokenRequest(this.scopes, this.claims, this.authorityId),
                 CancellationToken.None).AsTask();
         }
