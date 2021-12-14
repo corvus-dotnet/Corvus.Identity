@@ -37,6 +37,8 @@ namespace Corvus.Identity.Azure
         private MemoryStream? configurationJson;
         private TestConfiguration? configuration;
         private ServiceProvider? serviceProvider;
+        private string? validationResult;
+        private ClientIdentitySourceTypes validatedType;
 
         public ClientIdentityConfigurationSteps(
             TokenCredentialBindings tokenCredentials,
@@ -52,6 +54,72 @@ namespace Corvus.Identity.Azure
             this.configurationJson = new MemoryStream(Encoding.UTF8.GetBytes(configurationJson));
         }
 
+        [Given("a ClientIdAndSecret configuration with '([^']*)', '([^']*)', '([^']*)', '([^']*)'")]
+        public void GivenAClientIdAndSecretConfigurationWith(
+            string identitySourceType,
+            string azureAppTenantId,
+            string azureAdAppClientId,
+            string azureAppClientSecretPlainText)
+        {
+            var id = new ClientIdentityConfiguration
+            {
+                IdentitySourceType = string.IsNullOrWhiteSpace(identitySourceType)
+                    ? null
+                    : Enum.Parse<ClientIdentitySourceTypes>(identitySourceType),
+                AzureAdAppTenantId = azureAppTenantId,
+                AzureAdAppClientId = azureAdAppClientId,
+                AzureAdAppClientSecretPlainText = azureAppClientSecretPlainText,
+            };
+
+            this.configuration = new TestConfiguration { ClientIdentity = id };
+        }
+
+        [Given("a ClientIdAndSecret configuration with '([^']*)', '([^']*)', '([^']*)', '([^']*)' and a secret in key vault")]
+        public void GivenAClientIdAndSecretConfigurationWithAndASecretInKeyVault(
+            string identitySourceType,
+            string azureAppTenantId,
+            string azureAdAppClientId,
+            string azureAppClientSecretPlainText)
+        {
+            this.GivenAClientIdAndSecretConfigurationWith(identitySourceType, azureAppTenantId, azureAdAppClientId, azureAppClientSecretPlainText);
+            this.configuration!.ClientIdentity!.AzureAdAppClientSecretInKeyVault = new ()
+            {
+                VaultName = "somevault",
+                SecretName = "SomeSecret",
+            };
+        }
+
+        [When("I validate the configuration")]
+        public void WhenIValidateTheConfiguration()
+        {
+            if (this.configuration is null)
+            {
+                this.ParseConfiguration();
+            }
+
+            this.validationResult = ClientIdentityConfigurationValidation.Validate(
+                this.configuration!.ClientIdentity!,
+                out this.validatedType);
+        }
+
+        [Then("the validation should pass")]
+        public void ThenTheValidationShouldPass()
+        {
+            Assert.IsNull(this.validationResult);
+        }
+
+        [Then("the validated type should be '([^']*)'")]
+        public void ThenTheValidatedTypeShouldBe(ClientIdentitySourceTypes expectedValidatedType)
+        {
+            Assert.AreEqual(expectedValidatedType, this.validatedType);
+        }
+
+        [Then("the validation should fail with '([^']*)'")]
+        public void ThenTheValidationShouldFailWith(string message)
+        {
+            Assert.AreEqual(message, this.validationResult);
+        }
+
         [When("a TokenCredential is fetched for this configuration")]
         public async Task WhenATokenCredentialIsFetchedForThisConfiguration()
         {
@@ -61,11 +129,7 @@ namespace Corvus.Identity.Azure
         [When("a TokenCredential is fetched for this configuration as credential '(.*)'")]
         public async Task WhenATokenCredentialIsFetchedForThisConfigurationAsCredential(string? credentialName)
         {
-            IConfigurationRoot configRoot = new ConfigurationBuilder()
-                .AddJsonStream(this.configurationJson)
-                .Build();
-
-            this.configuration = configRoot.Get<TestConfiguration>();
+            this.ParseConfiguration();
 
             ServiceCollection services = new ();
             services.AddAzureTokenCredentialSourceFromDynamicConfiguration();
@@ -126,6 +190,15 @@ namespace Corvus.Identity.Azure
         public void Dispose()
         {
             this.serviceProvider?.Dispose();
+        }
+
+        private void ParseConfiguration()
+        {
+            IConfigurationRoot configRoot = new ConfigurationBuilder()
+                .AddJsonStream(this.configurationJson)
+                .Build();
+
+            this.configuration = configRoot.Get<TestConfiguration>();
         }
 
         public class TestConfiguration
