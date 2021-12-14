@@ -1,6 +1,6 @@
 # Configuration and Azure AD Client Identities
 
-Application code often needs to determine how to authenticate when using services that are secured by Azure AD. In some cases, there will be an ambient service identity (e.g., an Azure Managed Identity). But in some cases, it might be necessary to use some other identity, in which case suitable credentials will need to be obtained. These might need to be retrieved from an Azure Key Vault.
+Application code often needs to determine how to authenticate when using services that are secured by Azure AD. In some cases, there will be an ambient service identity (e.g., an Azure Managed Identity). But it might be necessary to use some other identity, in which case suitable credentials will need to be obtained. These might need to be retrieved from an Azure Key Vault.
 
 `Corvus.Identity` supports these scenarios through the [`ClientIdentityConfiguration`](xref:Corvus.Identity.ClientAuthentication.Azure.ClientIdentityConfiguration) type. In cases where a single service identity will suffice for the entire process, you can pass one of these to [`AzureIdentityServiceCollectionExtensions.AddServiceIdentityAzureTokenCredentialSourceFromClientIdentityConfiguration`](xref:Microsoft.Extensions.DependencyInjection.AzureIdentityServiceCollectionExtensions.AddServiceIdentityAzureTokenCredentialSourceFromClientIdentityConfiguration) to make the service identity available through DI. Or, if you need to use different identities in different scenarios, you can pass a [`ClientIdentityConfiguration`](xref:Corvus.Identity.ClientAuthentication.Azure.ClientIdentityConfiguration) to [`IAzureTokenCredentialSourceFromDynamicConfiguration.CredentialSourceForConfigurationAsync`](`Corvus.Identity.ClientAuthentication.Azure.IAzureTokenCredentialSourceFromDynamicConfiguration.CredentialSourceForConfigurationAsync`)
 
@@ -20,7 +20,7 @@ If your code will be running in an environment that provides an Azure Managed Id
 
 ### Managed Identity if available, falling back to local dev options
 
-The old `AzureServiceTokenProvider` that underpins the now-obsolete [`AzureManagedIdentityTokenSource`](xref:Corvus.Identity.ManagedServiceIdentity.ClientAuthentication.AzureManagedIdentityTokenSource) offered a mode in which it would look for an Azure Managed Identity, but if it failed to find one, it would fall back to alternative sources such as Visual Studio, or the Azure CLI. This was convenient for development purposes: it meant that if you published code to Azure it would use the managed identity but it would use your personal credentials when debugging locally. The new `Azure.Identity` libraries provide something similar, which you can opt for by setting [`IdentitySourceType`](xref:Corvus.Identity.ClientAuthentication.Azure.ClientIdentityConfiguration.IdentitySourceType) to [`AzureIdentityDefaultAzureCredential`](xref:Corvus.Identity.ClientAuthentication.Azure.ClientIdentitySourceTypes.AzureIdentityDefaultAzureCredential)
+The old `AzureServiceTokenProvider` that underpins the now-obsolete `Corvus.Identity.ManagedServiceIdentity.ClientAuthentication.AzureManagedIdentityTokenSource` offered a mode in which it would look for an Azure Managed Identity, but if it failed to find one, it would fall back to alternative sources such as Visual Studio, or the Azure CLI. This was convenient for development purposes: it meant that if you published code to Azure it would use the managed identity, but it would use your personal credentials when debugging locally. The new `Azure.Identity` libraries provide something similar, which you can opt for by setting [`IdentitySourceType`](xref:Corvus.Identity.ClientAuthentication.Azure.ClientIdentityConfiguration.IdentitySourceType) to [`AzureIdentityDefaultAzureCredential`](xref:Corvus.Identity.ClientAuthentication.Azure.ClientIdentitySourceTypes.AzureIdentityDefaultAzureCredential)
 
 ```json
 "MyService": {
@@ -28,7 +28,7 @@ The old `AzureServiceTokenProvider` that underpins the now-obsolete [`AzureManag
 }
 ```
 
-Be aware that this has some limitations when it falls back to using either Visual Studio or Azure CLI to obtain local credentials: you can only obtain tokens for certain services. So this works fine for common Azure services like Key Vault or ARM, but Azure AD will refuse to issue tokens for any custom services of your own for example (because the Azure AD application registrations for Visual Studio and Azure CLI will not have listed your custom services in the set of applications for which delegated permissions can be obtained). This restriction doesn't apply when this mode is able to use an Azure Managed Identity, so this means that there's a significant difference in behaviour when debugging locally in this mode. If you need tokens for services other than those that VS and `az` are pre-registered for, you'll need to set up a service principle that you can use for local dev work, and configure your code to use that.
+Be aware that this approach has always had some limitations when it falls back to using either Visual Studio or Azure CLI to obtain local credentials: it can only obtain tokens for certain services. So this works fine for common Azure services like Key Vault or ARM, but Azure AD will refuse to issue tokens for any custom services of your own. This is because the Azure AD application registrations for Visual Studio and Azure CLI will not have listed your custom services in the set of applications for which delegated permissions can be obtained. This restriction doesn't apply when this mode is able to use an Azure Managed Identity, so this means that there's a significant difference in behaviour when debugging locally. If you need tokens for services other than those that VS and `az` are pre-registered for, you'll need to set up a service principle that you can use for local dev work, and configure your code to use that.
 
 
 ### Service principle client/secret credentials in configuration
@@ -38,7 +38,7 @@ One way you can set up a [`ClientIdentityConfiguration`](xref:Corvus.Identity.Cl
 ```json
 "MyService": {
   "ClientIdentity": {
-    "AzureAdAppTenantId": "<tenantid>",
+    "AzureAdAppTenantId": "<tenantId>",
     "AzureAdAppClientId": "<appid>",
     "AzureAdAppClientSecretPlainText": "<clientsecret>"
   }
@@ -56,7 +56,7 @@ This shows how to define a [`ClientIdentityConfiguration`](xref:Corvus.Identity.
 ```json
 "MyService": {
   "ClientIdentity": {
-    "AzureAdAppTenantId": "<tenantid>",
+    "AzureAdAppTenantId": "<tenantId>",
     "AzureAdAppClientId": "<appid>",
     "AzureAdAppClientSecretInKeyVault": {
       "VaultName": "myvault",
@@ -75,13 +75,13 @@ If, as in the preceding example, you want a [`ClientIdentityConfiguration`](xref
 ```json
 "MyService": {
   "ClientIdentity": {
-    "AzureAdAppTenantId": "<tenantid>",
+    "AzureAdAppTenantId": "<tenantIdForServicePrincipalWeWant>",
     "AzureAdAppClientId": "<appIdForServicePrincipleWeWant>",
     "AzureAdAppClientSecretInKeyVault": {
       "VaultName": "someoneelsesvault",
       "SecretName": "CustomerAzureAdAppClientSecret",
       "VaultClientIdentity": {
-        "AzureAdAppTenantId": "<tenantid>",
+        "AzureAdAppTenantId": "<tenantIdForServicePrincipalWithWhichWeAccessClientKeyVault>",
         "AzureAdAppClientId": "<appIdWithWhichWeAccessClientKeyVault>",
         "AzureAdAppClientSecretInKeyVault": {
           "VaultName": "myvault",
@@ -96,6 +96,7 @@ If, as in the preceding example, you want a [`ClientIdentityConfiguration`](xref
 
 The [`VaultClientIdentity`](xref:Corvus.Identity.ClientAuthentication.Azure.KeyVaultSecretConfiguration.VaultClientIdentity) is a nested [`ClientIdentityConfiguration`](xref:Corvus.Identity.ClientAuthentication.Azure.ClientIdentityConfiguration), so you can specify the identity with which to connect to the Key Vault using all the same techniques shown in the preceding sections. So in this case, we're using `AzureAdAppClientSecretInKeyVault` at two levels because we're actually using two different key vaults (via different identities).
 
+The following section explains the scenario in which you might want to use this sort of configuration.
 
 ## Multi-tenant scenarios with multiple Azure AD tenants
 
@@ -109,6 +110,6 @@ The question then becomes: how is our application going to authenticate as the c
 
 One possible answer to this is to use a multi-tenant Azure AD application. (**Note**: multi-tenanting of Azure AD applications is a distinct technical mechanism from the broader idea of a multi-tenanted service. Unfortunately these two similar but different concepts have the same name.) If we define such an application in the application tenant, it is possible to create a service principle associated with that application in the customer tenant. (This is essentially the service principle equivalent of adding a user from an external domain as a guest.) The customer can choose to recognize a multi-tenanted AD application, at which point a new service principle gets created in the customer tenant, but it is associated with the Azure AD application in the application tenant. A significant advantage of this is that the credentials for the application belong to the application tenant, but the customer gets to decide what privileges the application has within the customer tenant, and they are free to revoke the application's membership of the customer tenant at any time. In this model, we retain full ownership of the application credentials (meaning that we do not need to coordinate with the customer in order to determine the mechanism used for authentication—e.g. client ID and password vs certificates—nor to rotate keys or otherwise refresh credentials), but the customer remains in full control of what our application is able to do with their resources. (Typically, they would grant the application no capabilities beyond access to the relevant storage account.)
 
-There are two downsides to multi-tenanted Azure AD applications. The first is that Managed Identities do not (as of November 2021) support multi-tenanting. The second is that some customers will simply refuse to use them. It is therefore necessary to be able to authenticate as a service principle defined in a customer tenant.
+There are two downsides to multi-tenanted Azure AD applications. The first is that Managed Identities do not (as of December 2021) support multi-tenanting. The second is that some customers will simply refuse to use them. It is therefore necessary to be able to authenticate as a service principle associated with an AD Application defined in a customer tenant.
 
 So it will then become necessary for the application to be able to authenticate as this service principle in the customer tenant. One way to achieve this would be for the corresponding application to be configured for AppId/Client Secret authentication. The customer might insist that put the relevant client secret be put into a distinct Azure Key Vault, accessible only to a particular application service principle (defined in the application tenant) to limit visibility of the relevant credentials. So the application would first need to authenticate as that distinct service to be able to access the Key Vault containing the credentials enabling the application to authenticate as the relevant customer service principle. This is how you might end up needing the two-layer key vault configuration shown above.
