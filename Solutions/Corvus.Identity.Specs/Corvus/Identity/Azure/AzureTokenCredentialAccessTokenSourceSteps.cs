@@ -1,6 +1,7 @@
 ﻿namespace Corvus.Identity.Azure
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -10,8 +11,6 @@
     using global::Azure.Core;
     using global::Azure.Identity;
 
-    using Microsoft.Extensions.DependencyInjection;
-
     using NUnit.Framework;
 
     using TechTalk.SpecFlow;
@@ -20,22 +19,24 @@
     public class AzureTokenCredentialAccessTokenSourceSteps
     {
         private readonly TaskCompletionSource<AccessToken> taskForResultFromUnderlyingCredential = new ();
+        private readonly List<TestTokenCredential> replacementCredentials = new ();
         private readonly IAccessTokenSource source;
 #nullable disable annotations
         private string[] scopes;
         private string claims;
         private string authorityId;
         private Task<AccessTokenDetail> accessTokenDetailReturnedTask;
+        private Task<AccessTokenDetail> replacedTokenDetailTask;
 #nullable restore annotations
         private TokenRequestContext requestContextPassedToUnderlyingCredential;
         private AccessToken resultFromUnderlyingCredential;
 
         public AzureTokenCredentialAccessTokenSourceSteps()
         {
-            var services = new ServiceCollection();
-            services.AddServiceIdentityAzureTokenCredentialSourceFromAzureCoreTokenCredential(new TestTokenCredential(this));
-            ServiceProvider sp = services.BuildServiceProvider();
-            this.source = sp.GetRequiredService<IServiceIdentityAccessTokenSource>();
+            this.source = new AzureTokenCredentialAccessTokenSource(
+                new AzureTokenCredentialSource(
+                    new TestTokenCredential(this),
+                    _ => this.ReplacementTokenRequested()));
         }
 
         [Given("the AccessTokenRequest scope is '(.*)'")]
@@ -56,10 +57,19 @@
             this.authorityId = authorityId;
         }
 
+        [Given(@"IAccessTokenSource\.GetAccessTokenAsync is called")]
         [When(@"IAccessTokenSource\.GetAccessTokenAsync is called")]
         public void WhenIAccessTokenSource_GetAccessTokenAsyncIsCalled()
         {
             this.accessTokenDetailReturnedTask = this.source.GetAccessTokenAsync(
+                new AccessTokenRequest(this.scopes, this.claims, this.authorityId),
+                CancellationToken.None).AsTask();
+        }
+
+        [When(@"IAccessTokenSource\.GetReplacementForFailedAccessTokenAsync is called")]
+        public void WhenIAccessTokenSource_GetReplacementForFailedAccessTokenAsyncIsCalled()
+        {
+            this.replacedTokenDetailTask = this.source.GetReplacementForFailedAccessTokenAsync(
                 new AccessTokenRequest(this.scopes, this.claims, this.authorityId),
                 CancellationToken.None).AsTask();
         }
@@ -84,8 +94,14 @@
                     "CredentialUnavailableException" => new CredentialUnavailableException("That's not there"),
                     "AuthenticationFailedException" => new AuthenticationFailedException("That didn't work"),
 
-                    _ => new InvalidOperationException($"Bad exceptionType in test: {exceptionType}")
+                    _ => new InvalidOperationException($"Bad exceptionType in test: {exceptionType}"),
                 });
+        }
+
+        [Then("the IAzureTokenCredentialSource should have been asked to replace the credential")]
+        public void ThenTheIAzureTokenCredentialSourceShouldHaveBeenAskedToReplaceTheCredential()
+        {
+            Assert.AreEqual(1, this.replacementCredentials.Count);
         }
 
         [Then(@"the scope should have been passed on to TokenCredential\.GetTokenAsync")]
@@ -162,6 +178,13 @@
             {
                 Assert.AreSame(this.taskForResultFromUnderlyingCredential.Task.Exception!.InnerException, x.InnerException);
             }
+        }
+
+        private ValueTask<TokenCredential> ReplacementTokenRequested()
+        {
+            TestTokenCredential replacement = new (this);
+            this.replacementCredentials.Add(replacement);
+            return new ValueTask<TokenCredential>(replacement);
         }
 
         private class TestTokenCredential : TokenCredential

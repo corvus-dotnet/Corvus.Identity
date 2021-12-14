@@ -28,7 +28,8 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
     /// </remarks>
     internal class AzureTokenCredentialSource : IAzureTokenCredentialSource
     {
-        private readonly TokenCredential tokenCredential;
+        private readonly Func<CancellationToken, ValueTask<TokenCredential>>? getReplacementCallback;
+        private TokenCredential tokenCredential;
 
         /// <summary>
         /// Creates a <see cref="AzureTokenCredentialSource"/>.
@@ -36,9 +37,16 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
         /// <param name="tokenCredential">
         /// The <see cref="TokenCredential"/> that <see cref="GetAccessTokenAsync"/> should return.
         /// </param>
-        public AzureTokenCredentialSource(TokenCredential tokenCredential)
+        /// <param name="getReplacementCallback">
+        /// A callback to invoke when <see cref="IAzureTokenCredentialSource.GetReplacementForFailedTokenCredentialAsync(CancellationToken)"/>
+        /// is called, invalidating cached data, and fetching a new token.
+        /// </param>
+        public AzureTokenCredentialSource(
+            TokenCredential tokenCredential,
+            Func<CancellationToken, ValueTask<TokenCredential>>? getReplacementCallback)
         {
             this.tokenCredential = tokenCredential ?? throw new ArgumentNullException(nameof(tokenCredential));
+            this.getReplacementCallback = getReplacementCallback;
         }
 
         /// <inheritdoc/>
@@ -49,10 +57,17 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
              => new (this.tokenCredential);
 
         /// <inheritdoc/>
-        public ValueTask<TokenCredential> GetReplacementForFailedTokenCredentialAsync(
-            TokenCredential failedTokenCredential, CancellationToken cancellationToken)
+        public async ValueTask<TokenCredential> GetReplacementForFailedTokenCredentialAsync(
+            CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            if (this.getReplacementCallback is null)
+            {
+                throw new NotSupportedException(
+                    "This type of credential has no means of pulling updated information, so if it has stopped working, there's no automatic way to recover");
+            }
+
+            this.tokenCredential = await this.getReplacementCallback(cancellationToken).ConfigureAwait(false);
+            return await this.GetTokenCredentialAsync(cancellationToken).ConfigureAwait(false);
         }
     }
 }

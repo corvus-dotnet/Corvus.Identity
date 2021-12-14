@@ -5,24 +5,34 @@
 namespace Corvus.Identity.Azure
 {
     using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
+    using System.Linq;
     using System.Text;
+    using System.Text.Json;
     using System.Threading.Tasks;
 
     using Corvus.Identity.ClientAuthentication.Azure;
+    using Corvus.Identity.ClientAuthentication.Azure.Internal;
 
     using global::Azure.Core;
 
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.DependencyInjection.Extensions;
+
+    using NUnit.Framework;
 
     using TechTalk.SpecFlow;
+    using TechTalk.SpecFlow.Assist;
 
     [Binding]
     public sealed class ClientIdentityConfigurationSteps : IDisposable
     {
         private readonly TokenCredentialBindings tokenCredentials;
         private readonly KeyVaultBindings keyVault;
+        private readonly TestCache secretCache = new ();
         private IAzureTokenCredentialSourceFromDynamicConfiguration? credsFromConfig;
         private MemoryStream? configurationJson;
         private TestConfiguration? configuration;
@@ -57,8 +67,12 @@ namespace Corvus.Identity.Azure
 
             this.configuration = configRoot.Get<TestConfiguration>();
 
-            IServiceCollection services = new ServiceCollection()
-                .AddAzureTokenCredentialSourceFromDynamicConfiguration();
+            ServiceCollection services = new ();
+            services.AddAzureTokenCredentialSourceFromDynamicConfiguration();
+
+            services.RemoveAll(typeof(IKeyVaultSecretCache));
+            services.AddSingleton<IKeyVaultSecretCache>(this.secretCache);
+
             this.keyVault.AddKeyVaultFactoryForTests(services);
             this.serviceProvider = services.BuildServiceProvider();
 
@@ -71,6 +85,44 @@ namespace Corvus.Identity.Azure
             this.tokenCredentials.SetNamedCredential(credentialName, credential);
         }
 
+        [Given("the secret cache returns '([^']*)' for the secret named '([^']*)' in '([^']*)'")]
+        public void GivenTheSecretCacheReturnsForTheSecretNamedIn(
+            string secretValue, string secretName, string vaultName)
+        {
+            this.secretCache.ReturnThisSecretInThisTest(vaultName, secretName, secretValue);
+        }
+
+        [Then("the secret cache should have seen these requests")]
+        public void ThenTheSecretCacheShouldHaveSeenTheseRequests(Table table)
+        {
+            var rows = table.CreateSet<SecretCacheRow>().ToList();
+            Assert.AreEqual(rows.Count, this.secretCache.TryGets.Count, "Number of gets");
+            foreach ((SecretCacheRow expected, SecretCacheRow actual) in rows.Zip(this.secretCache.TryGets))
+            {
+                Assert.AreEqual(expected.VaultName, actual.VaultName);
+                Assert.AreEqual(expected.SecretName, actual.SecretName);
+
+                ClientIdentityConfiguration? actualCredential = this.secretCache.Identities[actual.Credential];
+                ClientIdentityConfiguration expectedCredential;
+                switch (expected.Credential)
+                {
+                    case "null":
+                        Assert.IsNull(actualCredential);
+                        break;
+
+                    case "AzureAdAppClientSecretInKeyVault":
+                        expectedCredential = this.configuration!.ClientIdentity!.AzureAdAppClientSecretInKeyVault!.VaultClientIdentity!;
+                        Assert.AreEqual(JsonSerializer.Serialize(expectedCredential), JsonSerializer.Serialize(actualCredential));
+                        break;
+
+                    case "AzureAdAppClientSecretInKeyVault.AzureAdAppClientSecretInKeyVault":
+                        expectedCredential = this.configuration!.ClientIdentity!.AzureAdAppClientSecretInKeyVault!.VaultClientIdentity!.AzureAdAppClientSecretInKeyVault!.VaultClientIdentity!;
+                        Assert.AreEqual(JsonSerializer.Serialize(expectedCredential), JsonSerializer.Serialize(actualCredential));
+                        break;
+                }
+            }
+        }
+
         public void Dispose()
         {
             this.serviceProvider?.Dispose();
@@ -80,5 +132,42 @@ namespace Corvus.Identity.Azure
         {
             public ClientIdentityConfiguration? ClientIdentity { get; set; }
         }
+
+        private class TestCache : IKeyVaultSecretCache
+        {
+            private readonly Dictionary<(string VaultName, string SecretName), string> secretsToReturn = new ();
+
+            public List<SecretCacheRow> TryGets { get; } = new ();
+
+            public Dictionary<string, ClientIdentityConfiguration?> Identities { get; } = new ();
+
+            public void AddSecret(string vaultName, string secretName, ClientIdentityConfiguration? clientIdentity, string secret)
+            {
+            }
+
+            public void InvalidateSecret(string vaultName, string secretName, ClientIdentityConfiguration? clientIdentity)
+            {
+            }
+
+            public bool TryGetSecret(string vaultName, string secretName, ClientIdentityConfiguration? clientIdentity, [NotNullWhen(true)] out string? secret)
+            {
+                string identityName = $"id{this.Identities.Count}";
+                this.Identities.Add(identityName, clientIdentity);
+                this.TryGets.Add(new SecretCacheRow(vaultName, secretName, identityName));
+
+                return this.secretsToReturn.TryGetValue((vaultName, secretName), out secret);
+            }
+
+            internal void ReturnThisSecretInThisTest(string vaultName, string secretName, string secretValue)
+            {
+                this.secretsToReturn.Add((vaultName, secretName), secretValue);
+            }
+        }
+
+        [SuppressMessage(
+            "StyleCop.CSharp.NamingRules",
+            "SA1313:Parameter names should begin with lower-case letter",
+            Justification = "StyleCop doesn't seem to understand that these are properties")]
+        private record SecretCacheRow(string VaultName, string SecretName, string Credential);
     }
 }

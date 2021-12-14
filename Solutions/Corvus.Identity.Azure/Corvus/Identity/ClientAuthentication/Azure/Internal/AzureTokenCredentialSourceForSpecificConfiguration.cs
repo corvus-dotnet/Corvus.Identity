@@ -48,11 +48,10 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
 
         /// <inheritdoc/>
         public async ValueTask<TokenCredential> GetReplacementForFailedTokenCredentialAsync(
-            TokenCredential failedTokenCredential,
             CancellationToken cancellationToken)
         {
             IAzureTokenCredentialSource source = await this.EnsureSource(cancellationToken).ConfigureAwait(false);
-            return await source.GetReplacementForFailedTokenCredentialAsync(failedTokenCredential, cancellationToken)
+            return await source.GetReplacementForFailedTokenCredentialAsync(cancellationToken)
                 .ConfigureAwait(false);
         }
 
