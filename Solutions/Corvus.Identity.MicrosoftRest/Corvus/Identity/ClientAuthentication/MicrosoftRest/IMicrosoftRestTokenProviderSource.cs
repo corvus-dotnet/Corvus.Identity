@@ -36,5 +36,33 @@ namespace Corvus.Identity.ClientAuthentication.MicrosoftRest
         /// </para>
         /// </remarks>
         ITokenProvider GetTokenProvider(string[] scopes);
+
+        /// <summary>
+        /// Gets a new <see cref="ITokenProvider"/> to replace one that seems to have stopped
+        /// working.
+        /// </summary>
+        /// <param name="scopes">
+        /// The scopes for which the token is required.
+        /// </param>
+        /// <returns>
+        /// A <see cref="ITokenProvider"/> to use from now on.
+        /// </returns>
+        /// <remarks>
+        /// <para>
+        /// Some sources of access tokens will become invalid under certain circumstances. For
+        /// example, when using ClientID/ClientSecret credentials to authenticate as a service
+        /// principle, the secret will expire at some point. With short key rotation cycles, this
+        /// can happen fairly frequently, but in any case it will always happen eventually.
+        /// </para>
+        /// <para>
+        /// This method enables the application to obtain updated credentials. It also enables the
+        /// <see cref="IAccessTokenSource"/> implementation to know that the credentials
+        /// in question are no longer valid. Implementations that cache credentials can choose to
+        /// stop handing out the now-failed cached credentials to any futher calls to
+        /// <see cref="GetTokenProvider"/>, making those wait until refreshed credentials have
+        /// become available.
+        /// </para>
+        /// </remarks>
+        ITokenProvider GetReplacementForFailedTokenProvider(string[] scopes);
     }
 }

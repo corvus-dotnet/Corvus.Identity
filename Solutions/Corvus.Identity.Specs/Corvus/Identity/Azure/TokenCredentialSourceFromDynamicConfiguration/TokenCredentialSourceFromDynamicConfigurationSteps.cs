@@ -1,8 +1,8 @@
-﻿// <copyright file="ClientIdentityConfigurationSteps.cs" company="Endjin Limited">
+﻿// <copyright file="TokenCredentialSourceFromDynamicConfigurationSteps.cs" company="Endjin Limited">
 // Copyright (c) Endjin Limited. All rights reserved.
 // </copyright>
 
-namespace Corvus.Identity.Azure
+namespace Corvus.Identity.Azure.TokenCredentialSourceFromDynamicConfiguration
 {
     using System;
     using System.Collections.Generic;
@@ -28,7 +28,7 @@ namespace Corvus.Identity.Azure
     using TechTalk.SpecFlow.Assist;
 
     [Binding]
-    public sealed class ClientIdentityConfigurationSteps : IDisposable
+    public sealed class TokenCredentialSourceFromDynamicConfigurationSteps : IDisposable
     {
         private readonly TokenCredentialBindings tokenCredentials;
         private readonly KeyVaultBindings keyVault;
@@ -40,7 +40,7 @@ namespace Corvus.Identity.Azure
         private string? validationResult;
         private ClientIdentitySourceTypes validatedType;
 
-        public ClientIdentityConfigurationSteps(
+        public TokenCredentialSourceFromDynamicConfigurationSteps(
             TokenCredentialBindings tokenCredentials,
             KeyVaultBindings keyVault)
         {
@@ -52,6 +52,22 @@ namespace Corvus.Identity.Azure
         public void GivenConfigurationOf(string configurationJson)
         {
             this.configurationJson = new MemoryStream(Encoding.UTF8.GetBytes(configurationJson));
+
+            IConfigurationRoot configRoot = new ConfigurationBuilder()
+                .AddJsonStream(this.configurationJson)
+                .Build();
+
+            this.configuration = configRoot.Get<TestConfiguration>();
+            ServiceCollection services = new ();
+            services.AddAzureTokenCredentialSourceFromDynamicConfiguration();
+
+            services.RemoveAll(typeof(IKeyVaultSecretCache));
+            services.AddSingleton<IKeyVaultSecretCache>(this.secretCache);
+
+            this.keyVault.AddKeyVaultFactoryForTests(services);
+            this.serviceProvider = services.BuildServiceProvider();
+
+            this.credsFromConfig = this.serviceProvider.GetRequiredService<IAzureTokenCredentialSourceFromDynamicConfiguration>();
         }
 
         [Given("a ClientIdAndSecret configuration with '([^']*)', '([^']*)', '([^']*)', '([^']*)'")]
@@ -92,11 +108,6 @@ namespace Corvus.Identity.Azure
         [When("I validate the configuration")]
         public void WhenIValidateTheConfiguration()
         {
-            if (this.configuration is null)
-            {
-                this.ParseConfiguration();
-            }
-
             this.validationResult = ClientIdentityConfigurationValidation.Validate(
                 this.configuration!.ClientIdentity!,
                 out this.validatedType);
@@ -126,27 +137,34 @@ namespace Corvus.Identity.Azure
             await this.WhenATokenCredentialIsFetchedForThisConfigurationAsCredential(null).ConfigureAwait(false);
         }
 
+        [Given("a TokenCredential is fetched for this configuration as credential '(.*)'")]
         [When("a TokenCredential is fetched for this configuration as credential '(.*)'")]
         public async Task WhenATokenCredentialIsFetchedForThisConfigurationAsCredential(string? credentialName)
         {
-            this.ParseConfiguration();
-
-            ServiceCollection services = new ();
-            services.AddAzureTokenCredentialSourceFromDynamicConfiguration();
-
-            services.RemoveAll(typeof(IKeyVaultSecretCache));
-            services.AddSingleton<IKeyVaultSecretCache>(this.secretCache);
-
-            this.keyVault.AddKeyVaultFactoryForTests(services);
-            this.serviceProvider = services.BuildServiceProvider();
-
-            this.credsFromConfig = this.serviceProvider.GetRequiredService<IAzureTokenCredentialSourceFromDynamicConfiguration>();
-
             IAzureTokenCredentialSource source =
-                await this.credsFromConfig.CredentialSourceForConfigurationAsync(this.configuration!.ClientIdentity!).ConfigureAwait(false);
+                await this.credsFromConfig!.CredentialSourceForConfigurationAsync(this.configuration!.ClientIdentity!).ConfigureAwait(false);
             TokenCredential credential = await source.GetTokenCredentialAsync().ConfigureAwait(false);
 
             this.tokenCredentials.SetNamedCredential(credentialName, credential);
+        }
+
+        [When("this ClientIdentityConfiguration is invalidated via '([^']*)'")]
+        public async Task WhenThisClientIdentityConfigurationIsInvalidatedVia(string invalidationMechanism)
+        {
+            if (invalidationMechanism == "IAzureTokenCredentialSource")
+            {
+                IAzureTokenCredentialSource source =
+                    await this.credsFromConfig!.CredentialSourceForConfigurationAsync(this.configuration!.ClientIdentity!).ConfigureAwait(false);
+                await  source.GetReplacementForFailedTokenCredentialAsync().ConfigureAwait(false);
+            }
+            else if (invalidationMechanism == "IAzureTokenCredentialSourceFromDynamicConfiguration")
+            {
+                this.credsFromConfig!.InvalidateFailedAccessToken(this.configuration!.ClientIdentity!);
+            }
+            else
+            {
+                Assert.Fail("Unrecognized invalidation mechanism: " + invalidationMechanism);
+            }
         }
 
         [Given("the secret cache returns '([^']*)' for the secret named '([^']*)' in '([^']*)'")]
@@ -159,9 +177,25 @@ namespace Corvus.Identity.Azure
         [Then("the secret cache should have seen these requests")]
         public void ThenTheSecretCacheShouldHaveSeenTheseRequests(Table table)
         {
+            this.CheckCacheOperations(table, this.secretCache.TryGets, "gets");
+        }
+
+        [Then("the secret cache should have seen these credentials invalidated")]
+        public void ThenTheSecretCacheShouldHaveSeenTheseCredentialsInvalidated(Table table)
+        {
+            this.CheckCacheOperations(table, this.secretCache.Invalidations, "invalidations");
+        }
+
+        public void Dispose()
+        {
+            this.serviceProvider?.Dispose();
+        }
+
+        private void CheckCacheOperations(Table table, List<SecretCacheRow> actualRows, string operationName)
+        {
             var rows = table.CreateSet<SecretCacheRow>().ToList();
-            Assert.AreEqual(rows.Count, this.secretCache.TryGets.Count, "Number of gets");
-            foreach ((SecretCacheRow expected, SecretCacheRow actual) in rows.Zip(this.secretCache.TryGets))
+            Assert.AreEqual(rows.Count, actualRows.Count, $"Number of {operationName}");
+            foreach ((SecretCacheRow expected, SecretCacheRow actual) in rows.Zip(actualRows))
             {
                 Assert.AreEqual(expected.VaultName, actual.VaultName);
                 Assert.AreEqual(expected.SecretName, actual.SecretName);
@@ -185,20 +219,7 @@ namespace Corvus.Identity.Azure
                         break;
                 }
             }
-        }
 
-        public void Dispose()
-        {
-            this.serviceProvider?.Dispose();
-        }
-
-        private void ParseConfiguration()
-        {
-            IConfigurationRoot configRoot = new ConfigurationBuilder()
-                .AddJsonStream(this.configurationJson)
-                .Build();
-
-            this.configuration = configRoot.Get<TestConfiguration>();
         }
 
         public class TestConfiguration
@@ -212,6 +233,8 @@ namespace Corvus.Identity.Azure
 
             public List<SecretCacheRow> TryGets { get; } = new ();
 
+            public List<SecretCacheRow> Invalidations { get; } = new ();
+
             public Dictionary<string, ClientIdentityConfiguration?> Identities { get; } = new ();
 
             public void AddSecret(string vaultName, string secretName, ClientIdentityConfiguration? clientIdentity, string secret)
@@ -220,6 +243,9 @@ namespace Corvus.Identity.Azure
 
             public void InvalidateSecret(string vaultName, string secretName, ClientIdentityConfiguration? clientIdentity)
             {
+                string identityName = $"id{this.Identities.Count}";
+                this.Identities.Add(identityName, clientIdentity);
+                this.Invalidations.Add(new SecretCacheRow(vaultName, secretName, identityName));
             }
 
             public bool TryGetSecret(string vaultName, string secretName, ClientIdentityConfiguration? clientIdentity, [NotNullWhen(true)] out string? secret)

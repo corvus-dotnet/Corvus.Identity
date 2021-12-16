@@ -42,5 +42,11 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
                         configuration,
                         this.tokenCredentialSource)));
         }
+
+        /// <inheritdoc/>
+        public void InvalidateFailedAccessToken(ClientIdentityConfiguration configuration)
+        {
+            this.tokenCredentialSource.InvalidateFailedAccessToken(configuration);
+        }
     }
 }

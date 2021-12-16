@@ -32,5 +32,17 @@ namespace Corvus.Identity.ClientAuthentication.Azure
         ValueTask<IAccessTokenSource> AccessTokenSourceForConfigurationAsync(
             ClientIdentityConfiguration configuration,
             CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Removes any cached tokens for the specified identity. Called when an application has
+        /// reason to believe that credentials are out of date, and may need underlying secrets to
+        /// be reloaded.
+        /// </summary>
+        /// <param name="configuration">
+        /// The <see cref="ClientIdentityConfiguration"/> describing the identity for which cached
+        /// credentials no longer seem to be working..
+        /// </param>
+        void InvalidateFailedAccessToken(
+            ClientIdentityConfiguration configuration);
     }
 }
