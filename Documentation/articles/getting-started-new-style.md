@@ -8,10 +8,10 @@ This package is designed to be used through dependency injection. In your applic
 
 ```cs
 // Makes IServiceIdentityAccessTokenSource and IServiceIdentityAzureTokenCredentialSource
-// available through DI, with the `AzureServicesAuthConnectionString` configuration choosing
-// which credentials mechanism to use.
-services.AddServiceIdentityAzureTokenCredentialSourceFromLegacyConnectionString(
-    config.Get<LegacyAzureServiceTokenProviderOptions>());
+// available through DI, with the `ServiceIdentity` configuration defining which
+// credentials mechanism to use.
+ClientIdentityConfiguration idConfig = config.GetSection("ServiceIdentity").Get<ClientIdentityConfiguration>();
+services.AddServiceIdentityAzureTokenCredentialSourceFromClientIdentityConfiguration(idConfig);
 ```
 
 With this in place, you can then write classes that take a dependency on [`IServiceIdentityAzureTokenCredentialSource`](xref:Corvus.Identity.ClientAuthentication.Azure.IServiceIdentityAzureTokenCredentialSource), which provides a straightforward way to obtain credentials in the form required by modern Azure SDK client libraries. All it requires is a single call to the [`GetAccessTokenAsync`](xref:Corvus.Identity.ClientAuthentication.Azure.IAzureTokenCredentialSource.GetAccessTokenAsync) method, which you can see at the start of the `GetSecretAsync` method in the following example:
@@ -49,6 +49,17 @@ This same basic pattern works for any client library that uses the [`TokenCreden
 
 ## Alternatives
 
+If you are upgrading a project that uses the old `AzureServiceTokenProvider` mechanism, with a setting at the root of your configuration named `AzureServicesAuthConnectionString`, then you don't necessarily have to change to the new `ClientIdentityConfiguration` configuration format. (Making that change will enable access to the new functionality it provides, but perhaps you don't need that.) You can instead use this in your DI configuration:
+
+```cs
+// Makes IServiceIdentityAccessTokenSource and IServiceIdentityAzureTokenCredentialSource
+// available through DI, with the `AzureServicesAuthConnectionString` configuration choosing
+// which credentials mechanism to use.
+services.AddServiceIdentityAzureTokenCredentialSourceFromLegacyConnectionString(
+    config.Get<LegacyAzureServiceTokenProviderOptions>());
+```
+
+
 The code shown above allows application configuration to use old-style connection strings of the kind supported by the old `AzureServiceTokenProvider` type. (Microsoft chose to drop support for this style of configuration in their SDK redesign. `Corvus.Identity` enables you to continue to use it.)
 
 If you want to support this use of connection strings but for some reason you don't want to use Microsoft's [`IConfiguration`](xref:Microsoft.Extensions.Configuration.IConfiguration) mechanism, you can either construct a [`LegacyAzureServiceTokenProviderOptions`](xref:Corvus.Identity.ClientAuthentication.Azure.LegacyAzureServiceTokenProviderOptions) directly, putting the connection string into its [`AzureServicesAuthConnectionString` property](xref:Corvus.Identity.ClientAuthentication.Azure.LegacyAzureServiceTokenProviderOptions.AzureServicesAuthConnectionString), or you can just use the overload the takes a plain string:
@@ -61,9 +72,9 @@ services.AddServiceIdentityAzureTokenCredentialSourceFromLegacyConnectionString(
     myAuthenticationConnectionString);
 ```
 
-This connection string system is helpful because it enabled you to ensure that when code was deployed to production, it used the appropriate mechanisms (typically a Managed Identity) but enabled you to configure a service principle manually for local debugging. The new-style SDK provides no configuration-driven mechanism for switching between these two systems.
+This connection string system is helpful because it enabled you to ensure that when code was deployed to production, it used the appropriate mechanisms (typically a Managed Identity) but enabled you to configure a service principle manually for local debugging. The new-style SDK provides no configuration-driven mechanism for switching between these two systems. However, if you switch to `ClientIdentityConfiguration`, that provides a configuration-driven way to change the mechanism, with a lot more flexibility.
 
-If, however, you do not want support for these kinds of connection strings, you can instead use this alternative registration call:
+If you do not want to use configuration settings at all, you can instead use this alternative registration call:
 
 ```cs
 // Use this if you don't want connection-string-driven authentication configuration.

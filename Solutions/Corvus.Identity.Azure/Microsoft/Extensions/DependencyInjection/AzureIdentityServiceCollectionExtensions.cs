@@ -4,11 +4,11 @@
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    using Azure.Core;
-
     using Corvus.Identity.ClientAuthentication;
     using Corvus.Identity.ClientAuthentication.Azure;
     using Corvus.Identity.ClientAuthentication.Azure.Internal;
+
+    using global::Azure.Core;
 
     /// <summary>
     /// DI initialization for services using Corvus.Identity.Azure.
@@ -69,9 +69,62 @@ namespace Microsoft.Extensions.DependencyInjection
             this IServiceCollection services,
             TokenCredential tokenCredential)
         {
+            AzureTokenCredentialSource source = new (tokenCredential, null);
             return services
-                .AddSingleton<IServiceIdentityAzureTokenCredentialSource>(new AzureTokenCredentialSource(tokenCredential))
-                .AddSingleton<IServiceIdentityAccessTokenSource>(new AzureTokenCredentialAccessTokenSource(tokenCredential));
+                .AddSingleton<IServiceIdentityAzureTokenCredentialSource>(new ServiceIdentityAzureTokenCredentialSource(source))
+                .AddSingleton<IServiceIdentityAccessTokenSource, ServiceIdentityAccessTokenSource>();
+        }
+
+        /// <summary>
+        /// Adds an <see cref="IServiceIdentityAzureTokenCredentialSource"/> and a
+        /// <see cref="IServiceIdentityAccessTokenSource"/> implementation that provide credentials
+        /// for the identity described in a <see cref="ClientIdentityConfiguration"/>.
+        /// </summary>
+        /// <param name="services">The service collection.</param>
+        /// <param name="configuration">
+        /// A <see cref="ClientIdentityConfiguration"/> describing the identity to use as the
+        /// ambient service identity.
+        /// </param>
+        /// <returns>The modified service collection.</returns>
+        public static IServiceCollection AddServiceIdentityAzureTokenCredentialSourceFromClientIdentityConfiguration(
+            this IServiceCollection services,
+            ClientIdentityConfiguration configuration)
+        {
+            return services
+                .AddAzureTokenCredentialSourceFromDynamicConfiguration()
+                .AddSingleton<IServiceIdentityAzureTokenCredentialSource>(sp =>
+                    new ServiceIdentityAzureTokenCredentialSource(
+                        new AzureTokenCredentialSourceForSpecificConfiguration(
+                            configuration,
+                            sp.GetRequiredService<IAzureTokenCredentialSourceFromDynamicConfiguration>())))
+                .AddSingleton<IServiceIdentityAccessTokenSource, ServiceIdentityAccessTokenSource>();
+        }
+
+        /// <summary>
+        /// Makes an <see cref="IAzureTokenCredentialSourceFromDynamicConfiguration"/> implementation
+        /// available.
+        /// </summary>
+        /// <param name="services">The service collection.</param>
+        /// <returns>The modified service collection.</returns>
+        /// <remarks>
+        /// <para>
+        /// A "dynamic" configuration is one where the code provides a configuration object at
+        /// runtime, as opposed to relying on something ambient such as application settings, or
+        /// a service identity. (We use the term "dynamic configuration" because if we just used
+        /// the term "configuration" that has a tendancy to make it sound like the relevant
+        /// settings are being read out of an application's configuration settings, and the
+        /// whole point here is that we are using <see cref="ClientIdentityConfiguration"/>
+        /// instances that weren't just loaded from some static configuration file.)
+        /// </para>
+        /// </remarks>
+        public static IServiceCollection AddAzureTokenCredentialSourceFromDynamicConfiguration(
+            this IServiceCollection services)
+        {
+            return services
+                .AddSingleton<IAzureTokenCredentialSourceFromDynamicConfiguration, AzureTokenCredentialSourceFromConfiguration>()
+                .AddSingleton<IAccessTokenSourceFromDynamicConfiguration, AccessTokenSourceFromDynamicConfiguration>()
+                .AddSingleton<IKeyVaultSecretCache, KeyVaultSecretCache>()
+                .AddSingleton<IKeyVaultSecretClientFactory, KeyVaultSecretClientFactory>();
         }
     }
 }

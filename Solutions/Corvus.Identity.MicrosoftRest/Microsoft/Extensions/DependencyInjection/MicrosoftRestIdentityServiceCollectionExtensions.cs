@@ -8,6 +8,8 @@ namespace Microsoft.Extensions.DependencyInjection
     using Corvus.Identity.ClientAuthentication.MicrosoftRest;
     using Corvus.Identity.ClientAuthentication.MicrosoftRest.Internal;
 
+    using Microsoft.Rest;
+
     /// <summary>
     /// DI initialization for services using Corvus.Identity.ClientAuthentication.MicrosoftRest.
     /// </summary>
@@ -24,14 +26,29 @@ namespace Microsoft.Extensions.DependencyInjection
         /// This requires an implementation of <see cref="IServiceIdentityAccessTokenSource"/> to
         /// be available. This library does not know how to obtain tokens: it is an adapter that
         /// obtainstokens from the general-purpose <see cref="IServiceIdentityAccessTokenSource"/>
-        /// mechanism, and wraps them as an <see cref="Microsoft.Rest.ITokenProvider"/>, so
+        /// mechanism, and wraps them as an <see cref="ITokenProvider"/>, so
         /// something else needs to provide the basic ability to provide the tokens being wrapped.
         /// </para>
         /// </remarks>
         public static IServiceCollection AddMicrosoftRestAdapterForServiceIdentityAccessTokenSource(
             this IServiceCollection services)
         {
-            return services.AddSingleton<IServiceIdentityMicrosoftRestTokenProviderSource, MicrosoftRestTokenProviderSource>();
+            return services
+                .AddSingleton<IServiceIdentityMicrosoftRestTokenProviderSource, ServiceIdentityMicrosoftRestTokenProviderSource>();
+        }
+
+        /// <summary>
+        /// Makes an <see cref="IMicrosoftRestTokenProviderSourceFromDynamicConfiguration"/> implementation
+        /// available.
+        /// </summary>
+        /// <param name="services">The service collection.</param>
+        /// <returns>The modified service collection.</returns>
+        public static IServiceCollection AddMicrosoftRestTokenProviderSourceDynamicConfiguration(
+            this IServiceCollection services)
+        {
+            return services
+                .AddAzureTokenCredentialSourceFromDynamicConfiguration()
+                .AddSingleton<IMicrosoftRestTokenProviderSourceFromDynamicConfiguration, MicrosoftRestTokenProviderSourceFromDynamicConfiguration>();
         }
     }
 }

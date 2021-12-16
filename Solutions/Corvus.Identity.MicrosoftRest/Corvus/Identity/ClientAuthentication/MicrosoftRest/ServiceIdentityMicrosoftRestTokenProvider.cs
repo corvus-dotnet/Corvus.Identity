@@ -19,8 +19,7 @@ namespace Corvus.Identity.ClientAuthentication.MicrosoftRest
     /// </summary>
     public class ServiceIdentityMicrosoftRestTokenProvider : ITokenProvider
     {
-        private readonly IServiceIdentityAccessTokenSource serviceIdentityTokenSource;
-        private readonly string[] scopes;
+        private readonly MicrosoftRestTokenProvider tokenProvider;
 
         /// <summary>
         /// Create a <see cref="ServiceIdentityMicrosoftRestTokenProvider"/>.
@@ -53,21 +52,17 @@ namespace Corvus.Identity.ClientAuthentication.MicrosoftRest
             IServiceIdentityAccessTokenSource serviceIdentityTokenSource,
             string[] scopes)
         {
-            this.serviceIdentityTokenSource = serviceIdentityTokenSource ?? throw new ArgumentNullException(nameof(serviceIdentityTokenSource));
-            this.scopes = scopes ?? throw new ArgumentNullException(nameof(scopes));
-        }
+            this.tokenProvider = new MicrosoftRestTokenProvider(
+                serviceIdentityTokenSource ?? throw new ArgumentNullException(nameof(serviceIdentityTokenSource)),
+                scopes);
+       }
 
         /// <summary>
         /// Gets an authentication header value containing an access token.
         /// </summary>
         /// <param name="cancellationToken">A cancellation token.</param>
         /// <returns>A task that produces an authentication header.</returns>
-        public async Task<AuthenticationHeaderValue?> GetAuthenticationHeaderAsync(CancellationToken cancellationToken)
-        {
-            AccessTokenDetail token = await this.serviceIdentityTokenSource.GetAccessTokenAsync(
-                new AccessTokenRequest(this.scopes),
-                cancellationToken).ConfigureAwait(false);
-            return new AuthenticationHeaderValue("Bearer", token.AccessToken);
-        }
+        public Task<AuthenticationHeaderValue?> GetAuthenticationHeaderAsync(CancellationToken cancellationToken)
+            => this.tokenProvider.GetAuthenticationHeaderAsync(cancellationToken);
     }
 }

@@ -4,4 +4,4 @@
 
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("Corvus.Identity.ManagedServiceIdentity.ClientAuthentication.Specs")]
+[assembly: InternalsVisibleTo("Corvus.Identity.Specs")]

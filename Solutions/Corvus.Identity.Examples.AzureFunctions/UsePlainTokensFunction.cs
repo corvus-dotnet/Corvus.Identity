@@ -19,26 +19,32 @@ namespace Corvus.Identity.Examples.AzureFunctions
     /// </summary>
     public class UsePlainTokensFunction
     {
-        private readonly ReadResourceGroupsWithPlainTokens client;
-        private readonly ILogger<ReadResourceGroupsWithPlainTokens> logger;
+        private readonly ReadResourceGroupsAsServiceIdentityWithPlainTokens serviceIdClient;
+        private readonly ILogger<ReadResourceGroupsAsServiceIdentityWithPlainTokens> logger;
         private readonly ExampleSettings settings;
+        private readonly ReadResourceGroupsWithIdentityFromConfigWithPlainTokens configIdClient;
 
         /// <summary>
         /// Creates a <see cref="UsePlainTokensFunction"/>.
         /// </summary>
         /// <param name="settings">Example settings.</param>
-        /// <param name="client">
-        /// The client wrapper for accessing the key vault.
+        /// <param name="serviceIdClient">
+        /// The client wrapper for reading from ARM using the service identity.
+        /// </param>
+        /// <param name="configIdClient">
+        /// The client wrapper for reading from ARM using a configured identity.
         /// </param>
         /// <param name="logger">Logger.</param>
         public UsePlainTokensFunction(
             ExampleSettings settings,
-            ReadResourceGroupsWithPlainTokens client,
-            ILogger<ReadResourceGroupsWithPlainTokens> logger)
+            ReadResourceGroupsAsServiceIdentityWithPlainTokens serviceIdClient,
+            ReadResourceGroupsWithIdentityFromConfigWithPlainTokens configIdClient,
+            ILogger<ReadResourceGroupsAsServiceIdentityWithPlainTokens> logger)
         {
-            this.client = client ?? throw new System.ArgumentNullException(nameof(client));
+            this.serviceIdClient = serviceIdClient ?? throw new System.ArgumentNullException(nameof(serviceIdClient));
             this.logger = logger ?? throw new System.ArgumentNullException(nameof(logger));
             this.settings = settings ?? throw new System.ArgumentNullException(nameof(settings));
+            this.configIdClient = configIdClient;
         }
 
         /// <summary>
@@ -48,13 +54,35 @@ namespace Corvus.Identity.Examples.AzureFunctions
         /// <returns>
         /// A task that determines the response.
         /// </returns>
-        [FunctionName("UsePlainTokens")]
-        public async Task<IActionResult> Run(
+        [FunctionName("UseServiceIdentityPlainTokens")]
+        public async Task<IActionResult> UseServiceAzureIdentityAsync(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req)
         {
             this.logger.LogInformation($"Request: {req.Path}");
 
-            string result = await this.client.GetResourceGroupsAsync(this.settings.AzureSubscriptionId).ConfigureAwait(false);
+            string result = await this.serviceIdClient.GetResourceGroupsAsync(this.settings.AzureSubscriptionId)
+                .ConfigureAwait(false);
+
+            return new OkObjectResult(result);
+        }
+
+        /// <summary>
+        /// Function endpoint.
+        /// </summary>
+        /// <param name="req">HTTP request.</param>
+        /// <returns>
+        /// A task that determines the response.
+        /// </returns>
+        [FunctionName("UseConfiguredPlainTokens")]
+        public async Task<IActionResult> UseConfiguredAzureIdentity(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req)
+        {
+            this.logger.LogInformation($"Request: {req.Path}");
+
+            string result = await this.configIdClient.GetResourceGroupsAsync(
+                this.settings.KeyVaultClientIdentity,
+                this.settings.AzureSubscriptionId)
+                .ConfigureAwait(false);
 
             return new OkObjectResult(result);
         }
