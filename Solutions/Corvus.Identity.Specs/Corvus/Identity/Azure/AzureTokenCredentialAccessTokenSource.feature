@@ -75,13 +75,27 @@ Scenario: Token acquisition fails with AuthenticationFailedException
 # Sometimes applications find that a token that was once working no longer is. In situations where key
 # rotation is in use, this is normal, and applications can tell the token source that they want it to
 # try to reload the credentials behind the source.
-Scenario: Replace token
+Scenario: Replace token via IAccessTokenSource
     Given the AccessTokenRequest scope is 'https://management.core.windows.net/.default'
     And the AccessTokenRequest has additional claims of 'claim1 claim2'
     And IAccessTokenSource.GetAccessTokenAsync is called
     When IAccessTokenSource.GetReplacementForFailedAccessTokenAsync is called
     And the underlying TokenCredential returns a successful result
     Then the IAzureTokenCredentialSource should have been asked to replace the credential
+    And the scope should have been passed on to TokenCredential.GetTokenAsync
+    And the Claims should have been passed on to TokenCredential.GetTokenAsync
+    And the TenantId passed to TokenCredential.GetTokenAsync should be null
+    And the ParentRequestId passed to TokenCredential.GetTokenAsync should be null
+    And the AccessToken returned by IAccessTokenSource.GetAccessTokenAsync should be the same as was returned by TokenCredential.GetTokenAsync
+    And the ExpiresOn returned by IAccessTokenSource.GetAccessTokenAsync should be the same as was returned by TokenCredential.GetTokenAsync
+
+Scenario: Replace token via IAccessTokenSourceFromDynamicConfiguration
+    Given the AccessTokenRequest scope is 'https://management.core.windows.net/.default'
+    And the AccessTokenRequest has additional claims of 'claim1 claim2'
+    And IAccessTokenSource.GetAccessTokenAsync is called
+    When IAccessTokenSourceFromDynamicConfiguration.InvalidateFailedAccessToken is called
+    And the underlying TokenCredential returns a successful result
+    Then the IAzureTokenCredentialSourceFromDynamicConfiguration should have been asked to invalidate the credential
     And the scope should have been passed on to TokenCredential.GetTokenAsync
     And the Claims should have been passed on to TokenCredential.GetTokenAsync
     And the TenantId passed to TokenCredential.GetTokenAsync should be null

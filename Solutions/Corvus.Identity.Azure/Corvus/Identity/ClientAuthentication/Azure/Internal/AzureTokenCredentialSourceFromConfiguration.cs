@@ -71,6 +71,15 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
             return new AzureTokenCredentialSource(tokenCredential, null);
         }
 
+        /// <inheritdoc/>
+        public void InvalidateFailedAccessToken(ClientIdentityConfiguration configuration)
+        {
+            if (configuration.AzureAdAppClientSecretInKeyVault is KeyVaultSecretConfiguration keyVaultConfig)
+            {
+                this.InvalidateKeyVaultSecrets(keyVaultConfig);
+            }
+        }
+
         private async ValueTask<IAzureTokenCredentialSource> GetTokenCredentialSourceForAdAppWithClientSecret(
             ClientIdentityConfiguration configuration, CancellationToken cancellationToken)
         {
@@ -114,22 +123,10 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
                         // happen in key rotation situations. So we flush cached copies of
                         // the secret for these credentials, and also any nested credentials
                         // that were used in the population of these ones, and then try again.
-                        RecursivelyFlushCacheEntries(keyVaultConfig);
+                        this.InvalidateKeyVaultSecrets(keyVaultConfig);
                         IAzureTokenCredentialSource result = await this.CredentialSourceForConfigurationAsync(
                             configuration, cancellationToken).ConfigureAwait(false);
                         return await result.GetTokenCredentialAsync(cancellationToken).ConfigureAwait(false);
-
-                        void RecursivelyFlushCacheEntries(KeyVaultSecretConfiguration keyVaultSecretConfiguration)
-                        {
-                            this.secretCache.InvalidateSecret(
-                                keyVaultSecretConfiguration.VaultName,
-                                keyVaultSecretConfiguration.SecretName,
-                                keyVaultSecretConfiguration.VaultClientIdentity);
-                            if (keyVaultSecretConfiguration.VaultClientIdentity?.AzureAdAppClientSecretInKeyVault is KeyVaultSecretConfiguration childSecretConfiguration)
-                            {
-                                RecursivelyFlushCacheEntries(childSecretConfiguration);
-                            }
-                        }
                     });
             }
             else
@@ -143,6 +140,19 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
                     configuration.AzureAdAppClientId!,
                     secret),
                 null);
+        }
+
+        private void InvalidateKeyVaultSecrets(
+            KeyVaultSecretConfiguration keyVaultSecretConfiguration)
+        {
+            this.secretCache.InvalidateSecret(
+                keyVaultSecretConfiguration.VaultName,
+                keyVaultSecretConfiguration.SecretName,
+                keyVaultSecretConfiguration.VaultClientIdentity);
+            if (keyVaultSecretConfiguration.VaultClientIdentity?.AzureAdAppClientSecretInKeyVault is KeyVaultSecretConfiguration childSecretConfiguration)
+            {
+                this.InvalidateKeyVaultSecrets(childSecretConfiguration);
+            }
         }
     }
 }

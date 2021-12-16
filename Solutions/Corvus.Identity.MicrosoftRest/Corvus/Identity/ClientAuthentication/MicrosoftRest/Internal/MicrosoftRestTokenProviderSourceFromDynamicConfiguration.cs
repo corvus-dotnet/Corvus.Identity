@@ -29,13 +29,21 @@ namespace Corvus.Identity.ClientAuthentication.MicrosoftRest.Internal
         }
 
         /// <inheritdoc/>
+        public void InvalidateFailedTokenProviderSource(ClientIdentityConfiguration configuration)
+        {
+            this.tokenSourceFromDynamicConfiguration.InvalidateFailedAccessToken(configuration);
+        }
+
+        /// <inheritdoc/>
         public async ValueTask<IMicrosoftRestTokenProviderSource> TokenProviderSourceForConfigurationAsync(
             ClientIdentityConfiguration configuration, CancellationToken cancellationToken)
         {
             IAccessTokenSource tokenSource = await this.tokenSourceFromDynamicConfiguration.AccessTokenSourceForConfigurationAsync(
                 configuration, cancellationToken)
                 .ConfigureAwait(false);
-            return new MicrosoftRestTokenProviderSource(tokenSource);
+            return new MicrosoftRestTokenProviderSource(
+                tokenSource,
+                () => this.InvalidateFailedTokenProviderSource(configuration));
         }
     }
 }

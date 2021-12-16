@@ -21,7 +21,7 @@ namespace Corvus.Identity.ClientAuthentication.MicrosoftRest.Internal
         /// </param>
         public ServiceIdentityMicrosoftRestTokenProviderSource(
             IServiceIdentityAccessTokenSource underlyingSource)
-            : base(underlyingSource)
+            : base(underlyingSource, null)
         {
         }
     }

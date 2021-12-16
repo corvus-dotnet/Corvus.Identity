@@ -2,10 +2,12 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
 
     using Corvus.Identity.ClientAuthentication;
+    using Corvus.Identity.ClientAuthentication.Azure;
     using Corvus.Identity.ClientAuthentication.Azure.Internal;
 
     using global::Azure.Core;
@@ -20,7 +22,10 @@
     {
         private readonly TaskCompletionSource<AccessToken> taskForResultFromUnderlyingCredential = new ();
         private readonly List<TestTokenCredential> replacementCredentials = new ();
-        private readonly IAccessTokenSource source;
+        private readonly List<ClientIdentityConfiguration> invalidatedConfigurations = new ();
+        private readonly ClientIdentityConfiguration configuration;
+        private readonly IAccessTokenSourceFromDynamicConfiguration sourceFromDynamicConfiguration;
+        private readonly Task<IAccessTokenSource> accessTokenSource;
 #nullable disable annotations
         private string[] scopes;
         private string claims;
@@ -32,10 +37,21 @@
 
         public AzureTokenCredentialAccessTokenSourceSteps()
         {
-            this.source = new AzureTokenCredentialAccessTokenSource(
-                new AzureTokenCredentialSource(
-                    new TestTokenCredential(this),
-                    _ => this.ReplacementTokenRequested()));
+            AzureTokenCredentialSource tokenCredentialSource = new (
+                new TestTokenCredential(this),
+                _ => this.ReplacementTokenRequested());
+            ////this.accessTokenSource = new AzureTokenCredentialAccessTokenSource(
+            ////    tokenCredentialSource);
+            this.sourceFromDynamicConfiguration = new AccessTokenSourceFromDynamicConfiguration(
+                new TestTokenCredentialSourceFromConfig(this, tokenCredentialSource));
+
+            this.configuration = new ClientIdentityConfiguration
+            {
+                IdentitySourceType = ClientIdentitySourceTypes.Managed,
+            };
+            this.accessTokenSource = this.sourceFromDynamicConfiguration
+                .AccessTokenSourceForConfigurationAsync(this.configuration)
+                .AsTask();
         }
 
         [Given("the AccessTokenRequest scope is '(.*)'")]
@@ -58,19 +74,25 @@
 
         [Given(@"IAccessTokenSource\.GetAccessTokenAsync is called")]
         [When(@"IAccessTokenSource\.GetAccessTokenAsync is called")]
-        public void WhenIAccessTokenSource_GetAccessTokenAsyncIsCalled()
+        public async Task WhenIAccessTokenSource_GetAccessTokenAsyncIsCalledAsync()
         {
-            this.accessTokenDetailReturnedTask = this.source.GetAccessTokenAsync(
+            this.accessTokenDetailReturnedTask = (await this.accessTokenSource.ConfigureAwait(false)).GetAccessTokenAsync(
                 new AccessTokenRequest(this.scopes, this.claims, this.authorityId),
                 CancellationToken.None).AsTask();
         }
 
         [When(@"IAccessTokenSource\.GetReplacementForFailedAccessTokenAsync is called")]
-        public void WhenIAccessTokenSource_GetReplacementForFailedAccessTokenAsyncIsCalled()
+        public async Task WhenIAccessTokenSource_GetReplacementForFailedAccessTokenAsyncIsCalledAsync()
         {
-            this.accessTokenDetailReturnedTask = this.source.GetReplacementForFailedAccessTokenAsync(
+            this.accessTokenDetailReturnedTask = (await this.accessTokenSource.ConfigureAwait(false)).GetReplacementForFailedAccessTokenAsync(
                 new AccessTokenRequest(this.scopes, this.claims, this.authorityId),
                 CancellationToken.None).AsTask();
+        }
+
+        [When(@"IAccessTokenSourceFromDynamicConfiguration\.InvalidateFailedAccessToken is called")]
+        public void WhenIAccessTokenSourceFromDynamicConfiguration_InvalidateFailedAccessTokenIsCalled()
+        {
+            this.sourceFromDynamicConfiguration.InvalidateFailedAccessToken(this.configuration);
         }
 
         [When("the underlying TokenCredential returns a successful result")]
@@ -101,6 +123,12 @@
         public void ThenTheIAzureTokenCredentialSourceShouldHaveBeenAskedToReplaceTheCredential()
         {
             Assert.AreEqual(1, this.replacementCredentials.Count);
+        }
+
+        [Then("the IAzureTokenCredentialSourceFromDynamicConfiguration should have been asked to invalidate the credential")]
+        public void ThenTheIAzureTokenCredentialSourceFromDynamicConfigurationShouldHaveBeenAskedToInvalidateTheCredential()
+        {
+            Assert.AreSame(this.configuration, this.invalidatedConfigurations.Single());
         }
 
         [Then(@"the scope should have been passed on to TokenCredential\.GetTokenAsync")]
@@ -184,6 +212,31 @@
             TestTokenCredential replacement = new (this);
             this.replacementCredentials.Add(replacement);
             return new ValueTask<TokenCredential>(replacement);
+        }
+
+        private class TestTokenCredentialSourceFromConfig : IAzureTokenCredentialSourceFromDynamicConfiguration
+        {
+            private readonly AzureTokenCredentialAccessTokenSourceSteps azureTokenCredentialAccessTokenSourceSteps;
+            private readonly AzureTokenCredentialSource azureTokenCredentialSource;
+
+            public TestTokenCredentialSourceFromConfig(
+                AzureTokenCredentialAccessTokenSourceSteps azureTokenCredentialAccessTokenSourceSteps,
+                AzureTokenCredentialSource azureTokenCredentialSource)
+            {
+                this.azureTokenCredentialAccessTokenSourceSteps = azureTokenCredentialAccessTokenSourceSteps;
+                this.azureTokenCredentialSource = azureTokenCredentialSource;
+            }
+
+            public ValueTask<IAzureTokenCredentialSource> CredentialSourceForConfigurationAsync(
+                ClientIdentityConfiguration configuration, CancellationToken cancellationToken = default)
+            {
+                return new ValueTask<IAzureTokenCredentialSource>(this.azureTokenCredentialSource);
+            }
+
+            public void InvalidateFailedAccessToken(ClientIdentityConfiguration configuration)
+            {
+                this.azureTokenCredentialAccessTokenSourceSteps.invalidatedConfigurations.Add(configuration);
+            }
         }
 
         private class TestTokenCredential : TokenCredential
