@@ -12,7 +12,7 @@ Scenario: Successful token acquisition with just scopes
     And the TenantId passed to TokenCredential.GetTokenAsync should be null
     And the ParentRequestId passed to TokenCredential.GetTokenAsync should be null
     And the AccessToken returned by IAccessTokenSource.GetAccessTokenAsync should be the same as was returned by TokenCredential.GetTokenAsync
-    And the ExpiresOn returned by IAccessTokenSource.GetAccessTokenAsync should be the same as was returned by TokenCredential.GetTokenAsync
+    And the ExpiresOn returned by IAccessTokenSource.GetAccessTokenAsync should about three minutes into the future
 
 Scenario: Successful token acquisition with scopes and claims
     Given the AccessTokenRequest scope is 'https://management.core.windows.net/.default'
@@ -24,7 +24,7 @@ Scenario: Successful token acquisition with scopes and claims
     And the TenantId passed to TokenCredential.GetTokenAsync should be null
     And the ParentRequestId passed to TokenCredential.GetTokenAsync should be null
     And the AccessToken returned by IAccessTokenSource.GetAccessTokenAsync should be the same as was returned by TokenCredential.GetTokenAsync
-    And the ExpiresOn returned by IAccessTokenSource.GetAccessTokenAsync should be the same as was returned by TokenCredential.GetTokenAsync
+    And the ExpiresOn returned by IAccessTokenSource.GetAccessTokenAsync should about three minutes into the future
 
 Scenario: Successful token acquisition with scopes and authority id
     Given the AccessTokenRequest scope is 'https://management.core.windows.net/.default'
@@ -36,7 +36,7 @@ Scenario: Successful token acquisition with scopes and authority id
     And the AuthorityId should have been passed on to TokenCredential.GetTokenAsync as the TenantId
     And the ParentRequestId passed to TokenCredential.GetTokenAsync should be null
     And the AccessToken returned by IAccessTokenSource.GetAccessTokenAsync should be the same as was returned by TokenCredential.GetTokenAsync
-    And the ExpiresOn returned by IAccessTokenSource.GetAccessTokenAsync should be the same as was returned by TokenCredential.GetTokenAsync
+    And the ExpiresOn returned by IAccessTokenSource.GetAccessTokenAsync should about three minutes into the future
 
 Scenario: Successful token acquisition with scopes, claims, and authority id
     Given the AccessTokenRequest scope is 'https://management.core.windows.net/.default'
@@ -49,7 +49,7 @@ Scenario: Successful token acquisition with scopes, claims, and authority id
     And the AuthorityId should have been passed on to TokenCredential.GetTokenAsync as the TenantId
     And the ParentRequestId passed to TokenCredential.GetTokenAsync should be null
     And the AccessToken returned by IAccessTokenSource.GetAccessTokenAsync should be the same as was returned by TokenCredential.GetTokenAsync
-    And the ExpiresOn returned by IAccessTokenSource.GetAccessTokenAsync should be the same as was returned by TokenCredential.GetTokenAsync
+    And the ExpiresOn returned by IAccessTokenSource.GetAccessTokenAsync should about three minutes into the future
 
 
 # The various implementations of TokenCredential supplied by Azure.Identity throw either a
@@ -87,7 +87,7 @@ Scenario: Replace token via IAccessTokenSource
     And the TenantId passed to TokenCredential.GetTokenAsync should be null
     And the ParentRequestId passed to TokenCredential.GetTokenAsync should be null
     And the AccessToken returned by IAccessTokenSource.GetAccessTokenAsync should be the same as was returned by TokenCredential.GetTokenAsync
-    And the ExpiresOn returned by IAccessTokenSource.GetAccessTokenAsync should be the same as was returned by TokenCredential.GetTokenAsync
+    And the ExpiresOn returned by IAccessTokenSource.GetAccessTokenAsync should about three minutes into the future
 
 Scenario: Replace token via IAccessTokenSourceFromDynamicConfiguration
     Given the AccessTokenRequest scope is 'https://management.core.windows.net/.default'
@@ -101,4 +101,4 @@ Scenario: Replace token via IAccessTokenSourceFromDynamicConfiguration
     And the TenantId passed to TokenCredential.GetTokenAsync should be null
     And the ParentRequestId passed to TokenCredential.GetTokenAsync should be null
     And the AccessToken returned by IAccessTokenSource.GetAccessTokenAsync should be the same as was returned by TokenCredential.GetTokenAsync
-    And the ExpiresOn returned by IAccessTokenSource.GetAccessTokenAsync should be the same as was returned by TokenCredential.GetTokenAsync
+    And the ExpiresOn returned by IAccessTokenSource.GetAccessTokenAsync should about three minutes into the future

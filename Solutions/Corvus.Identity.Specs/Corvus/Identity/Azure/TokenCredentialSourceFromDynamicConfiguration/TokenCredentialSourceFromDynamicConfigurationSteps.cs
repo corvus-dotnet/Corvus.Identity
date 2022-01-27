@@ -219,7 +219,6 @@ namespace Corvus.Identity.Azure.TokenCredentialSourceFromDynamicConfiguration
                         break;
                 }
             }
-
         }
 
         public class TestConfiguration
