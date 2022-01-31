@@ -1,4 +1,8 @@
-﻿namespace Corvus.Identity.Azure
+﻿// <copyright file="LegacyAuthConnectionString.feature.multi.cs" company="Endjin Limited">
+// Copyright (c) Endjin Limited. All rights reserved.
+// </copyright>
+
+namespace Corvus.Identity.Azure
 {
     using NUnit.Framework;
 

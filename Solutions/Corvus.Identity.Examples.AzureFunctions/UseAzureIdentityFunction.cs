@@ -6,7 +6,9 @@ namespace Corvus.Identity.Examples.AzureFunctions
 {
     using System;
     using System.Threading.Tasks;
+
     using Corvus.Identity.Examples.UsingAzureCore;
+
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Azure.WebJobs;

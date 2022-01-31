@@ -55,7 +55,7 @@ namespace Corvus.Identity.ClientAuthentication.MicrosoftRest
             this.tokenProvider = new MicrosoftRestTokenProvider(
                 serviceIdentityTokenSource ?? throw new ArgumentNullException(nameof(serviceIdentityTokenSource)),
                 scopes);
-       }
+        }
 
         /// <summary>
         /// Gets an authentication header value containing an access token.

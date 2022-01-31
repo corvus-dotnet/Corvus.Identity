@@ -1,4 +1,8 @@
-﻿namespace Corvus.Identity.Azure
+﻿// <copyright file="TokenCredentialBindings.cs" company="Endjin Limited">
+// Copyright (c) Endjin Limited. All rights reserved.
+// </copyright>
+
+namespace Corvus.Identity.Azure
 {
     using System;
     using System.Collections.Generic;
@@ -25,7 +29,7 @@
             set => this.Credentials.Add(KeyForDefaultCredential, value);
         }
 
-        public Dictionary<string, TokenCredential> Credentials { get; } = new ();
+        public Dictionary<string, TokenCredential> Credentials { get; } = new();
 
         [Then("the TokenCredential should be of type '(.*)'")]
         public void ThenTheTokenCredentialShouldBeOfType(string credentialType)

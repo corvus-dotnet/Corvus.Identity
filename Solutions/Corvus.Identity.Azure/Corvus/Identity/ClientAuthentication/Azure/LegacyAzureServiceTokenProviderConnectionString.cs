@@ -43,9 +43,7 @@ namespace Corvus.Identity.ClientAuthentication.Azure
             const string appIdPattern = "RunAs=App;AppId=(?<AppId>[A-Fa-f0-9]{8}(?:-[A-Fa-f0-9]{4}){3}-[A-Fa-f0-9]{12});TenantId=(?<TenantId>[A-Fa-f0-9]{8}(?:-[A-Fa-f0-9]{4}){3}-[A-Fa-f0-9]{12});AppKey=(?<AppKey>[^;]*)";
             TokenCredential keyVaultCredentials = (legacyConnectionString?.Trim() ?? string.Empty) switch
             {
-#pragma warning disable SA1122 // Use string.Empty for empty strings - StyleCop analyzer 1.1.118 doesn't understand patterns; it *has* to be "" here
                 "" => new DefaultAzureCredential(),
-#pragma warning restore SA1122 // Use string.Empty for empty strings
 
                 "RunAs=Developer;DeveloperTool=AzureCli" => new AzureCliCredential(),
                 "RunAs=Developer;DeveloperTool=VisualStudio" => new VisualStudioCredential(),
@@ -54,7 +52,7 @@ namespace Corvus.Identity.ClientAuthentication.Azure
                 string s when Regex.Match(s, appIdPattern) is Match m && m.Success =>
                     new TestableClientSecretCredential(m.Groups["TenantId"].Value, m.Groups["AppId"].Value, m.Groups["AppKey"].Value),
 
-                _ => throw new InvalidOperationException($"AzureServicesAuthConnectionString configuration value '{legacyConnectionString}' is not supported in this version of Corvus.Identity")
+                _ => throw new InvalidOperationException($"AzureServicesAuthConnectionString configuration value '{legacyConnectionString}' is not supported in this version of Corvus.Identity"),
             };
 
             return keyVaultCredentials;

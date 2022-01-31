@@ -32,7 +32,7 @@ namespace Corvus.Identity.Azure.TokenCredentialSourceFromDynamicConfiguration
     {
         private readonly TokenCredentialBindings tokenCredentials;
         private readonly KeyVaultBindings keyVault;
-        private readonly TestCache secretCache = new ();
+        private readonly TestCache secretCache = new();
         private IAzureTokenCredentialSourceFromDynamicConfiguration? credsFromConfig;
         private MemoryStream? configurationJson;
         private TestConfiguration? configuration;
@@ -58,7 +58,7 @@ namespace Corvus.Identity.Azure.TokenCredentialSourceFromDynamicConfiguration
                 .Build();
 
             this.configuration = configRoot.Get<TestConfiguration>();
-            ServiceCollection services = new ();
+            ServiceCollection services = new();
             services.AddAzureTokenCredentialSourceFromDynamicConfiguration();
 
             services.RemoveAll(typeof(IKeyVaultSecretCache));
@@ -98,7 +98,7 @@ namespace Corvus.Identity.Azure.TokenCredentialSourceFromDynamicConfiguration
             string azureAppClientSecretPlainText)
         {
             this.GivenAClientIdAndSecretConfigurationWith(identitySourceType, azureAppTenantId, azureAdAppClientId, azureAppClientSecretPlainText);
-            this.configuration!.ClientIdentity!.AzureAdAppClientSecretInKeyVault = new ()
+            this.configuration!.ClientIdentity!.AzureAdAppClientSecretInKeyVault = new()
             {
                 VaultName = "somevault",
                 SecretName = "SomeSecret",
@@ -155,7 +155,7 @@ namespace Corvus.Identity.Azure.TokenCredentialSourceFromDynamicConfiguration
             {
                 IAzureTokenCredentialSource source =
                     await this.credsFromConfig!.CredentialSourceForConfigurationAsync(this.configuration!.ClientIdentity!).ConfigureAwait(false);
-                await  source.GetReplacementForFailedTokenCredentialAsync().ConfigureAwait(false);
+                await source.GetReplacementForFailedTokenCredentialAsync().ConfigureAwait(false);
             }
             else if (invalidationMechanism == "IAzureTokenCredentialSourceFromDynamicConfiguration")
             {
@@ -219,7 +219,6 @@ namespace Corvus.Identity.Azure.TokenCredentialSourceFromDynamicConfiguration
                         break;
                 }
             }
-
         }
 
         public class TestConfiguration
@@ -229,13 +228,13 @@ namespace Corvus.Identity.Azure.TokenCredentialSourceFromDynamicConfiguration
 
         private class TestCache : IKeyVaultSecretCache
         {
-            private readonly Dictionary<(string VaultName, string SecretName), string> secretsToReturn = new ();
+            private readonly Dictionary<(string VaultName, string SecretName), string> secretsToReturn = new();
 
-            public List<SecretCacheRow> TryGets { get; } = new ();
+            public List<SecretCacheRow> TryGets { get; } = new();
 
-            public List<SecretCacheRow> Invalidations { get; } = new ();
+            public List<SecretCacheRow> Invalidations { get; } = new();
 
-            public Dictionary<string, ClientIdentityConfiguration?> Identities { get; } = new ();
+            public Dictionary<string, ClientIdentityConfiguration?> Identities { get; } = new();
 
             public void AddSecret(string vaultName, string secretName, ClientIdentityConfiguration? clientIdentity, string secret)
             {
@@ -263,10 +262,6 @@ namespace Corvus.Identity.Azure.TokenCredentialSourceFromDynamicConfiguration
             }
         }
 
-        [SuppressMessage(
-            "StyleCop.CSharp.NamingRules",
-            "SA1313:Parameter names should begin with lower-case letter",
-            Justification = "StyleCop doesn't seem to understand that these are properties")]
         private record SecretCacheRow(string VaultName, string SecretName, string Credential);
     }
 }

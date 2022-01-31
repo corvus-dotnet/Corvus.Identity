@@ -30,7 +30,7 @@ namespace Corvus.Identity.ClientAuthentication.Azure
         {
             type = default;
 
-            HashSet<ClientIdentitySourceTypes> indicatedSourceTypes = new ();
+            HashSet<ClientIdentitySourceTypes> indicatedSourceTypes = new();
 
             if (configuration is null)
             {

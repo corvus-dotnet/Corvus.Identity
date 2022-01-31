@@ -54,7 +54,7 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
 
         /// <inheritdoc/>
         public ValueTask<TokenCredential> GetTokenCredentialAsync(CancellationToken cancellationToken = default)
-             => new (this.tokenCredential);
+             => new(this.tokenCredential);
 
         /// <inheritdoc/>
         public async ValueTask<TokenCredential> GetReplacementForFailedTokenCredentialAsync(

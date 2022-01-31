@@ -1,4 +1,8 @@
-﻿namespace Corvus.Identity.Azure
+﻿// <copyright file="KeyVaultBindings.cs" company="Endjin Limited">
+// Copyright (c) Endjin Limited. All rights reserved.
+// </copyright>
+
+namespace Corvus.Identity.Azure
 {
     using System;
     using System.Collections.Generic;
@@ -6,17 +10,17 @@
     using System.Threading;
     using System.Threading.Tasks;
 
+    using Corvus.Identity.ClientAuthentication.Azure.Internal;
     using global::Azure;
     using global::Azure.Core;
     using global::Azure.Security.KeyVault.Secrets;
 
-    using Corvus.Identity.ClientAuthentication.Azure.Internal;
-
     using Microsoft.Extensions.DependencyInjection;
 
-    using TechTalk.SpecFlow;
     using Moq;
+
     using NUnit.Framework;
+    using TechTalk.SpecFlow;
 
     [Binding]
     public class KeyVaultBindings
@@ -27,7 +31,7 @@
         public KeyVaultBindings(
             TokenCredentialBindings tokenCredentials)
         {
-            List<(string KeyVaultName, TokenCredential Credential)> vaultCredentialPairs = new ();
+            List<(string KeyVaultName, TokenCredential Credential)> vaultCredentialPairs = new();
             this.secretClientFactory = new FakeKeyVaultSecretClientFactory(vaultCredentialPairs);
             this.VaultCredentialPairs = vaultCredentialPairs;
             this.tokenCredentials = tokenCredentials;
@@ -66,7 +70,7 @@
         private class FakeKeyVaultSecretClientFactory : IKeyVaultSecretClientFactory
         {
             private readonly IList<(string KeyVaultName, TokenCredential Credential)> vaultCredentialPairs;
-            private readonly Dictionary<(string VaultName, string secretName), string> secrets = new ();
+            private readonly Dictionary<(string VaultName, string SecretName), string> secrets = new();
 
             public FakeKeyVaultSecretClientFactory(
                 IList<(string KeyVaultName, TokenCredential Credential)> vaultCredentialPairs)
