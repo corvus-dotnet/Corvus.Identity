@@ -44,8 +44,6 @@ namespace Corvus.Identity.Azure
             AzureTokenCredentialSource tokenCredentialSource = new(
                 new TestTokenCredential(this),
                 _ => this.ReplacementTokenRequested());
-            ////this.accessTokenSource = new AzureTokenCredentialAccessTokenSource(
-            ////    tokenCredentialSource);
             this.sourceFromDynamicConfiguration = new AccessTokenSourceFromDynamicConfiguration(
                 new TestTokenCredentialSourceFromConfig(this, tokenCredentialSource));
 
@@ -162,13 +160,20 @@ namespace Corvus.Identity.Azure
         [Then(@"the AccessToken returned by IAccessTokenSource\.GetAccessTokenAsync should be the same as was returned by TokenCredential\.GetTokenAsync")]
         public async Task ThenTheAccessTokenReturnedByIAccessTokenSource_GetAccessTokenAsyncShouldBeTheSameAsWasReturnedByTokenCredential_GetTokenAsync()
         {
-            Assert.AreSame(this.resultFromUnderlyingCredential.Token, (await this.accessTokenDetailReturnedTask.ConfigureAwait(false)).AccessToken);
+            Assert.AreEqual(this.resultFromUnderlyingCredential.Token, (await this.accessTokenDetailReturnedTask.ConfigureAwait(false)).AccessToken);
         }
 
-        [Then(@"the ExpiresOn returned by IAccessTokenSource\.GetAccessTokenAsync should be the same as was returned by TokenCredential\.GetTokenAsync")]
+        [Then(@"the ExpiresOn returned by IAccessTokenSource\.GetAccessTokenAsync should about three minutes into the future")]
         public async Task ThenTheExpiresOnReturnedByIAccessTokenSource_GetAccessTokenAsyncShouldBeTheSameAsWasReturnedByTokenCredential_GetTokenAsync()
         {
-            Assert.AreEqual(this.resultFromUnderlyingCredential.ExpiresOn, (await this.accessTokenDetailReturnedTask.ConfigureAwait(false)).ExpiresOn);
+            // Because of the limited access to the Azure.Core token caching functionality, it's
+            // not possible for us to determine the real token expiration time. (We'd have to
+            // write our own cache logic to do that.) We know that the token cache we are
+            // (indirectly) using refreshes tokens 5 minutes before they expire, so we just
+            // report a fixed expiration time a little into the future.
+            DateTimeOffset reportedExpiration = (await this.accessTokenDetailReturnedTask.ConfigureAwait(false)).ExpiresOn;
+            TimeSpan diff = DateTimeOffset.UtcNow.AddMinutes(3) - reportedExpiration;
+            Assert.IsTrue(Math.Abs(diff.TotalSeconds) < 30);
         }
 
         [Then(@"the Claims should have been passed on to TokenCredential\.GetTokenAsync")]

@@ -1,5 +1,11 @@
 # Release notes for Corvus.Identity v3.
 
+## v3.1
+
+New features:
+
+The `IAccessTokenSource` adapter for `Azure.Core`-style `TokenCredentials` (and, by extension, also the `Microsoft.Rest` adapters) now do token caching. This means for for credential types where the underlying mechanism does not have built-in caching (most notably Azure Managed Identities), and the client code also doesn't do any credential caching (which can happen with some Autorest client usage styles) we will now typically be able to avoid calls to the underlying credential provider in cases where the most recently received token for a given scope hasn't expired yet.
+
 ## v3.0
 
 New features:
