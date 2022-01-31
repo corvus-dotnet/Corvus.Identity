@@ -16,12 +16,12 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
     /// </summary>
     internal class KeyVaultSecretCache : IKeyVaultSecretCache
     {
-        private static readonly MemoryCacheEntryOptions EntryOptions = new ()
+        private static readonly MemoryCacheEntryOptions EntryOptions = new()
         {
             AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(20),
         };
 
-        private readonly MemoryCache cache = new (
+        private readonly MemoryCache cache = new(
             new OptionsWrapper<MemoryCacheOptions>(new MemoryCacheOptions()));
 
         /// <inheritdoc/>
@@ -49,7 +49,7 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
             return this.cache.TryGetValue(key, out secret);
         }
 
-        private static string GetKey (
+        private static string GetKey(
             string vaultName,
             string secretName,
             ClientIdentityConfiguration? clientIdentity)

@@ -9,9 +9,7 @@ namespace Corvus.Identity.ClientAuthentication
     /// <summary>
     /// Thrown when an <see cref="IAccessTokenSource"/> fails to acquire a token.
     /// </summary>
-#pragma warning disable RCS1194 // Implement exception constructors.
     public class AccessTokenNotIssuedException : Exception
-#pragma warning restore RCS1194 // Implement exception constructors.
     {
         /// <summary>
         /// Creates a new <see cref="AccessTokenNotIssuedException"/>.

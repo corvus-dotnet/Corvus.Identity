@@ -1,4 +1,8 @@
-﻿namespace Corvus.Identity.Azure
+﻿// <copyright file="AzureTokenCredentialAccessTokenSourceSteps.cs" company="Endjin Limited">
+// Copyright (c) Endjin Limited. All rights reserved.
+// </copyright>
+
+namespace Corvus.Identity.Azure
 {
     using System;
     using System.Collections.Generic;
@@ -20,9 +24,9 @@
     [Binding]
     public class AzureTokenCredentialAccessTokenSourceSteps
     {
-        private readonly TaskCompletionSource<AccessToken> taskForResultFromUnderlyingCredential = new ();
-        private readonly List<TestTokenCredential> replacementCredentials = new ();
-        private readonly List<ClientIdentityConfiguration> invalidatedConfigurations = new ();
+        private readonly TaskCompletionSource<AccessToken> taskForResultFromUnderlyingCredential = new();
+        private readonly List<TestTokenCredential> replacementCredentials = new();
+        private readonly List<ClientIdentityConfiguration> invalidatedConfigurations = new();
         private readonly ClientIdentityConfiguration configuration;
         private readonly IAccessTokenSourceFromDynamicConfiguration sourceFromDynamicConfiguration;
         private readonly Task<IAccessTokenSource> accessTokenSource;
@@ -37,7 +41,7 @@
 
         public AzureTokenCredentialAccessTokenSourceSteps()
         {
-            AzureTokenCredentialSource tokenCredentialSource = new (
+            AzureTokenCredentialSource tokenCredentialSource = new(
                 new TestTokenCredential(this),
                 _ => this.ReplacementTokenRequested());
             ////this.accessTokenSource = new AzureTokenCredentialAccessTokenSource(
@@ -209,7 +213,7 @@
 
         private ValueTask<TokenCredential> ReplacementTokenRequested()
         {
-            TestTokenCredential replacement = new (this);
+            TestTokenCredential replacement = new(this);
             this.replacementCredentials.Add(replacement);
             return new ValueTask<TokenCredential>(replacement);
         }

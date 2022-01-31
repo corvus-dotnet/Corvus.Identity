@@ -69,7 +69,7 @@ namespace Microsoft.Extensions.DependencyInjection
             this IServiceCollection services,
             TokenCredential tokenCredential)
         {
-            AzureTokenCredentialSource source = new (tokenCredential, null);
+            AzureTokenCredentialSource source = new(tokenCredential, null);
             return services
                 .AddSingleton<IServiceIdentityAzureTokenCredentialSource>(new ServiceIdentityAzureTokenCredentialSource(source))
                 .AddSingleton<IServiceIdentityAccessTokenSource, ServiceIdentityAccessTokenSource>();
