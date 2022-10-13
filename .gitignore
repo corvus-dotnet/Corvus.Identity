@@ -340,3 +340,8 @@ coverage.cobertura.xml
 local.settings.json
 
 *.feature.cs
+
+# Scripted build artifacts
+/_codeCoverage
+/_packages
+*.sbom.*
