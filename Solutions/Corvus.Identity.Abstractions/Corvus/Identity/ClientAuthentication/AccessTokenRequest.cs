@@ -7,7 +7,7 @@ namespace Corvus.Identity.ClientAuthentication
     /// <summary>
     /// Describes the characteristics required when requesting an access token.
     /// </summary>
-    public struct AccessTokenRequest
+    public readonly struct AccessTokenRequest
     {
         /// <summary>
         /// Creates an <see cref="AccessTokenRequest"/>.

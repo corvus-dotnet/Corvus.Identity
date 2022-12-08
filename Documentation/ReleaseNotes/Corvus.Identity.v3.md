@@ -1,5 +1,13 @@
 # Release notes for Corvus.Identity v3.
 
+## v3.2
+
+Dependency minor version upgrades:
+
+* Azure.Identity 1.6 -> 1.8
+* Azure.Security.KeyVault.Secrets 4.3 -> 4.4
+
+
 ## v3.1
 
 Dependency minor version upgrades:
