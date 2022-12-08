@@ -16,7 +16,7 @@ namespace Corvus.Identity.ClientAuthentication
     /// particular set of client libraries.
     /// </para>
     /// </remarks>
-    public struct AccessTokenDetail
+    public readonly struct AccessTokenDetail
     {
         /// <summary>
         /// Creates an <see cref="AccessTokenDetail"/>.
