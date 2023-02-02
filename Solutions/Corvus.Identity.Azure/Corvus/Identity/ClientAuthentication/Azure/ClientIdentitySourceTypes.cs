@@ -50,5 +50,11 @@ namespace Corvus.Identity.ClientAuthentication.Azure
         /// suitable for local development purposes.
         /// </summary>
         AzureIdentityDefaultAzureCredential,
+
+        /// <summary>
+        /// Visual Studio Code's authentication should be used to determine the identity. (For local
+        /// development purposes only.)
+        /// </summary>
+        VisualStudioCode,
     }
 }

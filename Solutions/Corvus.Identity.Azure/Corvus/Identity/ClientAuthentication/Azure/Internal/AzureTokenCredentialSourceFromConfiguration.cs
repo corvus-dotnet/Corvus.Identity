@@ -63,9 +63,12 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
             {
                 ClientIdentitySourceTypes.Managed => new ManagedIdentityCredential(),
                 ClientIdentitySourceTypes.AzureIdentityDefaultAzureCredential => new DefaultAzureCredential(),
+                ClientIdentitySourceTypes.AzureCli => new AzureCliCredential(),
+                ClientIdentitySourceTypes.VisualStudio => new VisualStudioCredential(),
+                ClientIdentitySourceTypes.VisualStudioCode => new VisualStudioCodeCredential(),
 
                 _ => throw new ArgumentException(
-                    $"Unsupported IdentitySourceType: ${identitySourceType}",
+                    $"Unsupported IdentitySourceType: {identitySourceType}",
                     nameof(configuration)),
             };
             return new AzureTokenCredentialSource(tokenCredential, null);
