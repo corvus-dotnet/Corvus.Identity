@@ -97,8 +97,8 @@
       },
       "Azure.Identity": {
         "type": "Transitive",
-        "resolved": "1.8.0",
-        "contentHash": "xnsY/lgAG4bO5d2akXc1hqfvknIk+u3gh5Ma33KN2uyNeU3C5AzIfrwO/N/b9D/7dk4MyXai4JGKHNgHjcoFsA==",
+        "resolved": "1.8.1",
+        "contentHash": "pxpGgVW6SCG+RewCVVlsEtcnQsLmlRobVlknY1Ir6t00iu2eRbdH/+ignhDnTaKlNN8pHfMJH5rTkJs9W4rQOg==",
         "dependencies": {
           "Azure.Core": "1.25.0",
           "Microsoft.Identity.Client": "4.46.0",
@@ -1580,7 +1580,7 @@
       "corvus.identity.azure": {
         "type": "Project",
         "dependencies": {
-          "Azure.Identity": "[1.8.0, )",
+          "Azure.Identity": "[1.8.1, )",
           "Azure.Security.KeyVault.Secrets": "[4.4.0, )",
           "Corvus.Identity.Abstractions": "[1.0.0, )",
           "Microsoft.Extensions.Caching.Memory": "[6.0.1, )",
