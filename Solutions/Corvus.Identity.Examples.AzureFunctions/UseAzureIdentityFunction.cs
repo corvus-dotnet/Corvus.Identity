@@ -79,12 +79,19 @@ namespace Corvus.Identity.Examples.AzureFunctions
         {
             this.logger.LogInformation($"Request: {req.Path}");
 
-            string secret = await this.configIdClient.GetSecretAsync(
-                this.settings.KeyVaultClientIdentity,
-                new Uri(this.settings.KeyVaultUri),
-                this.settings.KeyVaultSecretName).ConfigureAwait(false);
+            try
+            {
+                string secret = await this.configIdClient.GetSecretAsync(
+                        this.settings.KeyVaultClientIdentity,
+                        new Uri(this.settings.KeyVaultUri),
+                        this.settings.KeyVaultSecretName).ConfigureAwait(false);
 
-            return new OkObjectResult(secret);
+                return new OkObjectResult(secret);
+            }
+            catch (Exception x)
+            {
+                return new ObjectResult("Failed: " + x) { StatusCode = 500 };
+            }
         }
     }
 }

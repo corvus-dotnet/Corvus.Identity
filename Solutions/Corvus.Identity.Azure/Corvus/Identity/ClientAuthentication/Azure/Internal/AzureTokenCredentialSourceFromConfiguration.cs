@@ -61,7 +61,8 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
 
             TokenCredential tokenCredential = identitySourceType switch
             {
-                ClientIdentitySourceTypes.Managed => new ManagedIdentityCredential(),
+                ClientIdentitySourceTypes.SystemAssignedManaged => new ManagedIdentityCredential(),
+                ClientIdentitySourceTypes.UserAssignedManaged => new ManagedIdentityCredential(configuration.ManagedIdentityClientId),
                 ClientIdentitySourceTypes.AzureIdentityDefaultAzureCredential => new DefaultAzureCredential(),
                 ClientIdentitySourceTypes.AzureCli => new AzureCliCredential(),
                 ClientIdentitySourceTypes.VisualStudio => new VisualStudioCredential(),

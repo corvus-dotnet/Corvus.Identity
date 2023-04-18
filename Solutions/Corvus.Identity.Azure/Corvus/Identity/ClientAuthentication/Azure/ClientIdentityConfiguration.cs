@@ -65,5 +65,11 @@ namespace Corvus.Identity.ClientAuthentication.Azure
         /// </para>
         /// </remarks>
         public ClientIdentitySourceTypes? IdentitySourceType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the client id of the user-defined managed identity with which to
+        /// authenticate.
+        /// </summary>
+        public string? ManagedIdentityClientId { get; set; }
     }
 }
