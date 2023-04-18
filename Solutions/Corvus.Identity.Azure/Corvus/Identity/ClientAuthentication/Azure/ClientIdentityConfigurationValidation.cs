@@ -46,6 +46,7 @@ namespace Corvus.Identity.ClientAuthentication.Azure
             bool adAppClientIdPresent = !string.IsNullOrWhiteSpace(configuration.AzureAdAppClientId);
             bool adAppClientSecretPlainTextPresent = !string.IsNullOrWhiteSpace(configuration.AzureAdAppClientSecretPlainText);
             bool adAppClientSecretKeyVaultPresent = configuration.AzureAdAppClientSecretInKeyVault is not null;
+            bool managedIdClientIdPresent = !string.IsNullOrWhiteSpace(configuration.ManagedIdentityClientId);
             if (configuration.IdentitySourceType == ClientIdentitySourceTypes.ClientIdAndSecret
                 || adAppTenantIdPresent
                 || adAppClientIdPresent
@@ -53,6 +54,12 @@ namespace Corvus.Identity.ClientAuthentication.Azure
                 || adAppClientSecretKeyVaultPresent)
             {
                 indicatedSourceTypes.Add(ClientIdentitySourceTypes.ClientIdAndSecret);
+            }
+
+            if (configuration.IdentitySourceType == ClientIdentitySourceTypes.UserAssignedManaged
+                || managedIdClientIdPresent)
+            {
+                indicatedSourceTypes.Add(ClientIdentitySourceTypes.UserAssignedManaged);
             }
 
             switch (indicatedSourceTypes.Count)
@@ -68,7 +75,7 @@ namespace Corvus.Identity.ClientAuthentication.Azure
                     if (configuration.IdentitySourceType.HasValue)
                     {
                         string sourceTypes = string.Join(", ", indicatedSourceTypes.Except(new[] { configuration.IdentitySourceType.Value }));
-                        return $"identity type is ambiguous because the IdentitySourceType is {configuration.IdentitySourceType} but the properties set are for {sourceTypes}";
+                        return $"identity type is ambiguous because the IdentitySourceType is {SourceTypeString(configuration.IdentitySourceType)} but the properties set are for {sourceTypes}";
                     }
 
                     return $"identity type is ambiguous because the properties set are for {string.Join(", ", indicatedSourceTypes)}";
@@ -84,9 +91,28 @@ namespace Corvus.Identity.ClientAuthentication.Azure
                     }
 
                     break;
+
+                case ClientIdentitySourceTypes.UserAssignedManaged:
+                    if (!managedIdClientIdPresent)
+                    {
+                        return "UserAssignedManaged configuration must provide ManagedIdentityClientId";
+                    }
+
+                    break;
             }
 
             return null;
         }
+
+        private static string SourceTypeString(ClientIdentitySourceTypes? type) => type switch
+        {
+            // When we added support for user-assigned managed identities, we deprecated the
+            // old ClientIdentitySourceTypes.Managed enumeration entry, which is now an alias
+            // for ClientIdentitySourceTypes.SystemAssignedManaged. (Both have the same numeric
+            // value, 3.) ToString picks the old obsolete "Managed" label, not the new, preferred
+            // label of "SystemAssignedManaged", so we have to special-cased this.
+            ClientIdentitySourceTypes.SystemAssignedManaged => nameof(ClientIdentitySourceTypes.SystemAssignedManaged),
+            _ => type?.ToString() ?? "null",
+        };
     }
 }

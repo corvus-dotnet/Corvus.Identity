@@ -4,6 +4,8 @@
 
 namespace Corvus.Identity.ClientAuthentication.Azure
 {
+    using System;
+
     /// <summary>
     /// The various sources from which client identity information can be drawn.
     /// </summary>
@@ -29,7 +31,18 @@ namespace Corvus.Identity.ClientAuthentication.Azure
         /// <summary>
         /// The ambient Azure Managed Identity should be used.
         /// </summary>
-        Managed,
+        SystemAssignedManaged,
+
+        /// <summary>
+        /// The old name for <see cref="SystemAssignedManaged"/>.
+        /// </summary>
+        /// <remarks>
+        /// When this enum type was introduced, the only supported managed identity type was a
+        /// system-assigned managed identity. The addition of <see cref="UserAssignedManaged"/>
+        /// made this old name ambiguous.
+        /// </remarks>
+        [Obsolete("Use SystemAssignedManaged")]
+        Managed = SystemAssignedManaged,
 
         /// <summary>
         /// The identity with which the Azure CLI is current logged in should be used. (For local
@@ -56,5 +69,10 @@ namespace Corvus.Identity.ClientAuthentication.Azure
         /// development purposes only.)
         /// </summary>
         VisualStudioCode,
+
+        /// <summary>
+        /// A user-assigned managed identity.
+        /// </summary>
+        UserAssignedManaged,
     }
 }

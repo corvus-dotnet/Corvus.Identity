@@ -1,7 +1,7 @@
 ﻿Feature: ClientIdentityConfigurationValidation
-	As a developer or administrator configuring an application
-	I want to receive useful errors when an ClientIdentityConfiguration is incorrect
-	So that I can understand and resolve the situation quickly
+    As a developer or administrator configuring an application
+    I want to receive useful errors when an ClientIdentityConfiguration is incorrect
+    So that I can understand and resolve the situation quickly
 
 Scenario Outline: Simple valid configuration
     Given configuration of
@@ -10,8 +10,8 @@ Scenario Outline: Simple valid configuration
             "ClientIdentity": { "IdentitySourceType": "<IdentitySourceType>" }
         }
         """
-	When I validate the configuration
-	Then the validation should pass
+    When I validate the configuration
+    Then the validation should pass
     And the validated type should be '<IdentitySourceType>'
 
     Examples:
@@ -28,8 +28,8 @@ Scenario: Null configuration
           "ClientIdentity": null
         }
         """
-	When I validate the configuration
-	Then the validation should fail with 'must not be null'
+    When I validate the configuration
+    Then the validation should fail with 'must not be null'
     
 Scenario: No apparent source type
     Given configuration of
@@ -38,13 +38,13 @@ Scenario: No apparent source type
           "ClientIdentity": { "IdentitySourceType": null }
         }
         """
-	When I validate the configuration
-	Then the validation should fail with 'unable to determine identity type because no suitable properties have been set'
+    When I validate the configuration
+    Then the validation should fail with 'unable to determine identity type because no suitable properties have been set'
 
 Scenario Outline: Good ClientIdAndSecret
     Given a ClientIdAndSecret configuration with '<IdentitySourceType>', '<AzureAppTenantId>', '<AzureAdAppClientId>', '<AzureAdAppClientSecretPlainText>'
-	When I validate the configuration
-	Then the validation should pass
+    When I validate the configuration
+    Then the validation should pass
     And the validated type should be 'ClientIdAndSecret'
 
     Examples:
@@ -54,8 +54,8 @@ Scenario Outline: Good ClientIdAndSecret
 
 Scenario Outline: Bad ClientIdAndSecret plaintext
     Given a ClientIdAndSecret configuration with '<IdentitySourceType>', '<AzureAppTenantId>', '<AzureAdAppClientId>', '<AzureAdAppClientSecretPlainText>'
-	When I validate the configuration
-	Then the validation should fail with 'ClientIdAndSecret configuration must provide AzureAppTenantId, AzureAdAppClientId, and either AzureAppClientSecretPlainText or AzureAdAppClientSecretInKeyVault'
+    When I validate the configuration
+    Then the validation should fail with 'ClientIdAndSecret configuration must provide AzureAppTenantId, AzureAdAppClientId, and either AzureAppClientSecretPlainText or AzureAdAppClientSecretInKeyVault'
 
     Examples:
     | IdentitySourceType | AzureAppTenantId                     | AzureAdAppClientId                   | AzureAdAppClientSecretPlainText |
@@ -75,8 +75,8 @@ Scenario Outline: Bad ClientIdAndSecret plaintext
 
 Scenario Outline: Bad ClientIdAndSecret with secret in key vault
     Given a ClientIdAndSecret configuration with '<IdentitySourceType>', '<AzureAppTenantId>', '<AzureAdAppClientId>', '<AzureAdAppClientSecretPlainText>' and a secret in key vault
-	When I validate the configuration
-	Then the validation should fail with 'ClientIdAndSecret configuration must provide AzureAppTenantId, AzureAdAppClientId, and either AzureAppClientSecretPlainText or AzureAdAppClientSecretInKeyVault'
+    When I validate the configuration
+    Then the validation should fail with 'ClientIdAndSecret configuration must provide AzureAppTenantId, AzureAdAppClientId, and either AzureAppClientSecretPlainText or AzureAdAppClientSecretInKeyVault'
 
     Examples:
     | IdentitySourceType | AzureAppTenantId                     | AzureAdAppClientId                   | AzureAdAppClientSecretPlainText |
@@ -100,12 +100,13 @@ Scenario Outline: IdentitySourceType conflicts apparent ClientIdAndSecret with p
           }
         }
         """
-	When I validate the configuration
+    When I validate the configuration
     Then the validation should fail with 'identity type is ambiguous because the IdentitySourceType is <IdentitySourceType> but the properties set are for ClientIdAndSecret'
 
     Examples:
     | IdentitySourceType                  |
-    | Managed                             |
+    | SystemAssignedManaged               |
+    | UserAssignedManaged                 |
     | AzureCli                            |
     | VisualStudio                        |
     | AzureIdentityDefaultAzureCredential |
@@ -125,12 +126,69 @@ Scenario Outline: IdentitySourceType conflicts apparent ClientIdAndSecret with s
           }
         }
         """
-	When I validate the configuration
+    When I validate the configuration
     Then the validation should fail with 'identity type is ambiguous because the IdentitySourceType is <IdentitySourceType> but the properties set are for ClientIdAndSecret'
 
     Examples:
     | IdentitySourceType                  |
-    | Managed                             |
+    | SystemAssignedManaged               |
+    | UserAssignedManaged                 |
     | AzureCli                            |
     | VisualStudio                        |
     | AzureIdentityDefaultAzureCredential |
+
+Scenario Outline: Good SystemAssignedManaged
+    Given configuration of
+        """
+        {
+          "ClientIdentity": { "IdentitySourceType": "<IdentitySourceType>" }
+        }
+        """
+    When I validate the configuration
+    Then the validation should pass
+    And the validated type should be 'SystemAssignedManaged'
+
+    Examples:
+    | IdentitySourceType    |
+    | SystemAssignedManaged |
+    # Legacy, but still supported
+    | Managed               |
+
+Scenario: Good UserAssignedManaged
+    Given configuration of
+        """
+        {
+          "ClientIdentity": {
+              "IdentitySourceType": "UserAssignedManaged",
+              "ManagedIdentityClientId": "baadf00d-0123-4567-89ab-abbadabbad00"
+          }
+        }
+        """
+    When I validate the configuration
+    Then the validation should pass
+    And the validated type should be 'UserAssignedManaged'
+
+Scenario: Good implicit UserAssignedManaged
+    Given configuration of
+        """
+        {
+          "ClientIdentity": {
+              "ManagedIdentityClientId": "baadf00d-0123-4567-89ab-abbadabbad00"
+          }
+        }
+        """
+    When I validate the configuration
+    Then the validation should pass
+    And the validated type should be 'UserAssignedManaged'
+
+Scenario: UserAssignedManaged with missing ManagedIdentityClientId
+    Given configuration of
+        """
+        {
+          "ClientIdentity": {
+              "IdentitySourceType": "UserAssignedManaged"
+          }
+        }
+        """
+    When I validate the configuration
+    Then the validation should fail with 'UserAssignedManaged configuration must provide ManagedIdentityClientId'

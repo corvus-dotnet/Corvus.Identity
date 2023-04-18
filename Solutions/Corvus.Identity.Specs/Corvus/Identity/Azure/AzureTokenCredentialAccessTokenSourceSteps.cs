@@ -44,14 +44,12 @@ namespace Corvus.Identity.Azure
             AzureTokenCredentialSource tokenCredentialSource = new(
                 new TestTokenCredential(this),
                 _ => this.ReplacementTokenRequested());
-            ////this.accessTokenSource = new AzureTokenCredentialAccessTokenSource(
-            ////    tokenCredentialSource);
             this.sourceFromDynamicConfiguration = new AccessTokenSourceFromDynamicConfiguration(
                 new TestTokenCredentialSourceFromConfig(this, tokenCredentialSource));
 
             this.configuration = new ClientIdentityConfiguration
             {
-                IdentitySourceType = ClientIdentitySourceTypes.Managed,
+                IdentitySourceType = ClientIdentitySourceTypes.SystemAssignedManaged,
             };
             this.accessTokenSource = this.sourceFromDynamicConfiguration
                 .AccessTokenSourceForConfigurationAsync(this.configuration)

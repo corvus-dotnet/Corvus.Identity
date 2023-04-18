@@ -22,9 +22,14 @@
     // ...and you could either set the client secret directly as plain text in the config:
     // "ExampleSettings:ArmClientIdentity:AzureAdAppClientSecretPlainText": "<clientSecret>",
     // ...or you could load the client secret from Azure Key Vault
-    "ExampleSettings:ArmClientIdentity:AzureAdAppClientSecretInKeyVault:VaultName": "<keyVaultName>",
-    "ExampleSettings:ArmClientIdentity:AzureAdAppClientSecretInKeyVault:SecretName": "<nameOfSecretContainingAdAppClientSecret>",
-    "ExampleSettings:ArmClientIdentity:AzureAdAppClientSecretInKeyVault:VaultClientIdentity:IdentitySourceType": "AzureIdentityDefaultAzureCredential",
+    //"ExampleSettings:ArmClientIdentity:AzureAdAppClientSecretInKeyVault:VaultName": "<keyVaultName>",
+    //"ExampleSettings:ArmClientIdentity:AzureAdAppClientSecretInKeyVault:SecretName": "<nameOfSecretContainingAdAppClientSecret>",
+    //"ExampleSettings:ArmClientIdentity:AzureAdAppClientSecretInKeyVault:VaultClientIdentity:IdentitySourceType": "AzureIdentityDefaultAzureCredential",
+    // If deployed in Azure you could use a system-defined managed identity
+    //"ExampleSettings:ArmClientIdentity:IdentitySourceType": "SystemAssignedManaged",
+    // or a user-defined managed identity
+    //"ExampleSettings:ArmClientIdentity:IdentitySourceType": "UserAssignedManaged",
+    //"ExampleSettings:ArmClientIdentity:ManagedIdentityClientId": "<managed identity client id>",
 
     // Determines the mechanism used by the examples that use the Service Identity.
     "ExampleSettings:ServiceIdentity:IdentitySourceType": "AzureIdentityDefaultAzureCredential"
