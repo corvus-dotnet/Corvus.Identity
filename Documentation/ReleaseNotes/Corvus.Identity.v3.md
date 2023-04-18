@@ -1,5 +1,20 @@
 # Release notes for Corvus.Identity v3.
 
+## v3.3
+
+New feature:
+
+* Support for user-defined managed identities
+
+Dependency minor version upgrades:
+
+* Azure.Security.KeyVault.Secrets 4.4 -> 4.5, with the following transient upgrades:
+    * Azure.Core 1.25 -> 1.30
+    * Microsoft.Identity.Client 4.46 -> 4.49
+    * Microsoft.Identity.Client.Extensions.Msal 2.23 -> 2.25
+    * Microsoft.Identity.Model.Abstractions 6.18 -> 6.22
+
+
 ## v3.2
 
 Dependency minor version upgrades:
