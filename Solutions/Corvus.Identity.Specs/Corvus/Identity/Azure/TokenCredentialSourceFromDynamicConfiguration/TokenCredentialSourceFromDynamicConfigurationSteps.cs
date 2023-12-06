@@ -34,7 +34,6 @@ namespace Corvus.Identity.Azure.TokenCredentialSourceFromDynamicConfiguration
         private readonly KeyVaultBindings keyVault;
         private readonly TestCache secretCache = new();
         private IAzureTokenCredentialSourceFromDynamicConfiguration? credsFromConfig;
-        private MemoryStream? configurationJson;
         private TestConfiguration? configuration;
         private ServiceProvider? serviceProvider;
         private string? validationResult;
@@ -51,13 +50,7 @@ namespace Corvus.Identity.Azure.TokenCredentialSourceFromDynamicConfiguration
         [Given("configuration of")]
         public void GivenConfigurationOf(string configurationJson)
         {
-            this.configurationJson = new MemoryStream(Encoding.UTF8.GetBytes(configurationJson));
-
-            IConfigurationRoot configRoot = new ConfigurationBuilder()
-                .AddJsonStream(this.configurationJson)
-                .Build();
-
-            this.configuration = configRoot.Get<TestConfiguration>();
+            this.configuration = ConfigLoading.LoadJsonConfiguration<TestConfiguration>(configurationJson);
             ServiceCollection services = new();
             services.AddAzureTokenCredentialSourceFromDynamicConfiguration();
 
