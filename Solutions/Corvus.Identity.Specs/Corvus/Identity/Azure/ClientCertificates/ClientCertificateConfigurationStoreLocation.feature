@@ -16,3 +16,18 @@ Scenario Outline: Store location
     | StoreLocation |
     | CurrentUser   |
     | LocalMachine  |
+
+# Subject name identifies a certificate we do not have.
+
+Scenario: Certificate with subject name not found
+    When client certificate configuration is
+        """
+        {
+            "ClientCertificate": { "StoreLocation": "CurrentUser", "SubjectName": "NoCertificateWithThisSubjectName" }
+        }
+        """
+    And we attempt to get the configured certificate
+
+
+
+# Subject name identifies a certificate we do have.

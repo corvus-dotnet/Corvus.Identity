@@ -16,10 +16,12 @@ namespace Corvus.Identity.ClientAuthentication.Azure
         /// </summary>
         public StoreLocation StoreLocation { get; set; }
 
-        // Next time: Work out which of these criteria we really want to include:
+        /// <summary>
+        /// Gets or sets a value indicating the subject name of the certificate.
+        /// </summary>
+        public string? SubjectName { get; set; }
 
-        // To do:
-        // Which store e.g. user or machine.
+        // Next time: Work out which of these criteria we really want to include:
 
         // Could do:
         // Issuer name.
