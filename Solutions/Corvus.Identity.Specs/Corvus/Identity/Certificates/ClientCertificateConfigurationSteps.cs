@@ -2,13 +2,10 @@
 // Copyright (c) Endjin Limited. All rights reserved.
 // </copyright>
 
-namespace Corvus.Identity.Azure.ClientCertificates
+namespace Corvus.Identity.Certificates
 {
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
-    using Corvus.Identity.ClientAuthentication.Azure;
-    using Corvus.Identity.ClientAuthentication.Azure.Internal;
-    using global::Azure.Core;
     using Microsoft.Extensions.DependencyInjection;
     using NUnit.Framework;
     using TechTalk.SpecFlow;
@@ -19,7 +16,7 @@ namespace Corvus.Identity.Azure.ClientCertificates
         private TestConfiguration? configuration;
         private ServiceProvider serviceProvider;
         private ICertificateFromConfiguration certificateSource;
-        private X509Certificate2 certificate;
+        private X509Certificate2? certificate;
 
         public ClientCertificateConfigurationSteps()
         {

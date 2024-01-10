@@ -33,6 +33,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Corvus.Identity.Abstractions\Corvus.Identity.Abstractions.csproj" />
+    <ProjectReference Include="..\Corvus.Identity.Certificates\Corvus.Identity.Certificates.csproj" />
   </ItemGroup>
 
 </Project>

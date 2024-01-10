@@ -1743,7 +1743,14 @@
           "Azure.Identity": "[1.8.2, )",
           "Azure.Security.KeyVault.Secrets": "[4.5.0, )",
           "Corvus.Identity.Abstractions": "[1.0.0, )",
+          "Corvus.Identity.Certificates": "[1.0.0, )",
           "Microsoft.Extensions.Caching.Memory": "[6.0.1, )",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "[6.0.0, )"
+        }
+      },
+      "corvus.identity.certificates": {
+        "type": "Project",
+        "dependencies": {
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[6.0.0, )"
         }
       },

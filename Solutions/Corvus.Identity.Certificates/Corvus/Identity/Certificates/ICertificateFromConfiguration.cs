@@ -2,7 +2,7 @@
 // Copyright (c) Endjin Limited. All rights reserved.
 // </copyright>
 
-namespace Corvus.Identity.ClientAuthentication.Azure
+namespace Corvus.Identity.Certificates
 {
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
