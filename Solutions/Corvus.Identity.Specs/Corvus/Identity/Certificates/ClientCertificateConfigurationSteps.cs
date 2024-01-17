@@ -4,6 +4,8 @@
 
 namespace Corvus.Identity.Certificates
 {
+    using System;
+    using System.Security.Cryptography;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
     using Microsoft.Extensions.DependencyInjection;
@@ -17,6 +19,7 @@ namespace Corvus.Identity.Certificates
         private ServiceProvider serviceProvider;
         private ICertificateFromConfiguration certificateSource;
         private X509Certificate2? certificate;
+        private Exception? exceptionFromGetCertificate;
 
         public ClientCertificateConfigurationSteps()
         {
@@ -43,7 +46,20 @@ namespace Corvus.Identity.Certificates
         [When(@"we attempt to get the configured certificate")]
         public async Task WhenWeAttemptToGetTheConfiguredCertificateAsync()
         {
-            this.certificate = await this.certificateSource!.CertificateForConfigurationAsync(this.configuration!.ClientCertificate!).ConfigureAwait(false);
+            try
+            {
+                this.certificate = await this.certificateSource!.CertificateForConfigurationAsync(this.configuration!.ClientCertificate!).ConfigureAwait(false);
+            }
+            catch (Exception x)
+            {
+                this.exceptionFromGetCertificate = x;
+            }
+        }
+
+        [Then(@"CertificateForConfigurationAsync throws a CertificateNotFoundException")]
+        public void ThenCertificateForConfigurationAsyncThrowsACertificateNotFoundException()
+        {
+            Assert.IsInstanceOf<CertificateNotFoundException>(this.exceptionFromGetCertificate);
         }
 
         public class TestConfiguration

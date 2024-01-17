@@ -16,7 +16,10 @@ namespace Corvus.Identity.Certificates.Internal
         /// <inheritdoc/>
         public ValueTask<X509Certificate2> CertificateForConfigurationAsync(ClientCertificateConfiguration clientCertificateConfiguration)
         {
-            throw new NotImplementedException();
+            using X509Store store = new(clientCertificateConfiguration.StoreName, clientCertificateConfiguration.StoreLocation);
+            store.Open(OpenFlags.ReadOnly);
+
+            return new ValueTask<X509Certificate2>(store.Certificates.Find(X509FindType.FindBySubjectName, clientCertificateConfiguration.SubjectName!, true).Single());
         }
     }
 }

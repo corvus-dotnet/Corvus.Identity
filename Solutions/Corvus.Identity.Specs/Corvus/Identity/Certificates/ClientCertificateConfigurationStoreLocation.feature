@@ -23,11 +23,24 @@ Scenario: Certificate with subject name not found
     When client certificate configuration is
         """
         {
-            "ClientCertificate": { "StoreLocation": "CurrentUser", "SubjectName": "NoCertificateWithThisSubjectName" }
+            "ClientCertificate": { "StoreLocation": "CurrentUser", "StoreName": "My", "SubjectName": "NoCertificateWithThisSubjectName" }
         }
         """
     And we attempt to get the configured certificate
-
+    Then CertificateForConfigurationAsync throws a CertificateNotFoundException
 
 
 # Subject name identifies a certificate we do have.
+
+Scenario: Certificate with subject name is found
+    Given the 'My' store contains a certificate with the subject name of 'CorvusIdentityTestCertificate'
+    When client certificate configuration is
+        """
+        {
+            "ClientCertificate": { "StoreLocation": "CurrentUser", "StoreName": "My", "SubjectName": "NoCertificateWithThisSubjectName" }
+        }
+        """
+    And we attempt to get the configured certificate
+    Then CertificateForConfigurationAsync throws a CryptographicException
+
+# Store name not found.

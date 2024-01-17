@@ -17,6 +17,13 @@ namespace Corvus.Identity.Certificates
         public StoreLocation StoreLocation { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating the name of the certificate store to use.
+        /// </summary>
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+        public string StoreName { get; set; }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+
+        /// <summary>
         /// Gets or sets a value indicating the subject name of the certificate.
         /// </summary>
         public string? SubjectName { get; set; }
