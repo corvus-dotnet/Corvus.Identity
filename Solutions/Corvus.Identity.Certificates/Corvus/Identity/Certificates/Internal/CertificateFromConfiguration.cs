@@ -19,7 +19,7 @@ namespace Corvus.Identity.Certificates.Internal
             using X509Store store = new(clientCertificateConfiguration.StoreName, clientCertificateConfiguration.StoreLocation);
             store.Open(OpenFlags.ReadOnly);
 
-            return new ValueTask<X509Certificate2>(store.Certificates.Find(X509FindType.FindBySubjectName, clientCertificateConfiguration.SubjectName!, true).Single());
+            return new ValueTask<X509Certificate2>(store.Certificates.Find(X509FindType.FindBySubjectName, clientCertificateConfiguration.SubjectName!, true).SingleOrDefault() ?? throw new CertificateNotFoundException());
         }
     }
 }

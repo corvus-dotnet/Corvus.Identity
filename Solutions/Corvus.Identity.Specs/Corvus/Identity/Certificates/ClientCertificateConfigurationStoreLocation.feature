@@ -37,7 +37,7 @@ Scenario: Certificate with subject name is found
     When client certificate configuration is
         """
         {
-            "ClientCertificate": { "StoreLocation": "CurrentUser", "StoreName": "My", "SubjectName": "NoCertificateWithThisSubjectName" }
+            "ClientCertificate": { "StoreLocation": "CurrentUser", "StoreName": "My", "SubjectName": "CorvusIdentityTestCertificate" }
         }
         """
     And we attempt to get the configured certificate
