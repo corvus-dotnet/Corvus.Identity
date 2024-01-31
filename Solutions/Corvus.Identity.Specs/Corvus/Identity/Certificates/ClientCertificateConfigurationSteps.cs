@@ -5,7 +5,8 @@
 namespace Corvus.Identity.Certificates
 {
     using System;
-    using System.Numerics;
+    using System.Collections.Generic;
+    using System.Runtime.CompilerServices;
     using System.Security.Cryptography;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
@@ -24,13 +25,14 @@ namespace Corvus.Identity.Certificates
     using static Org.BouncyCastle.Asn1.Cmp.Challenge;
 
     [Binding]
-    public sealed class ClientCertificateConfigurationSteps
+    public sealed class ClientCertificateConfigurationSteps : IDisposable
     {
         private TestConfiguration? configuration;
         private ServiceProvider serviceProvider;
         private ICertificateFromConfiguration certificateSource;
         private X509Certificate2? certificate;
         private Exception? exceptionFromGetCertificate;
+        private List<(string StoreName, string SubjectName)> tempCertificates = new();
 
         public ClientCertificateConfigurationSteps()
         {
@@ -42,7 +44,7 @@ namespace Corvus.Identity.Certificates
             this.certificateSource = this.serviceProvider.GetRequiredService<ICertificateFromConfiguration>();
         }
 
-        [Given(@"the '([^']*)' store contains a certificate with the subject name of '([^']*)'")]
+        [Given(@"the '([^']*)' store contains a trusted certificate with the subject name of '([^']*)'")]
         public void GivenTheStoreContainsACertificateWithTheSubjectNameOf(string storeName, string subjectName)
         {
             using X509Store store = new(storeName, StoreLocation.CurrentUser);
@@ -55,7 +57,7 @@ namespace Corvus.Identity.Certificates
 
             var gen = new X509V3CertificateGenerator();
 
-            var commonName = new X509Name("CN=" + subjectName);
+            var commonName = new X509Name(subjectName);
             var serialNumber = Org.BouncyCastle.Math.BigInteger.ProbablePrime(120, new Random());
 
             gen.SetSerialNumber(serialNumber);
@@ -71,6 +73,7 @@ namespace Corvus.Identity.Certificates
             var certficate = new X509Certificate2(DotNetUtilities.ToX509Certificate((Org.BouncyCastle.X509.X509Certificate)newCert));
 
             store.Add(certficate);
+            this.tempCertificates.Add((storeName, subjectName));
         }
 
         [When("client certificate configuration is")]
@@ -98,10 +101,35 @@ namespace Corvus.Identity.Certificates
             }
         }
 
+        [When(@"we get the configured certificate")]
+        public async Task WhenWeGetTheConfiguredCertificateAsync()
+        {
+            this.certificate = await this.certificateSource!.CertificateForConfigurationAsync(this.configuration!.ClientCertificate!).ConfigureAwait(false);
+        }
+
         [Then(@"CertificateForConfigurationAsync throws a CertificateNotFoundException")]
         public void ThenCertificateForConfigurationAsyncThrowsACertificateNotFoundException()
         {
             Assert.IsInstanceOf<CertificateNotFoundException>(this.exceptionFromGetCertificate);
+        }
+
+        [Then(@"the certificate returned by CertificateForConfigurationAsync has a subject name of '([^']*)'")]
+        public void ThenTheCertificateReturnedByCertificateForConfigurationAsyncHasASubjectNameOf(string subjectName)
+        {
+            Assert.AreEqual(subjectName, this.certificate!.SubjectName);
+        }
+
+        public void Dispose()
+        {
+            foreach ((string storeName, string subjectName) in this.tempCertificates)
+            {
+                using X509Store store = new(storeName, StoreLocation.CurrentUser);
+                store.Open(OpenFlags.ReadWrite);
+                foreach (X509Certificate2 cert in store.Certificates.Find(X509FindType.FindBySubjectName, subjectName.Replace("CN=", string.Empty), validOnly: false))
+                {
+                    store.Remove(cert);
+                }
+            }
         }
 
         public class TestConfiguration

@@ -33,14 +33,14 @@ Scenario: Certificate with subject name not found
 # Subject name identifies a certificate we do have.
 
 Scenario: Certificate with subject name is found
-    Given the 'My' store contains a certificate with the subject name of 'CorvusIdentityTestCertificate'
+    Given the 'My' store contains a trusted certificate with the subject name of 'CN=CorvusIdentityTestShouldBeDeleted'
     When client certificate configuration is
         """
         {
-            "ClientCertificate": { "StoreLocation": "CurrentUser", "StoreName": "My", "SubjectName": "CorvusIdentityTestCertificate" }
+            "ClientCertificate": { "StoreLocation": "CurrentUser", "StoreName": "My", "SubjectName": "CorvusIdentityTestShouldBeDeleted" }
         }
         """
-    And we attempt to get the configured certificate
-    Then CertificateForConfigurationAsync throws a CryptographicException
+    And we get the configured certificate
+    Then the certificate returned by CertificateForConfigurationAsync has a subject name of 'CN=CorvusIdentityTestShouldBeDeleted'
 
 # Store name not found.

@@ -19,7 +19,10 @@ namespace Corvus.Identity.Certificates.Internal
             using X509Store store = new(clientCertificateConfiguration.StoreName, clientCertificateConfiguration.StoreLocation);
             store.Open(OpenFlags.ReadOnly);
 
-            return new ValueTask<X509Certificate2>(store.Certificates.Find(X509FindType.FindBySubjectName, clientCertificateConfiguration.SubjectName!, true).SingleOrDefault() ?? throw new CertificateNotFoundException());
+            // Passing validOnly: false because we do not want to limit this to certificates validated by an authority.
+            // These are client certificates so it is the other party's problem to decide how to validate them.
+            // For example, we might generate a certificate using a command line tool and then just upload that to AzureAD.
+            return new ValueTask<X509Certificate2>(store.Certificates.Find(X509FindType.FindBySubjectName, clientCertificateConfiguration.SubjectName!, validOnly: false).SingleOrDefault() ?? throw new CertificateNotFoundException());
         }
     }
 }
