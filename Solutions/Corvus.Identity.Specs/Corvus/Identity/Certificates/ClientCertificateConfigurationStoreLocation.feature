@@ -44,3 +44,13 @@ Scenario: Certificate with subject name is found
     Then the certificate returned by CertificateForConfigurationAsync has a subject name of 'CN=CorvusIdentityTestShouldBeDeleted'
 
 # Store name not found.
+
+Scenario: Certificate store not found
+    When client certificate configuration is
+        """
+        {
+            "ClientCertificate": { "StoreLocation": "CurrentUser", "StoreName": "NotReal", "SubjectName": "NoCertificateWithThisSubjectName" }
+        }
+        """
+    And we attempt to get the configured certificate
+    Then CertificateForConfigurationAsync throws a CertificateNotFoundException

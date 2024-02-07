@@ -6,8 +6,6 @@ namespace Corvus.Identity.Certificates
 {
     using System;
     using System.Collections.Generic;
-    using System.Runtime.CompilerServices;
-    using System.Security.Cryptography;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
     using Microsoft.Extensions.DependencyInjection;
@@ -18,11 +16,9 @@ namespace Corvus.Identity.Certificates
     using Org.BouncyCastle.Crypto.Generators;
     using Org.BouncyCastle.Crypto.Operators;
     using Org.BouncyCastle.Crypto.Prng;
-    using Org.BouncyCastle.Math;
     using Org.BouncyCastle.Security;
     using Org.BouncyCastle.X509;
     using TechTalk.SpecFlow;
-    using static Org.BouncyCastle.Asn1.Cmp.Challenge;
 
     [Binding]
     public sealed class ClientCertificateConfigurationSteps : IDisposable
@@ -116,7 +112,7 @@ namespace Corvus.Identity.Certificates
         [Then(@"the certificate returned by CertificateForConfigurationAsync has a subject name of '([^']*)'")]
         public void ThenTheCertificateReturnedByCertificateForConfigurationAsyncHasASubjectNameOf(string subjectName)
         {
-            Assert.AreEqual(subjectName, this.certificate!.SubjectName);
+            Assert.AreEqual(subjectName, this.certificate!.SubjectName.Name);
         }
 
         public void Dispose()
