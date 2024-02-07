@@ -88,6 +88,27 @@ Scenario Outline: Bad ClientIdAndSecret with secret in key vault
     | ClientIdAndSecret  |                                      | 831c7dcb-516a-4e6b-9b74-347264c67397 |                                 |
     | ClientIdAndSecret  | b39db674-9ba1-4343-8d4e-004675b5d7a8 | 831c7dcb-516a-4e6b-9b74-347264c67397 | s3cret!                         |
 
+Scenario Outline: Good ClientIdAndCertificate
+    Given a ClientIdAndCertificate configuration with '<IdentitySourceType>', '<AzureAppTenantId>', '<AzureAdAppClientId>', '<StoreLocation>', '<StoreName>', '<SubjectName>'
+    When I validate the configuration
+    Then the validation should pass
+    And the validated type should be 'ClientIdAndCertificate'
+
+    Examples:
+    | IdentitySourceType     | AzureAppTenantId                     | AzureAdAppClientId                   | StoreLocation | StoreName | SubjectName |
+    |                        | b39db674-9ba1-4343-8d4e-004675b5d7a8 | 831c7dcb-516a-4e6b-9b74-347264c67397 | CurrentUser   | My        | CN=MyCert   |
+    | ClientIdAndCertificate | b39db674-9ba1-4343-8d4e-004675b5d7a8 | 831c7dcb-516a-4e6b-9b74-347264c67397 | CurrentUser   | My        | CN=MyCert   |
+
+# We need valid client certificate based app service principals.
+# Infer certificate source type where possible.
+# Invalidity tests:
+# Mis-match of identity source type and presence/absence of certificate.
+# At least one property missing out of tenant, client and certificate configuration.
+# Incomplete client certificate configuration. Missing at least one of location, store and subject name (this might get more complex if we have mechanisms other than subject name.)
+# Provided more than one mechanism to authenticate (either for infered or explicit source types):
+    # Certificate and plain text secret.
+    # Certificate and key vault secret.
+    # Certificate and plain text and key vault secret.
 Scenario Outline: IdentitySourceType conflicts apparent ClientIdAndSecret with plaintext secret
     Given configuration of
         """

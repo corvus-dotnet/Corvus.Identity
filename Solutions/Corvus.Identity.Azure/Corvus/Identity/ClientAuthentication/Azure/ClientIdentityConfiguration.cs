@@ -4,6 +4,8 @@
 
 namespace Corvus.Identity.ClientAuthentication.Azure
 {
+    using Corvus.Identity.Certificates;
+
     /// <summary>
     /// Configuration determining the Azure AD identity client code will use for some operation
     /// (e.g., connecting to a storage service, or reading secrets from a key vault).
@@ -50,6 +52,12 @@ namespace Corvus.Identity.ClientAuthentication.Azure
         /// secret to be presented to Azure AD when authenticating.
         /// </summary>
         public KeyVaultSecretConfiguration? AzureAdAppClientSecretInKeyVault { get; set; }
+
+        /// <summary>
+        /// Gets or sets the configuration describing the client certificate to use when authenticating
+        /// to Azure AD as a service principal using certificate based authentication.
+        /// </summary>
+        public ClientCertificateConfiguration? AzureAdAppClientCertificate {  get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating where the identity to be used comes from (e.g., a
