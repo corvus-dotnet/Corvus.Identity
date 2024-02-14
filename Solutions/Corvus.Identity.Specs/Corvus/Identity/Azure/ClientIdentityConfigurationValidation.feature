@@ -41,6 +41,17 @@ Scenario: No apparent source type
     When I validate the configuration
     Then the validation should fail with 'unable to determine identity type because no suitable properties have been set'
 
+Scenario Outline: Unknown identity source type
+    Given a ClientIdAndSecret configuration with '', '<AzureAppTenantId>', '<AzureAdAppClientId>', ''
+    When I validate the configuration
+    Then the validation should fail with 'unable to determine identity type because no suitable properties have been set'
+
+    Examples:
+    | AzureAppTenantId                     | AzureAdAppClientId                   |
+    | b39db674-9ba1-4343-8d4e-004675b5d7a8 |                                      |
+    |                                      | 831c7dcb-516a-4e6b-9b74-347264c67397 |
+    | b39db674-9ba1-4343-8d4e-004675b5d7a8 | 831c7dcb-516a-4e6b-9b74-347264c67397 |
+
 Scenario Outline: Good ClientIdAndSecret
     Given a ClientIdAndSecret configuration with '<IdentitySourceType>', '<AzureAppTenantId>', '<AzureAdAppClientId>', '<AzureAdAppClientSecretPlainText>'
     When I validate the configuration
@@ -59,10 +70,7 @@ Scenario Outline: Bad ClientIdAndSecret plaintext
 
     Examples:
     | IdentitySourceType | AzureAppTenantId                     | AzureAdAppClientId                   | AzureAdAppClientSecretPlainText |
-    |                    | b39db674-9ba1-4343-8d4e-004675b5d7a8 |                                      |                                 |
-    |                    |                                      | 831c7dcb-516a-4e6b-9b74-347264c67397 |                                 |
     |                    |                                      |                                      | s3cret!                         |
-    |                    | b39db674-9ba1-4343-8d4e-004675b5d7a8 | 831c7dcb-516a-4e6b-9b74-347264c67397 |                                 |
     |                    | b39db674-9ba1-4343-8d4e-004675b5d7a8 |                                      | s3cret!                         |
     |                    |                                      | 831c7dcb-516a-4e6b-9b74-347264c67397 | s3cret!                         |
     | ClientIdAndSecret  |                                      |                                      |                                 |
@@ -98,6 +106,35 @@ Scenario Outline: Good ClientIdAndCertificate
     | IdentitySourceType     | AzureAppTenantId                     | AzureAdAppClientId                   | StoreLocation | StoreName | SubjectName |
     |                        | b39db674-9ba1-4343-8d4e-004675b5d7a8 | 831c7dcb-516a-4e6b-9b74-347264c67397 | CurrentUser   | My        | CN=MyCert   |
     | ClientIdAndCertificate | b39db674-9ba1-4343-8d4e-004675b5d7a8 | 831c7dcb-516a-4e6b-9b74-347264c67397 | CurrentUser   | My        | CN=MyCert   |
+
+Scenario Outline: Bad ClientIdAndCertificate
+    Given a ClientIdAndCertificate configuration with '<IdentitySourceType>', '<AzureAppTenantId>', '<AzureAdAppClientId>', '<StoreLocation>', '<StoreName>', '<SubjectName>'
+    When I validate the configuration
+    Then the validation should fail with 'ClientIdAndCertificate configuration must provide AzureAppTenantId, AzureAdAppClientId, and an AzureAppClientCertificate with a StoreLocation, StoreName, and SubjectName'
+
+    Examples:
+    | IdentitySourceType     | AzureAppTenantId                     | AzureAdAppClientId                   | StoreLocation | StoreName | SubjectName |
+    |                        |                                      | 831c7dcb-516a-4e6b-9b74-347264c67397 | CurrentUser   | My        | CN=MyCert   |
+    |                        | b39db674-9ba1-4343-8d4e-004675b5d7a8 |                                      | CurrentUser   | My        | CN=MyCert   |
+    |                        | b39db674-9ba1-4343-8d4e-004675b5d7a8 | 831c7dcb-516a-4e6b-9b74-347264c67397 |               | My        | CN=MyCert   |
+    |                        | b39db674-9ba1-4343-8d4e-004675b5d7a8 | 831c7dcb-516a-4e6b-9b74-347264c67397 | CurrentUser   |           | CN=MyCert   |
+    |                        | b39db674-9ba1-4343-8d4e-004675b5d7a8 | 831c7dcb-516a-4e6b-9b74-347264c67397 | CurrentUser   | My        |             |
+    | ClientIdAndCertificate |                                      | 831c7dcb-516a-4e6b-9b74-347264c67397 | CurrentUser   | My        | CN=MyCert   |
+    | ClientIdAndCertificate | b39db674-9ba1-4343-8d4e-004675b5d7a8 |                                      | CurrentUser   | My        | CN=MyCert   |
+    | ClientIdAndCertificate | b39db674-9ba1-4343-8d4e-004675b5d7a8 | 831c7dcb-516a-4e6b-9b74-347264c67397 |               | My        | CN=MyCert   |
+    | ClientIdAndCertificate | b39db674-9ba1-4343-8d4e-004675b5d7a8 | 831c7dcb-516a-4e6b-9b74-347264c67397 | CurrentUser   |           | CN=MyCert   |
+    | ClientIdAndCertificate | b39db674-9ba1-4343-8d4e-004675b5d7a8 | 831c7dcb-516a-4e6b-9b74-347264c67397 | CurrentUser   | My        |             |
+    | ClientIdAndCertificate | b39db674-9ba1-4343-8d4e-004675b5d7a8 | 831c7dcb-516a-4e6b-9b74-347264c67397 |               |           |             |
+
+Scenario: Bad ClientIdAndCertificate with null AzureAdAppClientCertificate
+    Given configuration of
+        """
+        {
+          "ClientIdentity": { "IdentitySourceType": "ClientIdAndCertificate" }
+        }
+        """
+    When I validate the configuration
+    Then the validation should fail with 'ClientIdAndCertificate configuration must provide AzureAppTenantId, AzureAdAppClientId, and an AzureAppClientCertificate with a StoreLocation, StoreName, and SubjectName'
 
 # We need valid client certificate based app service principals.
 # Infer certificate source type where possible.

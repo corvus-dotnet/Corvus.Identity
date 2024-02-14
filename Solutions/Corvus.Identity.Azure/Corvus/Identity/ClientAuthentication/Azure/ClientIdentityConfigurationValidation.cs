@@ -46,14 +46,18 @@ namespace Corvus.Identity.ClientAuthentication.Azure
             bool adAppClientIdPresent = !string.IsNullOrWhiteSpace(configuration.AzureAdAppClientId);
             bool adAppClientSecretPlainTextPresent = !string.IsNullOrWhiteSpace(configuration.AzureAdAppClientSecretPlainText);
             bool adAppClientSecretKeyVaultPresent = configuration.AzureAdAppClientSecretInKeyVault is not null;
+            bool adAppClientCertificatePresent = configuration.AzureAdAppClientCertificate is not null;
             bool managedIdClientIdPresent = !string.IsNullOrWhiteSpace(configuration.ManagedIdentityClientId);
             if (configuration.IdentitySourceType == ClientIdentitySourceTypes.ClientIdAndSecret
-                || adAppTenantIdPresent
-                || adAppClientIdPresent
-                || adAppClientSecretPlainTextPresent
-                || adAppClientSecretKeyVaultPresent)
+                || (adAppClientSecretPlainTextPresent || adAppClientSecretKeyVaultPresent))
             {
                 indicatedSourceTypes.Add(ClientIdentitySourceTypes.ClientIdAndSecret);
+            }
+
+            if (configuration.IdentitySourceType == ClientIdentitySourceTypes.ClientIdAndCertificate
+                || (adAppTenantIdPresent && adAppClientIdPresent && adAppClientCertificatePresent))
+            {
+                indicatedSourceTypes.Add(ClientIdentitySourceTypes.ClientIdAndCertificate);
             }
 
             if (configuration.IdentitySourceType == ClientIdentitySourceTypes.UserAssignedManaged
@@ -86,6 +90,16 @@ namespace Corvus.Identity.ClientAuthentication.Azure
                 case ClientIdentitySourceTypes.ClientIdAndSecret:
                     if (!(adAppTenantIdPresent && adAppClientIdPresent &&
                         (adAppClientSecretPlainTextPresent ^ adAppClientSecretKeyVaultPresent)))
+                    {
+                        return "ClientIdAndSecret configuration must provide AzureAppTenantId, AzureAdAppClientId, and either AzureAppClientSecretPlainText or AzureAdAppClientSecretInKeyVault";
+                    }
+
+                    break;
+
+                case ClientIdentitySourceTypes.ClientIdAndCertificate:
+                    if (!(adAppTenantIdPresent && adAppClientIdPresent &&
+                        configuration.AzureAdAppClientCertificate is not null &&
+                        (configuration.AzureAdAppClientCertificate.StoreLocation != 0)))
                     {
                         return "ClientIdAndSecret configuration must provide AzureAppTenantId, AzureAdAppClientId, and either AzureAppClientSecretPlainText or AzureAdAppClientSecretInKeyVault";
                     }

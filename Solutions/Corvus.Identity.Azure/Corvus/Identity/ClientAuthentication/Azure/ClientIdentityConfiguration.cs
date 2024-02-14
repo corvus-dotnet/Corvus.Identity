@@ -57,7 +57,7 @@ namespace Corvus.Identity.ClientAuthentication.Azure
         /// Gets or sets the configuration describing the client certificate to use when authenticating
         /// to Azure AD as a service principal using certificate based authentication.
         /// </summary>
-        public ClientCertificateConfiguration? AzureAdAppClientCertificate {  get; set; }
+        public ClientCertificateConfiguration? AzureAdAppClientCertificate { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating where the identity to be used comes from (e.g., a

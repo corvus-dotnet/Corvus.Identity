@@ -9,6 +9,7 @@ namespace Corvus.Identity.Azure.TokenCredentialSourceFromDynamicConfiguration
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Linq;
+    using System.Security.Cryptography.X509Certificates;
     using System.Text;
     using System.Text.Json;
     using System.Threading.Tasks;
@@ -96,6 +97,33 @@ namespace Corvus.Identity.Azure.TokenCredentialSourceFromDynamicConfiguration
                 VaultName = "somevault",
                 SecretName = "SomeSecret",
             };
+        }
+
+        [Given(@"a ClientIdAndCertificate configuration with '([^']*)', '([^']*)', '([^']*)', '([^']*)', '([^']*)', '([^']*)'")]
+        public void GivenAClientIdAndCertificateConfigurationWith(
+            string identitySourceType,
+            string azureAppTenantId,
+            string azureAdAppClientId,
+            StoreLocation storeLocation,
+            string storeName,
+            string subjectName)
+        {
+            var id = new ClientIdentityConfiguration
+            {
+                IdentitySourceType = string.IsNullOrWhiteSpace(identitySourceType)
+                    ? null
+                    : Enum.Parse<ClientIdentitySourceTypes>(identitySourceType),
+                AzureAdAppTenantId = azureAppTenantId,
+                AzureAdAppClientId = azureAdAppClientId,
+                AzureAdAppClientCertificate = new Certificates.ClientCertificateConfiguration
+                {
+                    StoreLocation = storeLocation,
+                    StoreName = storeName,
+                    SubjectName = subjectName,
+                },
+            };
+
+            this.configuration = new TestConfiguration { ClientIdentity = id };
         }
 
         [When("I validate the configuration")]
