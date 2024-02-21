@@ -55,7 +55,7 @@ namespace Corvus.Identity.ClientAuthentication.Azure
             }
 
             if (configuration.IdentitySourceType == ClientIdentitySourceTypes.ClientIdAndCertificate
-                || (adAppTenantIdPresent && adAppClientIdPresent && adAppClientCertificatePresent))
+                || adAppClientCertificatePresent)
             {
                 indicatedSourceTypes.Add(ClientIdentitySourceTypes.ClientIdAndCertificate);
             }
@@ -99,9 +99,11 @@ namespace Corvus.Identity.ClientAuthentication.Azure
                 case ClientIdentitySourceTypes.ClientIdAndCertificate:
                     if (!(adAppTenantIdPresent && adAppClientIdPresent &&
                         configuration.AzureAdAppClientCertificate is not null &&
-                        (configuration.AzureAdAppClientCertificate.StoreLocation != 0)))
+                        (configuration.AzureAdAppClientCertificate.StoreLocation != 0) &&
+                        !string.IsNullOrEmpty(configuration.AzureAdAppClientCertificate.StoreName) &&
+                        !string.IsNullOrEmpty(configuration.AzureAdAppClientCertificate.SubjectName)))
                     {
-                        return "ClientIdAndSecret configuration must provide AzureAppTenantId, AzureAdAppClientId, and either AzureAppClientSecretPlainText or AzureAdAppClientSecretInKeyVault";
+                        return "ClientIdAndCertificate configuration must provide AzureAppTenantId, AzureAdAppClientId, and an AzureAppClientCertificate with a StoreLocation, StoreName, and SubjectName";
                     }
 
                     break;

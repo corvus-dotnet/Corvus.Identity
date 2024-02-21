@@ -104,7 +104,7 @@ namespace Corvus.Identity.Azure.TokenCredentialSourceFromDynamicConfiguration
             string identitySourceType,
             string azureAppTenantId,
             string azureAdAppClientId,
-            StoreLocation storeLocation,
+            StoreLocation? storeLocation,
             string storeName,
             string subjectName)
         {
@@ -117,13 +117,29 @@ namespace Corvus.Identity.Azure.TokenCredentialSourceFromDynamicConfiguration
                 AzureAdAppClientId = azureAdAppClientId,
                 AzureAdAppClientCertificate = new Certificates.ClientCertificateConfiguration
                 {
-                    StoreLocation = storeLocation,
+                    StoreLocation = storeLocation ?? 0,
                     StoreName = storeName,
                     SubjectName = subjectName,
                 },
             };
 
             this.configuration = new TestConfiguration { ClientIdentity = id };
+        }
+
+        [Given(@"the AzureAdAppClientSecretPlainText is '([^']*)'")]
+        public void GivenTheAzureAdAppClientSecretPlainTextIs(string secret)
+        {
+            this.configuration!.ClientIdentity!.AzureAdAppClientSecretPlainText = secret;
+        }
+
+        [Given(@"the AzureAdAppClientSecretInKeyVault is set")]
+        public void GivenTheAzureAdAppClientSecretKeyVaultIsSet()
+        {
+            this.configuration!.ClientIdentity!.AzureAdAppClientSecretInKeyVault = new()
+            {
+                VaultName = "somevault",
+                SecretName = "SomeSecret",
+            };
         }
 
         [When("I validate the configuration")]

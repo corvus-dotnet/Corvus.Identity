@@ -136,16 +136,25 @@ Scenario: Bad ClientIdAndCertificate with null AzureAdAppClientCertificate
     When I validate the configuration
     Then the validation should fail with 'ClientIdAndCertificate configuration must provide AzureAppTenantId, AzureAdAppClientId, and an AzureAppClientCertificate with a StoreLocation, StoreName, and SubjectName'
 
-# We need valid client certificate based app service principals.
-# Infer certificate source type where possible.
-# Invalidity tests:
-# Mis-match of identity source type and presence/absence of certificate.
-# At least one property missing out of tenant, client and certificate configuration.
-# Incomplete client certificate configuration. Missing at least one of location, store and subject name (this might get more complex if we have mechanisms other than subject name.)
-# Provided more than one mechanism to authenticate (either for infered or explicit source types):
-    # Certificate and plain text secret.
-    # Certificate and key vault secret.
-    # Certificate and plain text and key vault secret.
+Scenario: Both ClientIdAndSecret with AzureAdAppClientSecretPlainText and ClientIdAndCertificate properties present
+    Given a ClientIdAndCertificate configuration with '', 'b39db674-9ba1-4343-8d4e-004675b5d7a8', '831c7dcb-516a-4e6b-9b74-347264c67397', 'CurrentUser', 'My', 'CN=MyCert'
+    And the AzureAdAppClientSecretPlainText is 'secret'
+    When I validate the configuration
+    Then the validation should fail with 'identity type is ambiguous because the properties set are for ClientIdAndSecret, ClientIdAndCertificate'
+
+Scenario: Both ClientIdAndSecret with AzureAdAppClientSecretInKeyVault and ClientIdAndCertificate properties present
+    Given a ClientIdAndCertificate configuration with '', 'b39db674-9ba1-4343-8d4e-004675b5d7a8', '831c7dcb-516a-4e6b-9b74-347264c67397', 'CurrentUser', 'My', 'CN=MyCert'
+    And the AzureAdAppClientSecretInKeyVault is set
+    When I validate the configuration
+    Then the validation should fail with 'identity type is ambiguous because the properties set are for ClientIdAndSecret, ClientIdAndCertificate'
+
+Scenario: Both ClientIdAndSecret with AzureAdAppClientSecretPlainText and AzureAdAppClientSecretInKeyVault and ClientIdAndCertificate properties present
+    Given a ClientIdAndCertificate configuration with '', 'b39db674-9ba1-4343-8d4e-004675b5d7a8', '831c7dcb-516a-4e6b-9b74-347264c67397', 'CurrentUser', 'My', 'CN=MyCert'
+    And the AzureAdAppClientSecretPlainText is 'secret'
+    And the AzureAdAppClientSecretInKeyVault is set
+    When I validate the configuration
+    Then the validation should fail with 'identity type is ambiguous because the properties set are for ClientIdAndSecret, ClientIdAndCertificate'
+
 Scenario Outline: IdentitySourceType conflicts apparent ClientIdAndSecret with plaintext secret
     Given configuration of
         """
@@ -168,6 +177,7 @@ Scenario Outline: IdentitySourceType conflicts apparent ClientIdAndSecret with p
     | AzureCli                            |
     | VisualStudio                        |
     | AzureIdentityDefaultAzureCredential |
+    | ClientIdAndCertificate              |
 
 Scenario Outline: IdentitySourceType conflicts apparent ClientIdAndSecret with secret in key vault
     Given configuration of
@@ -194,6 +204,21 @@ Scenario Outline: IdentitySourceType conflicts apparent ClientIdAndSecret with s
     | AzureCli                            |
     | VisualStudio                        |
     | AzureIdentityDefaultAzureCredential |
+    | ClientIdAndCertificate              |
+
+Scenario Outline: IdentitySourceType conflicts apparent ClientIdAndCertificate
+    Given a ClientIdAndCertificate configuration with '<IdentitySourceType>', 'b39db674-9ba1-4343-8d4e-004675b5d7a8', '831c7dcb-516a-4e6b-9b74-347264c67397', 'CurrentUser', 'My', 'CN=MyCert'
+    When I validate the configuration
+    Then the validation should fail with 'identity type is ambiguous because the IdentitySourceType is <IdentitySourceType> but the properties set are for ClientIdAndCertificate'
+
+    Examples:
+    | IdentitySourceType                  |
+    | SystemAssignedManaged               |
+    | UserAssignedManaged                 |
+    | AzureCli                            |
+    | VisualStudio                        |
+    | AzureIdentityDefaultAzureCredential |
+    | ClientIdAndSecret                   |
 
 Scenario Outline: Good SystemAssignedManaged
     Given configuration of
