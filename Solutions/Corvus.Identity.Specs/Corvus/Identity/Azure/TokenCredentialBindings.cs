@@ -66,6 +66,14 @@ namespace Corvus.Identity.Azure
                 ((TestableClientSecretCredential)this.Credentials[credentialName]).TenantId);
         }
 
+        [Then(@"the ClientCertificateCredential '([^']*)' tenantId should be '([^']*)'")]
+        public void ThenTheClientCertificateCredentialTenantIdShouldBe(string credentialName, string tenantId)
+        {
+            Assert.AreEqual(
+                tenantId,
+                ((TestableClientCertificateCredential)this.Credentials[credentialName]).TenantId);
+        }
+
         [Then("the ClientSecretCredential appId should be '(.*)'")]
         public void ThenTheClientSecretCredentialAppIdShouldBe(string clientId)
         {
@@ -78,6 +86,14 @@ namespace Corvus.Identity.Azure
             Assert.AreEqual(
                 clientId,
                 ((TestableClientSecretCredential)this.Credentials[credentialName]).ClientId);
+        }
+
+        [Then(@"the ClientCertificateCredential '([^']*)' appId should be '([^']*)'")]
+        public void ThenTheClientCertificateCredentialAppIdShouldBe(string credentialName, string clientId)
+        {
+            Assert.AreEqual(
+                clientId,
+                ((TestableClientCertificateCredential)this.Credentials[credentialName]).ClientId);
         }
 
         [Then("the ClientSecretCredential clientSecret should be '(.*)'")]
