@@ -24,5 +24,4 @@ Scenario: Service principle client ID in configuration and locally installed cli
     Then the TokenCredential 'TargetCredentials' should be of type 'ClientCertificateCredential'
 	And the ClientCertificateCredential 'TargetCredentials' tenantId should be 'b39db674-9ba1-4343-8d4e-004675b5d7a8'
 	And the ClientCertificateCredential 'TargetCredentials' appId should be '831c7dcb-516a-4e6b-9b74-347264c67397'
-    # Next time work out why this step isn't failing.
-	And the ClientCertificateCredential 'TargetCredentials' should be using the certificate from the 'My' store with the subject name of 'CN=CorvusIdentityTestShouldBeDeleted'
+	And the ClientCertificateCredential 'TargetCredentials' should be using the certificate from the 'My' store with the subject name of 'CorvusIdentityTestShouldBeDeleted'

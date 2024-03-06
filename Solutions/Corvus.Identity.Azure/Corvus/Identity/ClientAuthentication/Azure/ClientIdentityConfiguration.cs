@@ -19,11 +19,7 @@ namespace Corvus.Identity.ClientAuthentication.Azure
     /// a suitable authorized Azure AD identity.
     /// </para>
     /// <para>
-    /// TODO: certificate based auth. Microsoft actually recommends use of certificates instead of
-    /// client secrets for service principle authentication. How will we support these? Probably
-    /// a pair of properties: AzureAdAppClientCertificateSubject, for scenarios where we expect
-    /// the relevant client certificate to be ambiently available (e.g., because it's installed in
-    /// our compute environment), and AzureAdAppClientCertificateInKeyVault for when the cert lives
+    /// TODO: Key Vault certificate based auth. AzureAdAppClientCertificateInKeyVault for when the cert lives
     /// in Key Vault; we'd need to introduce a KeyVaultCertificateConfiguration similar to the
     /// existing KeyVaultSecretConfiguration to support this.
     /// </para>
