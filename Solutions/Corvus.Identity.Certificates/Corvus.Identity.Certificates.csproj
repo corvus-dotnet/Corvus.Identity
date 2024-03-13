@@ -11,6 +11,13 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+	<PropertyGroup>
+		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+		<PackageDescription></PackageDescription>
+		<PackageTags></PackageTags>
+		<PackageReleaseNotes></PackageReleaseNotes>
+	</PropertyGroup>
+
 	<ItemGroup>
 	  <PackageReference Include="Endjin.RecommendedPractices.GitHub" Version="2.1.9">
 	    <PrivateAssets>all</PrivateAssets>
