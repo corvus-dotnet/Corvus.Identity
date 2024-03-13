@@ -25,18 +25,5 @@ namespace Corvus.Identity.Certificates
         /// Gets or sets a value indicating the subject name of the certificate.
         /// </summary>
         public string? SubjectName { get; set; }
-
-        // Next time: Work out which of these criteria we really want to include:
-
-        // Could do:
-        // Issuer name.
-        // Subject name.
-        // Certificate name?
-        // Certificate application type.
-
-        // Won't do:
-        // Template name?
-        // Subject key name?
-        // Thumbprint?
     }
 }
