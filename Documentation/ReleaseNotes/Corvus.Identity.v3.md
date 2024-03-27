@@ -1,5 +1,19 @@
 # Release notes for Corvus.Identity v3.
 
+## v3.4
+
+New feature:
+
+* Support for client certificate auth:
+    * Added the Corvus.Identity.Certificates NuGet package.
+    * Added ClientIdentityConfiguration.AzureAdAppClientCertificate to Corvus.Identity.Azure.
+
+Dependency minor version upgrades:
+
+* Azure.Identity 1.8 -> 1.10
+* Azure.Core.1.36.0 -> Azure.Core.1.37.0
+* Azure.Security.KeyVault.Secrets.4.5.0 -> Azure.Security.KeyVault.Secrets.4.6.0
+
 ## v3.3
 
 New feature:

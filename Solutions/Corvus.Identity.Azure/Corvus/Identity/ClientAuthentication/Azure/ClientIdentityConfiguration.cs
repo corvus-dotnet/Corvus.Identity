@@ -4,6 +4,8 @@
 
 namespace Corvus.Identity.ClientAuthentication.Azure
 {
+    using Corvus.Identity.Certificates;
+
     /// <summary>
     /// Configuration determining the Azure AD identity client code will use for some operation
     /// (e.g., connecting to a storage service, or reading secrets from a key vault).
@@ -17,11 +19,7 @@ namespace Corvus.Identity.ClientAuthentication.Azure
     /// a suitable authorized Azure AD identity.
     /// </para>
     /// <para>
-    /// TODO: certificate based auth. Microsoft actually recommends use of certificates instead of
-    /// client secrets for service principle authentication. How will we support these? Probably
-    /// a pair of properties: AzureAdAppClientCertificateSubject, for scenarios where we expect
-    /// the relevant client certificate to be ambiently available (e.g., because it's installed in
-    /// our compute environment), and AzureAdAppClientCertificateInKeyVault for when the cert lives
+    /// TODO: Key Vault certificate based auth. AzureAdAppClientCertificateInKeyVault for when the cert lives
     /// in Key Vault; we'd need to introduce a KeyVaultCertificateConfiguration similar to the
     /// existing KeyVaultSecretConfiguration to support this.
     /// </para>
@@ -50,6 +48,12 @@ namespace Corvus.Identity.ClientAuthentication.Azure
         /// secret to be presented to Azure AD when authenticating.
         /// </summary>
         public KeyVaultSecretConfiguration? AzureAdAppClientSecretInKeyVault { get; set; }
+
+        /// <summary>
+        /// Gets or sets the configuration describing the client certificate to use when authenticating
+        /// to Azure AD as a service principal using certificate based authentication.
+        /// </summary>
+        public ClientCertificateConfiguration? AzureAdAppClientCertificate { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating where the identity to be used comes from (e.g., a
