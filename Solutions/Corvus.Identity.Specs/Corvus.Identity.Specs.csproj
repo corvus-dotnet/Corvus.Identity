@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <Import Project="$(EndjinProjectPropsPath)" Condition="$(EndjinProjectPropsPath) != ''" />
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <IsPackable>false</IsPackable>
     <!-- Disabling SA1204 because it prioritizes static/non-static over public/non-public, which doesn't fit very well
@@ -11,7 +11,7 @@
          public for technical reasaons, but they are not meant for public consumption, so XML doc comments are only
          appropriate if they aid understanding within the project.
     -->
-    <NoWarn>SA0001;SA1204;SA1201;SA1600;SA1602;CS1591</NoWarn>
+    <NoWarn>SA0001;SA1204;SA1201;SA1600;SA1602;CS1591;SA1636;SA1641</NoWarn>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
@@ -40,20 +40,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <SpecFlowObsoleteCodeBehindFiles Remove="Corvus\Identity\Azure\TokenCredentialSourceFromDynamicConfiguration\AdAppWithSecretInKeyVault - Copy.feature.cs" />
-    <SpecFlowObsoleteCodeBehindFiles Remove="Corvus\Identity\Azure\TokenCredentialSourceFromDynamicConfiguration\ClientIdentityConfiguration - Copy.feature.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Endjin.RecommendedPractices.GitHub" Version="2.1.12">
+    <PackageReference Include="Endjin.RecommendedPractices.GitHub" Version="2.1.14">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Idg.AsyncTestTools" Version="1.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="[6.0.*,)" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="[6.0.*,)" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[6.0.*,)" />
-    <PackageReference Include="Corvus.Testing.SpecFlow.NUnit" Version="2.0.1" />
+    <!--<PackageReference Include="Idg.AsyncTestTools" Version="1.0.0" />-->
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="[8.0.*,)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="[8.0.*,)" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[8.0.*,)" />
+    <PackageReference Include="Moq" Version="4.20.72" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
+    <PackageReference Include="Reqnroll.NUnit" Version="2.2.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Corvus.Identity.Azure\Corvus.Identity.Azure.csproj" />
@@ -71,7 +69,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Update="specflow.json">
+    <None Update="reqnroll.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -88,5 +86,8 @@
       <Visible>$(UsingMicrosoftNETSdk)</Visible>
       <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
     </SpecFlowFeatureFiles>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Idg\AsyncTest\TaskExtensions\" />
   </ItemGroup>
 </Project>

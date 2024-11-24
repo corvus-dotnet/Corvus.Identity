@@ -16,10 +16,8 @@ namespace Corvus.Identity.Azure
 
     using global::Azure.Core;
     using global::Azure.Identity;
-
     using NUnit.Framework;
-
-    using TechTalk.SpecFlow;
+    using Reqnroll;
 
     [Binding]
     public class AzureTokenCredentialAccessTokenSourceSteps
@@ -124,61 +122,61 @@ namespace Corvus.Identity.Azure
         [Then("the IAzureTokenCredentialSource should have been asked to replace the credential")]
         public void ThenTheIAzureTokenCredentialSourceShouldHaveBeenAskedToReplaceTheCredential()
         {
-            Assert.AreEqual(1, this.replacementCredentials.Count);
+            Assert.That(this.replacementCredentials.Count, Is.EqualTo(1));
         }
 
         [Then("the IAzureTokenCredentialSourceFromDynamicConfiguration should have been asked to invalidate the credential")]
         public void ThenTheIAzureTokenCredentialSourceFromDynamicConfigurationShouldHaveBeenAskedToInvalidateTheCredential()
         {
-            Assert.AreSame(this.configuration, this.invalidatedConfigurations.Single());
+            Assert.That(this.invalidatedConfigurations.Single(), Is.EqualTo(this.configuration));
         }
 
         [Then(@"the scope should have been passed on to TokenCredential\.GetTokenAsync")]
         public void ThenTheScopeShouldHaveBeenPassedOnToTokenCredential_GetToken()
         {
-            Assert.AreSame(this.scopes, this.requestContextPassedToUnderlyingCredential.Scopes);
+            Assert.That(this.requestContextPassedToUnderlyingCredential.Scopes, Is.EqualTo(this.scopes));
         }
 
         [Then(@"the Claims passed to TokenCredential\.GetTokenAsync should be null")]
         public void ThenTheClaimsPassedToTokenCredential_GetTokenAsyncShouldBeNull()
         {
-            Assert.IsNull(this.requestContextPassedToUnderlyingCredential.Claims);
+            Assert.That(this.requestContextPassedToUnderlyingCredential.Claims, Is.Null);
         }
 
         [Then(@"the TenantId passed to TokenCredential\.GetTokenAsync should be null")]
         public void ThenTheTenantIdPassedToTokenCredential_GetTokenAsyncShouldBeNull()
         {
-            Assert.IsNull(this.requestContextPassedToUnderlyingCredential.TenantId);
+            Assert.That(this.requestContextPassedToUnderlyingCredential.TenantId, Is.Null);
         }
 
         [Then(@"the ParentRequestId passed to TokenCredential\.GetTokenAsync should be null")]
         public void ThenTheParentRequestIdPassedToTokenCredential_GetTokenAsyncShouldBeNull()
         {
-            Assert.IsNull(this.requestContextPassedToUnderlyingCredential.ParentRequestId);
+            Assert.That(this.requestContextPassedToUnderlyingCredential.ParentRequestId, Is.Null);
         }
 
         [Then(@"the AccessToken returned by IAccessTokenSource\.GetAccessTokenAsync should be the same as was returned by TokenCredential\.GetTokenAsync")]
         public async Task ThenTheAccessTokenReturnedByIAccessTokenSource_GetAccessTokenAsyncShouldBeTheSameAsWasReturnedByTokenCredential_GetTokenAsync()
         {
-            Assert.AreSame(this.resultFromUnderlyingCredential.Token, (await this.accessTokenDetailReturnedTask.ConfigureAwait(false)).AccessToken);
+            Assert.That((await this.accessTokenDetailReturnedTask.ConfigureAwait(false)).AccessToken, Is.EqualTo(this.resultFromUnderlyingCredential.Token));
         }
 
         [Then(@"the ExpiresOn returned by IAccessTokenSource\.GetAccessTokenAsync should be the same as was returned by TokenCredential\.GetTokenAsync")]
         public async Task ThenTheExpiresOnReturnedByIAccessTokenSource_GetAccessTokenAsyncShouldBeTheSameAsWasReturnedByTokenCredential_GetTokenAsync()
         {
-            Assert.AreEqual(this.resultFromUnderlyingCredential.ExpiresOn, (await this.accessTokenDetailReturnedTask.ConfigureAwait(false)).ExpiresOn);
+            Assert.That((await this.accessTokenDetailReturnedTask.ConfigureAwait(false)).ExpiresOn, Is.EqualTo(this.resultFromUnderlyingCredential.ExpiresOn));
         }
 
         [Then(@"the Claims should have been passed on to TokenCredential\.GetTokenAsync")]
         public void ThenTheClaimsShouldHaveBeenPassedOnToTokenCredential_GetToken()
         {
-            Assert.AreSame(this.claims, this.requestContextPassedToUnderlyingCredential.Claims);
+            Assert.That(this.requestContextPassedToUnderlyingCredential.Claims, Is.EqualTo(this.claims));
         }
 
         [Then(@"the AuthorityId should have been passed on to TokenCredential\.GetTokenAsync as the TenantId")]
         public void ThenTheAuthorityIdShouldHaveBeenPassedOnToTokenCredential_GetTokenAsyncAsTheTenantId()
         {
-            Assert.AreSame(this.authorityId, this.requestContextPassedToUnderlyingCredential.TenantId);
+            Assert.That(this.requestContextPassedToUnderlyingCredential.TenantId, Is.EqualTo(this.authorityId));
         }
 
         [Then(@"IAccessTokenSource\.GetAccessTokenAsync should have thrown an AccessTokenNotIssuedException")]
@@ -191,7 +189,7 @@ namespace Corvus.Identity.Azure
             }
             catch (Exception x)
             {
-                Assert.IsInstanceOf<AccessTokenNotIssuedException>(x);
+                Assert.That(x, Is.InstanceOf<AccessTokenNotIssuedException>());
             }
         }
 
@@ -205,7 +203,7 @@ namespace Corvus.Identity.Azure
             }
             catch (Exception x)
             {
-                Assert.AreSame(this.taskForResultFromUnderlyingCredential.Task.Exception!.InnerException, x.InnerException);
+                Assert.That(x.InnerException, Is.EqualTo(this.taskForResultFromUnderlyingCredential.Task.Exception!.InnerException));
             }
         }
 

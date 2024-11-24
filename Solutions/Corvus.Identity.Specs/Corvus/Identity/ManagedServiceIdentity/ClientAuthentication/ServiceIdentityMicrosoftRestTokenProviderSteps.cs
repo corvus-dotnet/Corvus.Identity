@@ -16,7 +16,7 @@ namespace Corvus.Identity.ManagedServiceIdentity.ClientAuthentication
 
     using NUnit.Framework;
 
-    using TechTalk.SpecFlow;
+    using Reqnroll;
 
     [Binding]
     public class ServiceIdentityMicrosoftRestTokenProviderSteps
@@ -25,8 +25,7 @@ namespace Corvus.Identity.ManagedServiceIdentity.ClientAuthentication
         private readonly TokenProviderSteps common;
         private Exception? exceptionFromUnderlyingSource;
 
-        public ServiceIdentityMicrosoftRestTokenProviderSteps(
-            TokenProviderSteps common)
+        public ServiceIdentityMicrosoftRestTokenProviderSteps(TokenProviderSteps common)
         {
             this.source = new FakeTokenSource();
             this.common = common;
@@ -41,7 +40,7 @@ namespace Corvus.Identity.ManagedServiceIdentity.ClientAuthentication
         [Then("the scope passed to the wrapped IServiceIdentityAccessTokenSource implementation's GetAccessToken should be '(.*)'")]
         public void ThenTheScopePassedToTheWrappedIServiceIdentityAccessTokenSourceImplementationApiWhatever_Default(string scope)
         {
-            Assert.AreEqual(scope, this.source.TokenRequest.Scopes.Single());
+            Assert.That(this.source.TokenRequest.Scopes.Single(), Is.EqualTo(scope));
         }
 
         [When("the task returned by the wrapped IServiceIdentityAccessTokenSource implementation's GetAccessToken method returns '(.*)'")]
@@ -60,9 +59,9 @@ namespace Corvus.Identity.ManagedServiceIdentity.ClientAuthentication
         [Then(@"the task returned from ITokenProvider\.GetAuthenticationHeaderAsync should fail with the exception produced by IServiceIdentityAccessTokenSource\.GetAccessToken")]
         public async Task ThenTheTaskReturnedFromITokenProvider_GetAuthenticationHeaderAsyncShouldFailWithTheExceptionProducedByIServiceIdentityAccessTokenSource_GetAccessToken()
         {
-            await this.common.Result.WhenCompleteIgnoringErrors().WithTimeout().ConfigureAwait(false);
-            Assert.AreEqual(TaskStatus.Faulted, this.common.Result!.Status);
-            Assert.AreSame(this.exceptionFromUnderlyingSource, this.common.Result.Exception!.InnerException);
+            await this.common.Result!.WhenCompleteIgnoringErrors().WithTimeout().ConfigureAwait(false);
+            Assert.That(this.common.Result!.Status, Is.EqualTo(TaskStatus.Faulted));
+            Assert.That(this.common.Result.Exception!.InnerException, Is.EqualTo(this.exceptionFromUnderlyingSource));
         }
 
         // Not using MoQ due to ValueTask funkiness
