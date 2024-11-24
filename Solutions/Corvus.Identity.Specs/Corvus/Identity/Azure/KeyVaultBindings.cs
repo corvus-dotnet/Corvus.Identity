@@ -16,11 +16,9 @@ namespace Corvus.Identity.Azure
     using global::Azure.Security.KeyVault.Secrets;
 
     using Microsoft.Extensions.DependencyInjection;
-
     using Moq;
-
     using NUnit.Framework;
-    using TechTalk.SpecFlow;
+    using Reqnroll;
 
     [Binding]
     public class KeyVaultBindings
@@ -64,7 +62,7 @@ namespace Corvus.Identity.Azure
         [Then(@"the key vault client should have been used (\d+) times")]
         public void ThenTheKeyVaultClientShouldNotHaveBeenUsed(int times)
         {
-            Assert.AreEqual(times, this.VaultCredentialPairs.Count);
+            Assert.That(this.VaultCredentialPairs.Count, Is.EqualTo(times));
         }
 
         private class FakeKeyVaultSecretClientFactory : IKeyVaultSecretClientFactory

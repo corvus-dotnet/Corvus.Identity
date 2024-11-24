@@ -21,11 +21,8 @@ namespace Corvus.Identity.Azure.TokenCredentialSourceFromDynamicConfiguration
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
-
     using NUnit.Framework;
-
-    using TechTalk.SpecFlow;
-    using TechTalk.SpecFlow.Assist;
+    using Reqnroll;
 
     [Binding]
     public sealed class TokenCredentialSourceFromDynamicConfigurationSteps : IDisposable
@@ -40,9 +37,7 @@ namespace Corvus.Identity.Azure.TokenCredentialSourceFromDynamicConfiguration
         private string? validationResult;
         private ClientIdentitySourceTypes validatedType;
 
-        public TokenCredentialSourceFromDynamicConfigurationSteps(
-            TokenCredentialBindings tokenCredentials,
-            KeyVaultBindings keyVault)
+        public TokenCredentialSourceFromDynamicConfigurationSteps(TokenCredentialBindings tokenCredentials, KeyVaultBindings keyVault)
         {
             this.tokenCredentials = tokenCredentials;
             this.keyVault = keyVault;
@@ -116,19 +111,19 @@ namespace Corvus.Identity.Azure.TokenCredentialSourceFromDynamicConfiguration
         [Then("the validation should pass")]
         public void ThenTheValidationShouldPass()
         {
-            Assert.IsNull(this.validationResult);
+            Assert.That(this.validationResult, Is.Null);
         }
 
         [Then("the validated type should be '([^']*)'")]
         public void ThenTheValidatedTypeShouldBe(ClientIdentitySourceTypes expectedValidatedType)
         {
-            Assert.AreEqual(expectedValidatedType, this.validatedType);
+            Assert.That(this.validatedType, Is.EqualTo(expectedValidatedType));
         }
 
         [Then("the validation should fail with '([^']*)'")]
         public void ThenTheValidationShouldFailWith(string message)
         {
-            Assert.AreEqual(message, this.validationResult);
+            Assert.That(this.validationResult, Is.EqualTo(message));
         }
 
         [When("a TokenCredential is fetched for this configuration")]
@@ -194,28 +189,30 @@ namespace Corvus.Identity.Azure.TokenCredentialSourceFromDynamicConfiguration
         private void CheckCacheOperations(Table table, List<SecretCacheRow> actualRows, string operationName)
         {
             var rows = table.CreateSet<SecretCacheRow>().ToList();
-            Assert.AreEqual(rows.Count, actualRows.Count, $"Number of {operationName}");
+
+            Assert.That(actualRows.Count, Is.EqualTo(rows.Count), $"Number of {operationName}");
+
             foreach ((SecretCacheRow expected, SecretCacheRow actual) in rows.Zip(actualRows))
             {
-                Assert.AreEqual(expected.VaultName, actual.VaultName);
-                Assert.AreEqual(expected.SecretName, actual.SecretName);
+                Assert.That(actual.VaultName, Is.EqualTo(expected.VaultName));
+                Assert.That(actual.SecretName, Is.EqualTo(expected.SecretName));
 
                 ClientIdentityConfiguration? actualCredential = this.secretCache.Identities[actual.Credential];
                 ClientIdentityConfiguration expectedCredential;
                 switch (expected.Credential)
                 {
                     case "null":
-                        Assert.IsNull(actualCredential);
+                        Assert.That(actualCredential, Is.Null);
                         break;
 
                     case "AzureAdAppClientSecretInKeyVault":
                         expectedCredential = this.configuration!.ClientIdentity!.AzureAdAppClientSecretInKeyVault!.VaultClientIdentity!;
-                        Assert.AreEqual(JsonSerializer.Serialize(expectedCredential), JsonSerializer.Serialize(actualCredential));
+                        Assert.That(JsonSerializer.Serialize(actualCredential), Is.EqualTo(JsonSerializer.Serialize(expectedCredential)));
                         break;
 
                     case "AzureAdAppClientSecretInKeyVault.AzureAdAppClientSecretInKeyVault":
                         expectedCredential = this.configuration!.ClientIdentity!.AzureAdAppClientSecretInKeyVault!.VaultClientIdentity!.AzureAdAppClientSecretInKeyVault!.VaultClientIdentity!;
-                        Assert.AreEqual(JsonSerializer.Serialize(expectedCredential), JsonSerializer.Serialize(actualCredential));
+                        Assert.That(JsonSerializer.Serialize(actualCredential), Is.EqualTo(JsonSerializer.Serialize(expectedCredential)));
                         break;
                 }
             }
@@ -230,9 +227,9 @@ namespace Corvus.Identity.Azure.TokenCredentialSourceFromDynamicConfiguration
         {
             private readonly Dictionary<(string VaultName, string SecretName), string> secretsToReturn = new();
 
-            public List<SecretCacheRow> TryGets { get; } = new();
+            public List<SecretCacheRow> TryGets { get; } = [];
 
-            public List<SecretCacheRow> Invalidations { get; } = new();
+            public List<SecretCacheRow> Invalidations { get; } = [];
 
             public Dictionary<string, ClientIdentityConfiguration?> Identities { get; } = new();
 

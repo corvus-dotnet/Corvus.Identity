@@ -9,10 +9,8 @@ namespace Corvus.Identity.Azure
     using Corvus.Identity.ClientAuthentication.Azure;
 
     using Microsoft.Extensions.DependencyInjection;
-
     using NUnit.Framework.Internal;
-
-    using TechTalk.SpecFlow;
+    using Reqnroll;
 
     [Binding]
     public class LegacyAuthConnectionStringsSteps
@@ -23,7 +21,7 @@ namespace Corvus.Identity.Azure
         public LegacyAuthConnectionStringsSteps(
             TokenCredentialBindings tokenCredentials)
         {
-            var feature = (LegacyAuthConnectionStringsFeature)TestExecutionContext.CurrentContext.TestObject;
+            LegacyAuthConnectionStringsFeature feature = (LegacyAuthConnectionStringsFeature)TestExecutionContext.CurrentContext.TestObject!;
             this.mode = feature.Mode;
             this.tokenCredentials = tokenCredentials;
         }

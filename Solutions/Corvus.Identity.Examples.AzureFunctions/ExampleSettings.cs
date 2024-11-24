@@ -30,16 +30,9 @@ namespace Corvus.Identity.Examples.AzureFunctions
         public ClientIdentityConfiguration KeyVaultClientIdentity { get; set; }
 
         /// <summary>
-        /// Gets or sets the Azure Subscription id used by <see cref="UseMicrosoftRestFunction"/>
-        /// and <see cref="UsePlainTokensFunction"/>.
+        /// Gets or sets the Azure Subscription id used by <see cref="UsePlainTokensFunction"/>.
         /// </summary>
         public string AzureSubscriptionId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the configuration determining client identity to use in
-        /// <see cref="UseMicrosoftRestFunction.UseConfiguredAsync(Microsoft.AspNetCore.Http.HttpRequest)"/>.
-        /// </summary>
-        public ClientIdentityConfiguration ArmClientIdentity { get; set; }
 
         /// <summary>
         /// Gets or sets the configuration determining the client identity to use as the ambient
