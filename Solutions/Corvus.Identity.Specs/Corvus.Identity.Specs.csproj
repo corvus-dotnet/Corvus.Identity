@@ -55,7 +55,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Corvus.Identity.Azure\Corvus.Identity.Azure.csproj" />
-    <ProjectReference Include="..\Corvus.Identity.MicrosoftRest\Corvus.Identity.MicrosoftRest.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Corvus\Identity\Azure\TokenCredentialSourceFromDynamicConfiguration\CacheInvalidation.feature.cs">
@@ -63,9 +62,6 @@
     </Compile>
     <Compile Update="Corvus\Identity\Azure\TokenCredentialSourceFromDynamicConfiguration\SimpleSourceTypes.feature.cs">
       <DependentUpon>SimpleSourceTypes.feature</DependentUpon>
-    </Compile>
-    <Compile Update="Corvus\Identity\ManagedServiceIdentity\ClientAuthentication\ServiceIdentityMicrosoftRestTokenProvider.feature.cs">
-      <DependentUpon>ServiceIdentityMicrosoftRestTokenProvider.feature</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -79,10 +75,6 @@
       <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
     </SpecFlowFeatureFiles>
     <SpecFlowFeatureFiles Update="Corvus\Identity\Azure\TokenCredentialSourceFromDynamicConfiguration\SimpleSourceTypes.feature">
-      <Visible>$(UsingMicrosoftNETSdk)</Visible>
-      <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
-    </SpecFlowFeatureFiles>
-    <SpecFlowFeatureFiles Update="Corvus\Identity\ManagedServiceIdentity\ClientAuthentication\ServiceIdentityMicrosoftRestTokenProvider.feature">
       <Visible>$(UsingMicrosoftNETSdk)</Visible>
       <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
     </SpecFlowFeatureFiles>
