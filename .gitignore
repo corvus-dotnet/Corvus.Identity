@@ -345,3 +345,4 @@ local.settings.json
 /_codeCoverage
 /_packages
 *.sbom.*
+.zf/extensions/
