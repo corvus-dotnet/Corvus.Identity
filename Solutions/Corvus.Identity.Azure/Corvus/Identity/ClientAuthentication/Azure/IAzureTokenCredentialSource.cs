@@ -62,7 +62,7 @@ namespace Corvus.Identity.ClientAuthentication.Azure
         /// This method enables the application to obtain updated credentials. It also enables the
         /// <see cref="IAzureTokenCredentialSource"/> implementation to know that the credentials
         /// in question are no longer valid. Implementations that cache credentials can choose to
-        /// stop handing out the now-failed cached credentials to any futher calls to
+        /// stop handing out the now-failed cached credentials to any further calls to
         /// <see cref="GetAccessTokenAsync"/>, making those wait until refreshed credentials have
         /// become available.
         /// </para>

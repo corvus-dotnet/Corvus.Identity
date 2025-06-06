@@ -63,6 +63,8 @@ Scenario: Visual Studio Credential
     When a TokenCredential is fetched for this configuration
     Then the TokenCredential should be of type 'VisualStudioCredential'
 
+# VisualStudioCode is now obsolete.
+@ignore  
 Scenario: Visual Studio Code Credential
     Given configuration of
         """

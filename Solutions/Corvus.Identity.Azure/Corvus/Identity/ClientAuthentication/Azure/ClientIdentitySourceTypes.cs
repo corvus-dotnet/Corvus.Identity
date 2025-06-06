@@ -68,6 +68,7 @@ namespace Corvus.Identity.ClientAuthentication.Azure
         /// Visual Studio Code's authentication should be used to determine the identity. (For local
         /// development purposes only.)
         /// </summary>
+        [Obsolete("Use AzureCli")]
         VisualStudioCode,
 
         /// <summary>
