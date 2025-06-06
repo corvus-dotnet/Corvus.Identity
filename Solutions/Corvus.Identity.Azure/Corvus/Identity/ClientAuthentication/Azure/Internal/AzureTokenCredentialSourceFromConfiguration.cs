@@ -66,7 +66,7 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
                 ClientIdentitySourceTypes.AzureIdentityDefaultAzureCredential => new DefaultAzureCredential(),
                 ClientIdentitySourceTypes.AzureCli => new AzureCliCredential(),
                 ClientIdentitySourceTypes.VisualStudio => new VisualStudioCredential(),
-                ClientIdentitySourceTypes.VisualStudioCode => new AzureCliCredential(), // VisualStuCredential is obsolete
+                ClientIdentitySourceTypes.VisualStudioCode => new AzureCliCredential(), // VisualStudioCodeCredential is obsolete
 
                 _ => throw new ArgumentException(
                     $"Unsupported IdentitySourceType: {identitySourceType}",
