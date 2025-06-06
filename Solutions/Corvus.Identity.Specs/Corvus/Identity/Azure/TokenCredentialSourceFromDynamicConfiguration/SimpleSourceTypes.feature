@@ -71,4 +71,4 @@ Scenario: Visual Studio Code Credential
         }
         """
     When a TokenCredential is fetched for this configuration
-    Then the TokenCredential should be of type 'VisualStudioCodeCredential'
+    Then the TokenCredential should be of type 'AzureCliCredential'
