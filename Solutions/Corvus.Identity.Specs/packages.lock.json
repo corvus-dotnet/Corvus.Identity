@@ -2,6 +2,12 @@
   "version": 1,
   "dependencies": {
     "net8.0": {
+      "BouncyCastle.Cryptography": {
+        "type": "Direct",
+        "requested": "[2.6.1, )",
+        "resolved": "2.6.1",
+        "contentHash": "vZsG2YILhthgRqO+ZVgRff4ZFKKTl0v7kqaVBLCtRvpREhfBP33pcWrdA3PRYgWuFL1RxiUFvjMUHTdBZlJcoA=="
+      },
       "Corvus.Testing.ReqnRoll.NUnit": {
         "type": "Direct",
         "requested": "[4.0.5, )",
@@ -530,7 +536,14 @@
           "Azure.Identity": "[1.14.0, )",
           "Azure.Security.KeyVault.Secrets": "[4.7.0, )",
           "Corvus.Identity.Abstractions": "[1.0.0, )",
+          "Corvus.Identity.Certificates": "[1.0.0, )",
           "Microsoft.Extensions.Caching.Memory": "[8.0.*, )",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "[8.0.*, )"
+        }
+      },
+      "corvus.identity.certificates": {
+        "type": "Project",
+        "dependencies": {
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[8.0.*, )"
         }
       }

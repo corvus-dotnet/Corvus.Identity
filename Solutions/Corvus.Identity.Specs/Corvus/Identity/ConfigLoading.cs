@@ -13,7 +13,7 @@ namespace Corvus.Identity
     /// </summary>
     public static class ConfigLoading
     {
-        public static T LoadJsonConfiguration<T>(string configurationJson)
+        public static T? LoadJsonConfiguration<T>(string configurationJson)
         {
             var configurationJsonStream = new MemoryStream(Encoding.UTF8.GetBytes(configurationJson));
 

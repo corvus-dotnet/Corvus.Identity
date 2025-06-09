@@ -8,8 +8,11 @@ namespace Corvus.Identity.Certificates
     using System.Collections.Generic;
     using System.Security.Cryptography.X509Certificates;
     using System.Threading.Tasks;
+
     using Microsoft.Extensions.DependencyInjection;
+
     using NUnit.Framework;
+
     using Org.BouncyCastle.Asn1.Pkcs;
     using Org.BouncyCastle.Asn1.X509;
     using Org.BouncyCastle.Crypto;
@@ -18,7 +21,8 @@ namespace Corvus.Identity.Certificates
     using Org.BouncyCastle.Crypto.Prng;
     using Org.BouncyCastle.Security;
     using Org.BouncyCastle.X509;
-    using TechTalk.SpecFlow;
+
+    using Reqnroll;
 
     [Binding]
     public sealed class ClientCertificateConfigurationSteps : IDisposable
