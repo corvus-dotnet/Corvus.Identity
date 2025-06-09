@@ -12,10 +12,8 @@ namespace Corvus.Identity.Azure
 
     using global::Azure.Core;
     using global::Azure.Identity;
-
     using NUnit.Framework;
-
-    using TechTalk.SpecFlow;
+    using Reqnroll;
 
     [Binding]
     public class TokenCredentialBindings
@@ -49,7 +47,7 @@ namespace Corvus.Identity.Azure
             }
             else
             {
-                Assert.IsInstanceOf(expectedBaseType, this.Credentials[credentialName]);
+                Assert.That(this.Credentials[credentialName], Is.InstanceOf(expectedBaseType));
             }
         }
 
@@ -62,9 +60,7 @@ namespace Corvus.Identity.Azure
         [Then("the ClientSecretCredential '(.*)' tenantId should be '(.*)'")]
         public void ThenTheClientSecretCredentialTenantIdShouldBe(string credentialName, string tenantId)
         {
-            Assert.AreEqual(
-                tenantId,
-                ((TestableClientSecretCredential)this.Credentials[credentialName]).TenantId);
+            Assert.That(((TestableClientSecretCredential)this.Credentials[credentialName]).TenantId, Is.EqualTo(tenantId));
         }
 
         [Then(@"the ClientCertificateCredential '([^']*)' tenantId should be '([^']*)'")]
@@ -84,9 +80,7 @@ namespace Corvus.Identity.Azure
         [Then("the ClientSecretCredential '(.*)' appId should be '(.*)'")]
         public void ThenTheClientSecretCredentialAppIdShouldBe(string credentialName, string clientId)
         {
-            Assert.AreEqual(
-                clientId,
-                ((TestableClientSecretCredential)this.Credentials[credentialName]).ClientId);
+            Assert.That(((TestableClientSecretCredential)this.Credentials[credentialName]).ClientId, Is.EqualTo(clientId));
         }
 
         [Then(@"the ClientCertificateCredential '([^']*)' appId should be '([^']*)'")]
@@ -106,9 +100,7 @@ namespace Corvus.Identity.Azure
         [Then("the ClientSecretCredential '(.*)' clientSecret should be '(.*)'")]
         public void ThenTheClientSecretCredentialClientSecretShouldBe(string credentialName, string clientSecret)
         {
-            Assert.AreEqual(
-                clientSecret,
-                ((TestableClientSecretCredential)this.Credentials[credentialName]).ClientSecret);
+            Assert.That(((TestableClientSecretCredential)this.Credentials[credentialName]).ClientSecret, Is.EqualTo(clientSecret));
         }
 
         [Then(@"the ClientCertificateCredential '(.*)' should be using the certificate from the '(.*)' store with the subject name of '(.*)'")]

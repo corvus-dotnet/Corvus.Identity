@@ -30,7 +30,7 @@ namespace Corvus.Identity.ClientAuthentication.Azure
         {
             type = default;
 
-            HashSet<ClientIdentitySourceTypes> indicatedSourceTypes = new();
+            HashSet<ClientIdentitySourceTypes> indicatedSourceTypes = [];
 
             if (configuration is null)
             {
@@ -78,7 +78,7 @@ namespace Corvus.Identity.ClientAuthentication.Azure
                 default:
                     if (configuration.IdentitySourceType.HasValue)
                     {
-                        string sourceTypes = string.Join(", ", indicatedSourceTypes.Except(new[] { configuration.IdentitySourceType.Value }));
+                        string sourceTypes = string.Join(", ", indicatedSourceTypes.Except([configuration.IdentitySourceType.Value]));
                         return $"identity type is ambiguous because the IdentitySourceType is {SourceTypeString(configuration.IdentitySourceType)} but the properties set are for {sourceTypes}";
                     }
 
