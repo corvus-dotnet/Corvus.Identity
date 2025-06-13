@@ -6,7 +6,8 @@ namespace Corvus.Identity.Azure
 {
     using System;
     using System.Collections.Generic;
-
+    using System.Linq;
+    using System.Security.Cryptography.X509Certificates;
     using Corvus.Identity.ClientAuthentication.Azure.Internal;
 
     using global::Azure.Core;
@@ -62,6 +63,14 @@ namespace Corvus.Identity.Azure
             Assert.That(((TestableClientSecretCredential)this.Credentials[credentialName]).TenantId, Is.EqualTo(tenantId));
         }
 
+        [Then(@"the ClientCertificateCredential '([^']*)' tenantId should be '([^']*)'")]
+        public void ThenTheClientCertificateCredentialTenantIdShouldBe(string credentialName, string tenantId)
+        {
+            Assert.AreEqual(
+                tenantId,
+                ((TestableClientCertificateCredential)this.Credentials[credentialName]).TenantId);
+        }
+
         [Then("the ClientSecretCredential appId should be '(.*)'")]
         public void ThenTheClientSecretCredentialAppIdShouldBe(string clientId)
         {
@@ -74,6 +83,14 @@ namespace Corvus.Identity.Azure
             Assert.That(((TestableClientSecretCredential)this.Credentials[credentialName]).ClientId, Is.EqualTo(clientId));
         }
 
+        [Then(@"the ClientCertificateCredential '([^']*)' appId should be '([^']*)'")]
+        public void ThenTheClientCertificateCredentialAppIdShouldBe(string credentialName, string clientId)
+        {
+            Assert.AreEqual(
+                clientId,
+                ((TestableClientCertificateCredential)this.Credentials[credentialName]).ClientId);
+        }
+
         [Then("the ClientSecretCredential clientSecret should be '(.*)'")]
         public void ThenTheClientSecretCredentialClientSecretShouldBe(string clientSecret)
         {
@@ -84,6 +101,19 @@ namespace Corvus.Identity.Azure
         public void ThenTheClientSecretCredentialClientSecretShouldBe(string credentialName, string clientSecret)
         {
             Assert.That(((TestableClientSecretCredential)this.Credentials[credentialName]).ClientSecret, Is.EqualTo(clientSecret));
+        }
+
+        [Then(@"the ClientCertificateCredential '(.*)' should be using the certificate from the '(.*)' store with the subject name of '(.*)'")]
+        public void ThenTheClientCertificateCredentialShouldBeUsingTheCertificateFromTheStoreWithTheSubjectNameOf(string credentialName, string storeName, string subjectName)
+        {
+            using X509Store store = new(storeName, StoreLocation.CurrentUser);
+            store.Open(OpenFlags.ReadWrite);
+
+            X509Certificate2 certificate = store.Certificates.Find(X509FindType.FindBySubjectName, subjectName, false).Single();
+
+            Assert.AreEqual(
+                    certificate.Thumbprint,
+                    ((TestableClientCertificateCredential)this.Credentials[credentialName]).ClientCertificate.Thumbprint);
         }
 
         public void SetNamedCredential(string? credentialName, TokenCredential credential)

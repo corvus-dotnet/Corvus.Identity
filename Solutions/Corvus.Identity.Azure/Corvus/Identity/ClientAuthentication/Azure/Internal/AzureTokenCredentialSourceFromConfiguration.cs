@@ -5,9 +5,10 @@
 namespace Corvus.Identity.ClientAuthentication.Azure.Internal
 {
     using System;
+    using System.Security.Cryptography.X509Certificates;
     using System.Threading;
     using System.Threading.Tasks;
-
+    using Corvus.Identity.Certificates;
     using global::Azure;
     using global::Azure.Core;
     using global::Azure.Identity;
@@ -20,6 +21,7 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
     {
         private readonly IKeyVaultSecretClientFactory secretClientFactory;
         private readonly IKeyVaultSecretCache secretCache;
+        private readonly ICertificateFromConfiguration certificateSource;
 
         /// <summary>
         /// Creates an <see cref="AzureTokenCredentialSourceFromConfiguration"/>.
@@ -30,12 +32,17 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
         /// <param name="secretCache">
         /// Provides caching to avoid repeated lookups in key vault.
         /// </param>
+        /// <param name="certificateSource">
+        /// Retrieves certificates.
+        /// </param>
         public AzureTokenCredentialSourceFromConfiguration(
             IKeyVaultSecretClientFactory secretClientFactory,
-            IKeyVaultSecretCache secretCache)
+            IKeyVaultSecretCache secretCache,
+            ICertificateFromConfiguration certificateSource)
         {
             this.secretClientFactory = secretClientFactory ?? throw new ArgumentNullException(nameof(secretClientFactory));
             this.secretCache = secretCache;
+            this.certificateSource = certificateSource;
         }
 
         /// <inheritdoc/>
@@ -57,6 +64,11 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
             if (identitySourceType == ClientIdentitySourceTypes.ClientIdAndSecret)
             {
                 return await this.GetTokenCredentialSourceForAdAppWithClientSecret(configuration, cancellationToken).ConfigureAwait(false);
+            }
+
+            if (identitySourceType == ClientIdentitySourceTypes.ClientIdAndCertificate)
+            {
+                return await this.GetTokenCredentialSourceForAdAppWithClientCertificate(configuration, cancellationToken).ConfigureAwait(false);
             }
 
             TokenCredential tokenCredential = identitySourceType switch
@@ -81,6 +93,14 @@ namespace Corvus.Identity.ClientAuthentication.Azure.Internal
             {
                 this.InvalidateKeyVaultSecrets(keyVaultConfig);
             }
+        }
+
+        private async Task<IAzureTokenCredentialSource> GetTokenCredentialSourceForAdAppWithClientCertificate(ClientIdentityConfiguration configuration, CancellationToken cancellationToken)
+        {
+            X509Certificate2 certificate = await this.certificateSource.CertificateForConfigurationAsync(configuration.AzureAdAppClientCertificate!).ConfigureAwait(false);
+
+            // TO DO: Implement renewal callback.
+            return new AzureTokenCredentialSource(new TestableClientCertificateCredential(configuration.AzureAdAppTenantId!, configuration.AzureAdAppClientId!, certificate), null);
         }
 
         private async ValueTask<IAzureTokenCredentialSource> GetTokenCredentialSourceForAdAppWithClientSecret(

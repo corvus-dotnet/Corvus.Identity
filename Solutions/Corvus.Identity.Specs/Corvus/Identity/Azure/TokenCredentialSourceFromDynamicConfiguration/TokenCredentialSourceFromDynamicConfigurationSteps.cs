@@ -9,6 +9,7 @@ namespace Corvus.Identity.Azure.TokenCredentialSourceFromDynamicConfiguration
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Linq;
+    using System.Security.Cryptography.X509Certificates;
     using System.Text;
     using System.Text.Json;
     using System.Threading.Tasks;
@@ -31,7 +32,6 @@ namespace Corvus.Identity.Azure.TokenCredentialSourceFromDynamicConfiguration
         private readonly KeyVaultBindings keyVault;
         private readonly TestCache secretCache = new();
         private IAzureTokenCredentialSourceFromDynamicConfiguration? credsFromConfig;
-        private MemoryStream? configurationJson;
         private TestConfiguration? configuration;
         private ServiceProvider? serviceProvider;
         private string? validationResult;
@@ -46,13 +46,7 @@ namespace Corvus.Identity.Azure.TokenCredentialSourceFromDynamicConfiguration
         [Given("configuration of")]
         public void GivenConfigurationOf(string configurationJson)
         {
-            this.configurationJson = new MemoryStream(Encoding.UTF8.GetBytes(configurationJson));
-
-            IConfigurationRoot configRoot = new ConfigurationBuilder()
-                .AddJsonStream(this.configurationJson)
-                .Build();
-
-            this.configuration = configRoot.Get<TestConfiguration>();
+            this.configuration = ConfigLoading.LoadJsonConfiguration<TestConfiguration>(configurationJson);
             ServiceCollection services = new();
             services.AddAzureTokenCredentialSourceFromDynamicConfiguration();
 
@@ -93,6 +87,49 @@ namespace Corvus.Identity.Azure.TokenCredentialSourceFromDynamicConfiguration
             string azureAppClientSecretPlainText)
         {
             this.GivenAClientIdAndSecretConfigurationWith(identitySourceType, azureAppTenantId, azureAdAppClientId, azureAppClientSecretPlainText);
+            this.configuration!.ClientIdentity!.AzureAdAppClientSecretInKeyVault = new()
+            {
+                VaultName = "somevault",
+                SecretName = "SomeSecret",
+            };
+        }
+
+        [Given(@"a ClientIdAndCertificate configuration with '([^']*)', '([^']*)', '([^']*)', '([^']*)', '([^']*)', '([^']*)'")]
+        public void GivenAClientIdAndCertificateConfigurationWith(
+            string identitySourceType,
+            string azureAppTenantId,
+            string azureAdAppClientId,
+            StoreLocation? storeLocation,
+            string storeName,
+            string subjectName)
+        {
+            var id = new ClientIdentityConfiguration
+            {
+                IdentitySourceType = string.IsNullOrWhiteSpace(identitySourceType)
+                    ? null
+                    : Enum.Parse<ClientIdentitySourceTypes>(identitySourceType),
+                AzureAdAppTenantId = azureAppTenantId,
+                AzureAdAppClientId = azureAdAppClientId,
+                AzureAdAppClientCertificate = new Certificates.ClientCertificateConfiguration
+                {
+                    StoreLocation = storeLocation ?? 0,
+                    StoreName = storeName,
+                    SubjectName = subjectName,
+                },
+            };
+
+            this.configuration = new TestConfiguration { ClientIdentity = id };
+        }
+
+        [Given(@"the AzureAdAppClientSecretPlainText is '([^']*)'")]
+        public void GivenTheAzureAdAppClientSecretPlainTextIs(string secret)
+        {
+            this.configuration!.ClientIdentity!.AzureAdAppClientSecretPlainText = secret;
+        }
+
+        [Given(@"the AzureAdAppClientSecretInKeyVault is set")]
+        public void GivenTheAzureAdAppClientSecretKeyVaultIsSet()
+        {
             this.configuration!.ClientIdentity!.AzureAdAppClientSecretInKeyVault = new()
             {
                 VaultName = "somevault",

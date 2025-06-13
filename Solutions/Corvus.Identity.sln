@@ -23,6 +23,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Corvus.Identity.Examples.Us
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Corvus.Identity.Examples.UsingPlainTokens", "Corvus.Identity.Examples.UsingPlainTokens\Corvus.Identity.Examples.UsingPlainTokens.csproj", "{8FFF9508-9CE7-41AC-B1F2-BA86F9939ACA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Corvus.Identity.Certificates", "Corvus.Identity.Certificates\Corvus.Identity.Certificates.csproj", "{15B51CD0-4819-4958-AB58-FD55D9FCB035}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +55,10 @@ Global
 		{8FFF9508-9CE7-41AC-B1F2-BA86F9939ACA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8FFF9508-9CE7-41AC-B1F2-BA86F9939ACA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8FFF9508-9CE7-41AC-B1F2-BA86F9939ACA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15B51CD0-4819-4958-AB58-FD55D9FCB035}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15B51CD0-4819-4958-AB58-FD55D9FCB035}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15B51CD0-4819-4958-AB58-FD55D9FCB035}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15B51CD0-4819-4958-AB58-FD55D9FCB035}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
