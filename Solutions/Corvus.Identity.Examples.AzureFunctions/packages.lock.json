@@ -1715,14 +1715,14 @@
           "Azure.Security.KeyVault.Secrets": "[4.7.0, )",
           "Corvus.Identity.Abstractions": "[1.0.0, )",
           "Corvus.Identity.Certificates": "[1.0.0, )",
-          "Microsoft.Extensions.Caching.Memory": "[8.0.*, )",
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "[8.0.*, )"
+          "Microsoft.Extensions.Caching.Memory": "[8.*, )",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "[8.*, )"
         }
       },
       "corvus.identity.certificates": {
         "type": "Project",
         "dependencies": {
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "[8.0.*, )"
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "[8.*, )"
         }
       },
       "corvus.identity.examples.usingazurecore": {
@@ -1736,7 +1736,7 @@
         "type": "Project",
         "dependencies": {
           "Corvus.Identity.Azure": "[1.0.0, )",
-          "Microsoft.Extensions.Http": "[8.0.*, )"
+          "Microsoft.Extensions.Http": "[8.*, )"
         }
       }
     }
