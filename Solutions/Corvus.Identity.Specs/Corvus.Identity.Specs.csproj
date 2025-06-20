@@ -13,6 +13,7 @@
     -->
     <NoWarn>SA0001;SA1204;SA1201;SA1600;SA1602;CS1591;SA1636;SA1641</NoWarn>
     <Nullable>enable</Nullable>
+    <IsTestProject>true</IsTestProject>
   </PropertyGroup>
 
   <PropertyGroup>
